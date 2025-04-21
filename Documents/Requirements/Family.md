@@ -39,6 +39,11 @@ Every user of the application must belong to a family.
   `[Head of Family Name] + [Region]`  
   **Example**: *Bhagwatnarayan Garothaya – Amravati, MH*
 
+- **Family photo**:
+  Family photo
+  
+- **Pets**:
+  List pets in the family with image
 
 ## Audit Attributes (for Family Changes)
 
