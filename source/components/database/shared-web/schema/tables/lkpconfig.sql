@@ -29,6 +29,9 @@ TABLESPACE pg_default;
 ALTER TABLE IF EXISTS shared_schema.lkpconfig
     OWNER to familytree_master;
 
+COMMENT ON TABLE shared_schema.lkpconfig
+    IS 'Application config table';
+
 COMMENT ON COLUMN shared_schema.lkpconfig.configname
     IS 'Main config name e.g. COUNTRYNAME';
 
