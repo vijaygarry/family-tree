@@ -1,0 +1,23 @@
+jar {
+    archiveBaseName.set('web-infra')
+}
+
+dependencies {
+	//compile libraries.lombok
+    //annotationProcessor libraries.lombokProcessor
+}
+
+apply plugin: 'eclipse-wtp'
+
+eclipse {
+    def repoSource = "${rootDir.path}"
+    // Fix windows directory delimiters
+    repoSource = repoSource.replaceAll( "\\\\", "/" )
+
+    project {
+        name = 'web-infra'
+    }
+    wtp.facet {
+    	facet name:'org.eclipse.wst.common.project.facet.core.nature'
+    }
+}

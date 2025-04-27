@@ -1,0 +1,41 @@
+ext.neasaaUtilVersion = '1.0.20240829'
+
+//This file list out all the jars required by this application
+
+// Define list of jars to be used by application
+// Note: All these jars are not included in all projects by default, Include required libraries in projects as required.
+
+
+ext.libraries = [
+    lombok: "org.projectlombok:lombok:1.18.38@jar",
+    lombokProcessor: 'org.projectlombok:lombok:1.18.38',
+    neasaaUtils: "com.neasaa:neasaa-utils:${neasaaUtilVersion}@jar",
+]
+
+/*
+libraries << [
+    logger: [
+        libraries.slf4jApi,
+        libraries.log4j2Slf4jImpl,
+        libraries.apacheLog4jApi,
+        libraries.apacheLog4jCore
+	],
+]
+*/
+
+/*
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.session:spring-session-jdbc'
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'org.postgresql:postgresql'
+	annotationProcessor 'org.projectlombok:lombok'
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+*/
