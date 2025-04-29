@@ -1,5 +1,7 @@
 ext.neasaaUtilVersion = '1.0.20240829'
-
+ext.springBootVersion = '3.4.5'
+ext.springFrameworkVersion = '6.2.6'
+ext.tomcatVersion = '10.1.40'
 //This file list out all the jars required by this application
 
 // Define list of jars to be used by application
@@ -10,8 +12,97 @@ ext.libraries = [
     lombok: "org.projectlombok:lombok:1.18.38@jar",
     lombokProcessor: 'org.projectlombok:lombok:1.18.38',
     neasaaUtils: "com.neasaa:neasaa-utils:${neasaaUtilVersion}@jar",
+	
+	// Spring Framework Web
+	springFrameworkWebJar: "org.springframework:spring-web:${springFrameworkVersion}@jar",
+	springFrameworkWebMvc: "org.springframework:spring-webmvc:${springFrameworkVersion}@jar",
+
+	//Spring Boot dependencies
+	springBootJar: "org.springframework.boot:spring-boot:${springBootVersion}@jar",
+	springBootStarter: "org.springframework.boot:spring-boot-starter:${springBootVersion}@jar",
+	springBootStarterWeb: "org.springframework.boot:spring-boot-starter-web:${springBootVersion}@jar",
+	springBootStarterJson: "org.springframework.boot:spring-boot-starter-json:${springBootVersion}@jar",
+	springBootStarterTomcat: "org.springframework.boot:spring-boot-starter-tomcat:${springBootVersion}@jar",
+	springBootAutoconfigure: "org.springframework.boot:spring-boot-autoconfigure:${springBootVersion}@jar",
+	
+	// Embeded Tomcat
+	// tomcatEmbedWebsocket: "org.apache.tomcat.embed:tomcat-embed-websocket:${springFrameworkVersion}@jar",
+	tomcatEmbedCore: "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}@jar",
+	tomcatEmbedEl: "org.apache.tomcat.embed:tomcat-embed-el:${tomcatVersion}@jar",
+
+
+	// jackson-datatype-jsr310: "com.fasterxml.jackson.datatype:jackson-datatype-jsr310@jar",
+	// jackson-module-parameter-names: "com.fasterxml.jackson.module:jackson-module-parameter-names@jar",
+	// jackson-annotations: "com.fasterxml.jackson.core:jackson-annotations@jar",
+	// jackson-core: "com.fasterxml.jackson.core:jackson-core@jar",
+	// jackson-datatype-jdk8: "com.fasterxml.jackson.datatype:jackson-datatype-jdk8@jar",
+	// jackson-databind: "com.fasterxml.jackson.core:jackson-databind@jar",
+	// jakarta.annotation-api: "jakarta.annotation:jakarta.annotation-api@jar",
+
+// com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.18.3/cc57924cccf42fc852081c36215272f84ffcd991/jackson-datatype-jsr310-2.18.3.jar
+// com.fasterxml.jackson.module/jackson-module-parameter-names/2.18.3/fa63ae5eb3956b1a6d7a7ead2b513af89dea22e7/jackson-module-parameter-names-2.18.3.jar
+// com.fasterxml.jackson.core/jackson-annotations/2.18.3/7fa21cf7da4598f8240e4ebd9779249622af1acd/jackson-annotations-2.18.3.jar
+// com.fasterxml.jackson.core/jackson-core/2.18.3/78f80c259268200e588aa204dd97ecf09b76916e/jackson-core-2.18.3.jar
+// com.fasterxml.jackson.datatype/jackson-datatype-jdk8/2.18.3/621558295660935134b171ce2b0d9ad6842ec2ff/jackson-datatype-jdk8-2.18.3.jar
+// com.fasterxml.jackson.core/jackson-databind/2.18.3/537e3886263e3b3464385040453e92567fd509e2/jackson-databind-2.18.3.jar
+// jakarta.annotation/jakarta.annotation-api/2.1.1/48b9bda22b091b1f48b13af03fe36db3be6e1ae3/jakarta.annotation-api-2.1.1.jar
+
+	
+	// Spring Framework
+	springCore: "org.springframework:spring-core:${springFrameworkVersion}@jar",
+	springBeans: "org.springframework:spring-beans:${springFrameworkVersion}@jar",
+	springContext: "org.springframework:spring-context:${springFrameworkVersion}@jar",
+	springAop: "org.springframework:spring-aop:${springFrameworkVersion}@jar",
+	// spring-expression: "org.springframework:spring-expression:${springFrameworkVersion}@jar",
+	
+
+
+	// micrometer-observation: "io.micrometer:micrometer-observation@jar",
+	// spring-boot-starter-logging: "org.springframework.boot:spring-boot-starter-logging@jar",
+	// snakeyaml: "org.yaml:snakeyaml@jar",
+	// spring-jcl: "org.springframework:spring-jcl@jar",
+	// micrometer-commons: "io.micrometer:micrometer-commons@jar",
+	// logback-classic: "ch.qos.logback:logback-classic@jar",
+	// log4j-to-slf4j: "org.apache.logging.log4j:log4j-to-slf4j@jar",
+	// jul-to-slf4j: "org.slf4j:jul-to-slf4j@jar",
+	// logback-core: "ch.qos.logback:logback-core@jar",
+	// slf4j-api: "org.slf4j:slf4j-api@jar",
+	// log4j-api: "org.apache.logging.log4j:log4j-api@jar",
+// 	io.micrometer/micrometer-observation/1.14.5/b23dff6bf07a29f67fdae8f3f3f8f1c78fa7b126/micrometer-observation-1.14.5.jar
+// org.springframework.boot/spring-boot-starter-logging/3.4.5/f4821c3181ef6dfbbc5305ebf5a3ed2c5493ef14/spring-boot-starter-logging-3.4.5.jar
+// org.yaml/snakeyaml/2.3/936b36210e27320f920536f695cf1af210c44586/snakeyaml-2.3.jar
+// org.springframework/spring-jcl/6.2.6/f4468f33de0015179abb6055964801bc962f8d51/spring-jcl-6.2.6.jar
+// io.micrometer/micrometer-commons/1.14.5/6201a40489ccedc9539c5f7a2c84e9e64702bf10/micrometer-commons-1.14.5.jar
+// ch.qos.logback/logback-classic/1.5.18/fc371f3fc97a639de2d67947cffb7518ec5e3d40/logback-classic-1.5.18.jar
+// org.apache.logging.log4j/log4j-to-slf4j/2.24.3/da1143e2a2531ee1c2d90baa98eb50a28a39d5a7/log4j-to-slf4j-2.24.3.jar
+// org.slf4j/jul-to-slf4j/2.0.17/524cb6ccc2b68a57604750e1ab8b13b5a786a6aa/jul-to-slf4j-2.0.17.jar
+// ch.qos.logback/logback-core/1.5.18/6c0375624f6f36b4e089e2488ba21334a11ef13f/logback-core-1.5.18.jar
+// org.slf4j/slf4j-api/2.0.17/d9e58ac9c7779ba3bf8142aff6c830617a7fe60f/slf4j-api-2.0.17.jar
+// org.apache.logging.log4j/log4j-api/2.24.3/b02c125db8b6d295adf72ae6e71af5d83bce2370/log4j-api-2.24.3.jar
 ]
 
+libraries << [
+    springBoot: [
+		libraries.springBootJar,
+        libraries.springBootStarter,
+		libraries.springBootAutoconfigure,
+		libraries.springBootStarterWeb,
+		libraries.springBootStarterJson,
+		libraries.springBootStarterTomcat,
+		libraries.tomcatEmbedCore,
+		libraries.tomcatEmbedEl,
+	],
+	springFrameworkWeb: [
+		libraries.springFrameworkWebJar,
+		libraries.springFrameworkWebMvc,
+	],
+	springFramework: [
+		libraries.springCore,
+		libraries.springBeans,
+		libraries.springContext,
+		libraries.springAop,
+	]
+]
 /*
 libraries << [
     logger: [

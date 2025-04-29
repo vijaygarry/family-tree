@@ -41,6 +41,13 @@ allprojects {
 		}
 	}
 
+	task printJars {
+		doLast {
+			configurations.runtimeClasspath.resolvedConfiguration.resolvedArtifacts.each { artifact ->
+				println artifact.file
+			}
+		}
+	}
 	project.ext.hasVersion = { prop ->
 		return project.hasProperty("${prop}") 
 				&& project[prop] 

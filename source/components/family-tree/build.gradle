@@ -1,0 +1,20 @@
+jar {
+    archiveBaseName.set('family-tree')
+}
+
+dependencies {
+    implementation project(':components:web-infra')
+    implementation libraries.springBoot
+    implementation libraries.springFrameworkWeb
+    implementation libraries.springFramework
+}
+
+eclipse {
+    def repoSource = "${rootDir.path}"
+    // Fix windows directory delimiters
+    repoSource = repoSource.replaceAll( "\\\\", "/" )
+
+    project {
+        name = 'family-tree'
+    }
+}
