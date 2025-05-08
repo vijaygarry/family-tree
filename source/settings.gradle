@@ -1,2 +1,2 @@
 rootProject.name = 'family-tree'
-include ':components:web-infra', ':components:family-tree'
+include ':components:neasaa-base-app', ':components:family-tree', ':components:family-tree-web-boot'

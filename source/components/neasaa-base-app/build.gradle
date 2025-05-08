@@ -1,0 +1,19 @@
+jar {
+    archiveBaseName.set('neasaa-base-app')
+}
+
+dependencies {
+    implementation libraries.springFramework
+    implementation libraries.springLogger
+    implementation libraries.log4j
+}
+
+eclipse {
+    def repoSource = "${rootDir.path}"
+    // Fix windows directory delimiters
+    repoSource = repoSource.replaceAll( "\\\\", "/" )
+
+    project {
+        name = 'neasaa-base-app'
+    }
+}

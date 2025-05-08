@@ -3,12 +3,9 @@ jar {
 }
 
 dependencies {
-    implementation project(':components:web-infra')
-    implementation libraries.springBoot
-    implementation libraries.springFrameworkWeb
-    implementation libraries.springFramework
-    implementation libraries.logger
-    implementation libraries.jackson
+    implementation project(':components:neasaa-base-app')
+    // implementation libraries.springFramework
+    // implementation libraries.logger
 }
 
 eclipse {

@@ -1,0 +1,25 @@
+jar {
+    archiveBaseName.set('family-tree-web-boot')
+}
+
+dependencies {
+    implementation project(':components:family-tree')
+    implementation libraries.springBoot
+    implementation libraries.springFrameworkWeb
+    implementation libraries.jackson
+}
+
+apply plugin: 'eclipse-wtp'
+
+eclipse {
+    def repoSource = "${rootDir.path}"
+    // Fix windows directory delimiters
+    repoSource = repoSource.replaceAll( "\\\\", "/" )
+
+    project {
+        name = 'family-tree-web-boot'
+    }
+    wtp.facet {
+    	facet name:'org.eclipse.wst.common.project.facet.core.nature'
+    }
+}
