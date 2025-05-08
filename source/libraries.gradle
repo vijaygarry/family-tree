@@ -26,6 +26,10 @@ ext.libraries = [
 	springBootStarterTomcat: "org.springframework.boot:spring-boot-starter-tomcat:${springBootVersion}@jar",
 	springBootAutoconfigure: "org.springframework.boot:spring-boot-autoconfigure:${springBootVersion}@jar",
 	
+	//SpringBoot uses Jakarta Annotations.
+	jakartaAnnotation: "jakarta.annotation:jakarta.annotation-api:3.0.0@jar",
+	micrometerObservation: "io.micrometer:micrometer-observation:1.14.6@jar",
+
 	// Embeded Tomcat
 	// tomcatEmbedWebsocket: "org.apache.tomcat.embed:tomcat-embed-websocket:${springFrameworkVersion}@jar",
 	tomcatEmbedCore: "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}@jar",
@@ -54,9 +58,8 @@ ext.libraries = [
 	springContext: "org.springframework:spring-context:${springFrameworkVersion}@jar",
 	springAop: "org.springframework:spring-aop:${springFrameworkVersion}@jar",
 	springExpression: "org.springframework:spring-expression:${springFrameworkVersion}@jar",
-	//Spring uses Jakarta Annotations.
-	jakartaAnnotation: "jakarta.annotation:jakarta.annotation-api:3.0.0@jar",
-	micrometerObservation: "io.micrometer:micrometer-observation:1.14.6@jar",
+	springTx: "org.springframework:spring-tx:${springFrameworkVersion}@jar",
+	
 	
 	// Spring framework uses commons logging API for logging.
     // This creates mandatory logging dependency in Spring on the Jakarta Commons Logging API (JCL).
@@ -124,6 +127,7 @@ libraries << [
 		libraries.springContext,
 		libraries.springAop,
 		libraries.springExpression,
+		libraries.springTx,
 	],
 	springLogger: [
         libraries.commonsLogging,

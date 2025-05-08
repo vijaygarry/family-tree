@@ -1,8 +1,8 @@
 package com.neasaa.base.app.operation;
 
-import com.neasaa.base.app.operation.dto.OperationRequest;
-import com.neasaa.base.app.operation.dto.OperationResponse;
 import com.neasaa.base.app.operation.exception.OperationException;
+import com.neasaa.base.app.operation.model.OperationRequest;
+import com.neasaa.base.app.operation.model.OperationResponse;
 
 public interface Operation <Request extends OperationRequest, Response extends OperationResponse> {
 	String getOperationName();

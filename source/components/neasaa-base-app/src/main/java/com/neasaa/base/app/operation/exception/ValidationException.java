@@ -10,7 +10,7 @@ public class ValidationException extends OperationException {
 
 	@Override
 	public int getHttpResponseCode() {
-		return HTTP_400;
+		return BaseErrorCodes.HTTP_400;
 	}
 	
 

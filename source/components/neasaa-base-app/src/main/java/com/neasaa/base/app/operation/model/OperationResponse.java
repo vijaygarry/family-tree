@@ -1,4 +1,4 @@
-package com.neasaa.base.app.operation.dto;
+package com.neasaa.base.app.operation.model;
 
 import java.io.Serializable;
 
@@ -9,16 +9,7 @@ import lombok.Setter;
 @Getter
 public abstract class OperationResponse implements Serializable {
 
-	public static final int SUCCESS_CODE = 0;
-	public static final int USER_CANCEL_OPERATION = 1;
-	
 	private static final long serialVersionUID = 4309029842159428542L;
-
-	
-	/**
-	 * Integer return code for operation result.
-	 */
-	private int responseCode;
 	
 	/**
 	 * Operation message on completion of operation. This may be success response, information, etc.
@@ -30,8 +21,8 @@ public abstract class OperationResponse implements Serializable {
 		this.operationMessage = message;
 	}
 	
-	public OperationResponse (int responseCode) {
-		this.responseCode = responseCode;
+	public OperationResponse () {
+		
 	}
 	
 	public abstract String getAuditString();

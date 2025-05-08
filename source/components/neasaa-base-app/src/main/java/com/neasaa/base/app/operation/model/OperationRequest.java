@@ -1,4 +1,4 @@
-package com.neasaa.base.app.operation.dto;
+package com.neasaa.base.app.operation.model;
 
 import java.io.Serializable;
 
