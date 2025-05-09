@@ -1,4 +1,4 @@
-ext.neasaaUtilVersion = '1.0.20240829'
+ext.neasaaUtilVersion = '1.0.20250508'
 ext.springBootVersion = '3.4.5'
 ext.springFrameworkVersion = '6.2.6'
 ext.tomcatVersion = '10.1.40'
@@ -59,7 +59,7 @@ ext.libraries = [
 	springAop: "org.springframework:spring-aop:${springFrameworkVersion}@jar",
 	springExpression: "org.springframework:spring-expression:${springFrameworkVersion}@jar",
 	springTx: "org.springframework:spring-tx:${springFrameworkVersion}@jar",
-	
+	springJdbc: "org.springframework:spring-jdbc:${springFrameworkVersion}@jar",
 	
 	// Spring framework uses commons logging API for logging.
     // This creates mandatory logging dependency in Spring on the Jakarta Commons Logging API (JCL).
@@ -128,6 +128,7 @@ libraries << [
 		libraries.springAop,
 		libraries.springExpression,
 		libraries.springTx,
+		libraries.springJdbc,
 	],
 	springLogger: [
         libraries.commonsLogging,

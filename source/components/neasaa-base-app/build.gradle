@@ -6,6 +6,7 @@ dependencies {
     implementation libraries.springFramework
     implementation libraries.springLogger
     implementation libraries.log4j
+    implementation libraries.neasaaUtils
 }
 
 eclipse {
