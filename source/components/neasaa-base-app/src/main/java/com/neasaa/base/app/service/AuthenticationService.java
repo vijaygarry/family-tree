@@ -1,0 +1,31 @@
+package com.neasaa.base.app.service;
+
+import java.util.Map;
+
+import com.neasaa.base.app.operation.exception.OperationException;
+import com.neasaa.base.app.operation.session.model.LoginRequest;
+
+public interface AuthenticationService {
+	
+	/**
+	 * This method authenticate the user with specified details. If authentication is successful, returns the authenticated user
+	 * Throws exception if user authentication fails.
+	 * 
+	 * @param aLoginDetails
+	 * @param aOtherParams
+	 * @return
+	 * @throws Exception
+	 */
+	AuthenticatedUser authenticateUser (LoginRequest aLoginInput, Map<String, String> aOtherParams) throws Exception;
+	
+	
+	/**
+	 * Verify the existing password and if valid, change it to new password.
+	 * 
+	 * @param aLogonName
+	 * @param aOldPassword
+	 * @param aNewPassword
+	 * @throws OperationException - Throws exception if failed to update the password.
+	 */
+	void changePassword (String aLogonName, String aOldPassword, String aNewPassword) throws OperationException;
+}
