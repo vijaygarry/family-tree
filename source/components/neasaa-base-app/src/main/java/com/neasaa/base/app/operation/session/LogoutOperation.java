@@ -15,7 +15,7 @@ public class LogoutOperation extends AbstractOperation<EmptyOperationRequest, Em
 
 	@Override
 	public String getOperationName() {
-		return OperationNames.CLOSE_SESSION;
+		return OperationNames.LOGOUT;
 	}
 
 	@Override

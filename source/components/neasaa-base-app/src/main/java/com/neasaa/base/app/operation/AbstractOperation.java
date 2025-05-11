@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.neasaa.base.app.entity.AppSession;
 import com.neasaa.base.app.entity.OperationEntity;
-import com.neasaa.base.app.operation.exception.AuthorizationException;
+import com.neasaa.base.app.operation.exception.AccessDeniedException;
 import com.neasaa.base.app.operation.exception.InternalServerException;
 import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
@@ -55,7 +55,7 @@ public abstract class AbstractOperation<Request extends OperationRequest, Respon
 			}
 			
 			if(!this.authorizationService.isOperationAllowedForUser( operationEntity, this.appSession )) {
-				throw new AuthorizationException("Operation " + operationName + " not allowed. Please contact administrator.");
+				throw new AccessDeniedException("Operation " + operationName + " not allowed. Please contact administrator.");
 			}
 			
 			// Static validation for input fields. This should not depends on DB connection.

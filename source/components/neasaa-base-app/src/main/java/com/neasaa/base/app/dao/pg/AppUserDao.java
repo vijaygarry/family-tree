@@ -57,7 +57,7 @@ public class AppUserDao extends AbstractDao {
 
 	}
 
-	public PreparedStatement buildUpdateStatement(Connection aConection, AppUser aAppUser) throws SQLException {
+	private PreparedStatement buildUpdateStatement(Connection aConection, AppUser aAppUser) throws SQLException {
 		String updateStatement = "UPDATE APPUSER SET LOGONNAME = ? , HASHPASSWORD = ? , FIRSTNAME = ? , LASTNAME = ? , EMAILID = ? , AUTHENTICATIONTYPE = ? , SINGLESIGNONID = ? , INVALIDLOGINATTEMPTS = ? , LASTLOGINTIME = ? , LASTPASSWORDCHANGETIME = ? , STATUS = ? , CREATEDBY = ? , CREATEDDATE = ? , LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  where USERID = ?";
 
 		PreparedStatement prepareStatement = aConection.prepareStatement(updateStatement);
@@ -87,13 +87,57 @@ public class AppUserDao extends AbstractDao {
 				return buildUpdateStatement(aCon, aAppUser);
 			}
 		});
-
 	}
 
-	public AppUser fetchAppUser(AppUser aAppUser) throws SQLException {
-		String selectQuery = "select  USERID , LOGONNAME , HASHPASSWORD , FIRSTNAME , LASTNAME , EMAILID , AUTHENTICATIONTYPE , SINGLESIGNONID , INVALIDLOGINATTEMPTS , LASTLOGINTIME , LASTPASSWORDCHANGETIME , STATUS , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  from APPUSER where USERID = ? ";
-		return getJdbcTemplate().queryForObject(selectQuery, new AppUserRowMapper(), aAppUser.getUserId());
-
+	/** Update invalid login attempt for logon name.
+	 * This method does not check status of logon name.
+	 * @param logonName
+	 * @param numberOfInvalidAttempts
+	 * @return
+	 * @throws SQLException
+	 */
+	public int updateInvalidLoginAttempt(String logonName, int numberOfInvalidAttempts, String status) throws SQLException {
+		return getJdbcTemplate().update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {
+				String updateStatement = "UPDATE APPUSER "
+						+ "SET INVALIDLOGINATTEMPTS = ?, "
+						+ "STATUS = ?, "
+						+ "updateddate = NOW() "
+						+ "WHERE LOGONNAME = ?";
+				PreparedStatement prepareStatement = aCon.prepareStatement(updateStatement);
+				setIntInStatement(prepareStatement, 1, numberOfInvalidAttempts);
+				setStringInStatement(prepareStatement, 2, status);
+				setStringInStatement(prepareStatement, 3, logonName);
+				return prepareStatement;
+			}
+		});
+	}
+	
+	public int updateLastSuccessLoginTime(String logonName, int userId) throws SQLException {
+		return getJdbcTemplate().update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {
+				String updateStatement = "UPDATE APPUSER "
+						+ "SET INVALIDLOGINATTEMPTS = 0, "
+						+ "LASTLOGINTIME = NOW(), "
+						+ "LASTUPDATEDDATE = NOW(), "
+						+ "LASTUPDATEDBY = ? "
+						+ "WHERE LOGONNAME = ?";
+				PreparedStatement prepareStatement = aCon.prepareStatement(updateStatement);
+				setIntInStatement(prepareStatement, 1, userId);
+				setStringInStatement(prepareStatement, 2, logonName);
+				return prepareStatement;
+			}
+		});
+	}
+	
+	public AppUser getUserByLogonName(String logonName) throws SQLException {
+		String selectQuery = "select "
+				+ " USERID , LOGONNAME , HASHPASSWORD , FIRSTNAME , LASTNAME , EMAILID , AUTHENTICATIONTYPE , SINGLESIGNONID , INVALIDLOGINATTEMPTS , LASTLOGINTIME , LASTPASSWORDCHANGETIME , STATUS , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE"
+				+ " from APPUSER"
+				+ " where LOGONNAME = ? ";
+		return getJdbcTemplate().queryForObject(selectQuery, new AppUserRowMapper(), logonName);
 	}
 
 }
