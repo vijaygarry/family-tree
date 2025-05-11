@@ -13,18 +13,20 @@ public class AppSessionRowMapper implements RowMapper<AppSession> {
 
 	@Override
 	public AppSession mapRow(ResultSet aRs, int aRowNum) throws SQLException {
-		AppSession appSession = new AppSession();
-		appSession.setSessionId(aRs.getLong("SESSIONID"));
-		appSession.setUserId(aRs.getInt("USERID"));
-		appSession.setChannelId(aRs.getString("CHANNELID"));
-		appSession.setActive(aRs.getString("ISACTIVE"));
-		appSession.setSessionCreationTime(AbstractDao.getTimestampFromResultSet(aRs, "SESSIONCREATIONTIME"));
-		appSession.setLogoutTime(AbstractDao.getTimestampFromResultSet(aRs, "LOGOUTTIME"));
-		appSession.setLastAccessTime(AbstractDao.getTimestampFromResultSet(aRs, "LASTACCESSTIME"));
-		appSession.setExitCode(aRs.getShort("EXITCODE"));
-		appSession.setAppHostName(aRs.getString("APPHOSTNAME"));
-		appSession.setClientIpAddress(aRs.getString("CLIENTIPADDRESS"));
-		appSession.setUserAgent(aRs.getString("USER_AGENT"));
+		AppSession appSession = AppSession.builder()
+				.sessionId(aRs.getLong("SESSIONID"))
+				.userId(aRs.getInt("USERID"))
+				.channelId(aRs.getString("CHANNELID"))
+				.active(aRs.getString("ISACTIVE"))
+				.sessionCreationTime(AbstractDao.getTimestampFromResultSet(aRs, "SESSIONCREATIONTIME"))
+				.logoutTime(AbstractDao.getTimestampFromResultSet(aRs, "LOGOUTTIME"))
+				.lastAccessTime(AbstractDao.getTimestampFromResultSet(aRs, "LASTACCESSTIME"))
+				.exitCode(aRs.getShort("EXITCODE"))
+				.appHostName(aRs.getString("APPHOSTNAME"))
+				.clientIpAddress(aRs.getString("CLIENTIPADDRESS"))
+				.userAgent(aRs.getString("USER_AGENT"))
+				.build();
+
 		return appSession;
 	}
 

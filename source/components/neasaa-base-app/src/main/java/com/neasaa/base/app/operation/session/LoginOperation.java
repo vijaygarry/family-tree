@@ -2,6 +2,9 @@ package com.neasaa.base.app.operation.session;
 
 import static com.neasaa.base.app.utils.ValidationUtils.checkValuePresent;
 
+import java.util.Date;
+
+import com.neasaa.base.app.entity.AppSession;
 import com.neasaa.base.app.enums.ChannelEnum;
 import com.neasaa.base.app.operation.AbstractOperation;
 import com.neasaa.base.app.operation.OperationNames;
@@ -9,12 +12,24 @@ import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.base.app.operation.model.EmptyOperationResponse;
 import com.neasaa.base.app.operation.session.model.LoginRequest;
+import com.neasaa.base.app.operation.session.model.LoginResponse;
+import com.neasaa.base.app.service.AuthenticatedUser;
 import com.neasaa.base.app.service.AuthenticationService;
+import com.neasaa.base.app.service.SessionService;
 
-public class LoginOperation extends AbstractOperation<LoginRequest, EmptyOperationResponse>{
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
+public class LoginOperation extends AbstractOperation<LoginRequest, LoginResponse>{
 	
 	private ChannelEnum selectedChannel;
-	private AuthenticationService authenticationService;
+	private final AuthenticationService authenticationService;
+	private final SessionService sessionService;
+	
+	private LoginOperation (AuthenticationService authenticationService, SessionService sessionService) {
+		this.authenticationService = authenticationService;
+		this.sessionService = sessionService;
+	}
 	
 	@Override
 	public String getOperationName() {
@@ -36,11 +51,30 @@ public class LoginOperation extends AbstractOperation<LoginRequest, EmptyOperati
 	}
 	
 	@Override
-	public EmptyOperationResponse doExecute(LoginRequest opRequest) throws OperationException {
+	public LoginResponse doExecute(LoginRequest opRequest) throws OperationException {
+		AuthenticatedUser authenticatedUser = authenticationService.authenticateUser(opRequest.getLoginName(), opRequest.getPassword(), null);
+		log.info( "User {} authenticated successfully! ", opRequest.getLoginName());
 		
-		return new EmptyOperationResponse("Login successfully");
-	}
+		AppSession session = sessionService.createSession(authenticatedUser, false, selectedChannel, getOperationName(), getOperationName(), getOperationName(), getOperationName());
 
+		LoginResponse loginResponse = 
+				LoginResponse.builder()
+				.logonName(authenticatedUser.getLogonName())
+				.firstName(authenticatedUser.getFirstName())
+				.lastName(authenticatedUser.getLastName())
+				.emailId(authenticatedUser.getEmailId())
+				.sessionId(session.getSessionId())
+				.sessionActive(true)
+				.lastAccessTime(null)
+				.build();
+		return loginResponse;
+	}
+	
+	private AppSession createSession (LoginRequest opRequest) {
+		AppSession appSession = this.getSessionService().createSession( authenticateUser, true, this.selectedChannel,
+				GeneralUtilities.getLocalHostName(), operationInput.getClientIpAddress(), operationInput.getClientOsName(), operationInput.getClientBrowserName() );
+		sessionDetails.setSessionDetails(appSession);
+	}
 	@Override
 	public void postExecute() {
 		

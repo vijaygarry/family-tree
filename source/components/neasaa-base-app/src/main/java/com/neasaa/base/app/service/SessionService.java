@@ -1,16 +1,47 @@
 package com.neasaa.base.app.service;
 
+import java.util.Date;
+
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.neasaa.base.app.dao.pg.AbstractDao;
+import com.neasaa.base.app.dao.pg.AppSessionDao;
 import com.neasaa.base.app.entity.AppSession;
+import com.neasaa.base.app.enums.ChannelEnum;
 import com.neasaa.base.app.operation.exception.OperationException;
 
 public class SessionService {
 	
-//	private SessionDAO sessionDAO;
+	private final AppSessionDao sessionDao;
 //	private UserDAO userDAO;
 
+	public SessionService (AppSessionDao sessionDao) {
+		this.sessionDao = sessionDao;
+	}
+	
+	public AppSession createSession(AuthenticatedUser authenticatedUser, boolean aAuthenticated, ChannelEnum aChannel,
+			String aAppHostName, String aClientIpAddress, String aClientOsName, String aClientBrowserName)
+			throws OperationException {
+		Date currentTime = new Date();
+		AppSession appSession = AppSession.builder()
+				.userId(authenticatedUser.getUserId())
+				.channelId(aChannel.name())
+				.active(aRs.getString("ISACTIVE"))
+				.sessionCreationTime(currentTime)
+				.logoutTime(null)
+				.lastAccessTime(currentTime)
+				.exitCode(aRs.getShort("EXITCODE"))
+				.appHostName(aRs.getString("APPHOSTNAME"))
+				.clientIpAddress(aClientIpAddress)
+				.userAgent(aRs.getString("USER_AGENT"))
+				.build();
+		
+		return sessionDao.addAppSession(appSession);
+		
+		
+	}
+	
 //	public AppSession createSession(AppUserDto aSessionUser, boolean aAuthenticated, ChannelEnum aChannel,
 //			String aAppHostName, String aClientIpAddress, String aClientOsName, String aClientBrowserName)
 //			throws OperationException {

@@ -3,7 +3,6 @@ package com.neasaa.base.app.service;
 import java.util.Map;
 
 import com.neasaa.base.app.operation.exception.OperationException;
-import com.neasaa.base.app.operation.session.model.LoginRequest;
 
 public interface AuthenticationService {
 	
@@ -16,7 +15,7 @@ public interface AuthenticationService {
 	 * @return
 	 * @throws Exception
 	 */
-	AuthenticatedUser authenticateUser (LoginRequest aLoginInput, Map<String, String> aOtherParams) throws Exception;
+	AuthenticatedUser authenticateUser (String logonName, String plainTextPwd, Map<String, String> aOtherParams) throws OperationException;
 	
 	
 	/**

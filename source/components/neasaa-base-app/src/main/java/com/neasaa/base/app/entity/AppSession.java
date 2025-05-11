@@ -4,15 +4,17 @@
 
 package com.neasaa.base.app.entity;
 
-import lombok.Setter;
-import lombok.Getter;
 import java.util.Date;
 
+import lombok.Builder;
+import lombok.Getter;
+
 @Getter
-@Setter
+@Builder
 public class AppSession extends BaseEntity {
 
 	public static final long serialVersionUID = 1745893230022L;
+	
 	private long sessionId;
 	private int userId;
 	private String channelId;

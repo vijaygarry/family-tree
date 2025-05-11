@@ -7,13 +7,39 @@ package com.neasaa.base.app.dao.pg;
 import java.sql.SQLException;
 import java.sql.Connection;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+
 import java.sql.PreparedStatement;
 import com.neasaa.base.app.entity.AppSession;
 
 public class AppSessionDao extends AbstractDao {
-
+	
+	private static final String GET_SESSION_BYID = "SELECT  SESSIONID , USERID , CHANNELID , ISACTIVE , "
+			+ "SESSIONCREATIONTIME , LOGOUTTIME , LASTACCESSTIME , EXITCODE , APPHOSTNAME , "
+			+ "CLIENTIPADDRESS , USER_AGENT  from TXTSESSION where SESSIONID = ? ";
+	
+	public AppSession addAppSession(AppSession aAppSession) throws SQLException {
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		getJdbcTemplate().update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {
+				return buildInsertStatement(aCon, aAppSession);
+			}
+		}, keyHolder);
+		
+		Long sessionId = -1l;
+		Number key = keyHolder.getKey();
+		if (key != null) {
+			sessionId = key.longValue();
+		}
+		return getSessionById(sessionId);
+	}
+	
 	private PreparedStatement buildInsertStatement(Connection aConection, AppSession aAppSession) throws SQLException {
-		String sqlStatement = "INSERT INTO TXTSESSION (USERID, CHANNELID, ISACTIVE, SESSIONCREATIONTIME, LOGOUTTIME, LASTACCESSTIME, EXITCODE, APPHOSTNAME, CLIENTIPADDRESS, USER_AGENT) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String sqlStatement = "INSERT INTO TXTSESSION (USERID, CHANNELID, ISACTIVE, SESSIONCREATIONTIME, LOGOUTTIME, "
+				+ "LASTACCESSTIME, EXITCODE, APPHOSTNAME, CLIENTIPADDRESS, USER_AGENT) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 		PreparedStatement prepareStatement = aConection.prepareStatement(sqlStatement);
 		setIntInStatement(prepareStatement, 1, aAppSession.getUserId());
@@ -29,15 +55,12 @@ public class AppSessionDao extends AbstractDao {
 		return prepareStatement;
 	}
 
-	public int insertAppSession(AppSession aAppSession) throws SQLException {
-		return getJdbcTemplate().update(new PreparedStatementCreator() {
-			@Override
-			public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {
-				return buildInsertStatement(aCon, aAppSession);
-			}
-		});
-
+	
+	
+	public AppSession getSessionById(Long aSessionId) {
+		return getJdbcTemplate().queryForObject(GET_SESSION_BYID, new AppSessionRowMapper(), aSessionId);
 	}
+	
 
 	public int deleteAppSession(AppSession aAppSession) throws SQLException {
 		return getJdbcTemplate().update(new PreparedStatementCreator() {
@@ -78,12 +101,6 @@ public class AppSessionDao extends AbstractDao {
 			}
 		});
 
-	}
-
-	public AppSession fetchAppSession(AppSession aAppSession) throws SQLException {
-		String selectQuery = "select  SESSIONID , USERID , CHANNELID , ISACTIVE , SESSIONCREATIONTIME , LOGOUTTIME , LASTACCESSTIME , EXITCODE , APPHOSTNAME , CLIENTIPADDRESS , USER_AGENT  from TXTSESSION where SESSIONID = ? ";
-		return getJdbcTemplate().queryForObject(selectQuery, new AppSessionRowMapper(), aAppSession.getSessionId());
-
-	}
+	}	
 
 }
