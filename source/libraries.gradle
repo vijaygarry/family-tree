@@ -24,6 +24,11 @@ ext.libraries = [
 	springBootStarterWeb: "org.springframework.boot:spring-boot-starter-web:${springBootVersion}@jar",
 	springBootStarterJson: "org.springframework.boot:spring-boot-starter-json:${springBootVersion}@jar",
 	springBootStarterTomcat: "org.springframework.boot:spring-boot-starter-tomcat:${springBootVersion}@jar",
+	springBootStarterLog4j2: "org.springframework.boot:spring-boot-starter-log4j2:${springBootVersion}",
+	// You're using Log4j 2 in your Spring Boot or Java app.
+	// Some dependencies (e.g., Jersey, Hibernate, Tomcat, etc.) use java.util.logging.
+	// You want all logs, including JUL ones, to be handled consistently by Log4j 2 — respecting its config, filters, formatters, appenders, etc.
+	slf4jJul: "org.slf4j:jul-to-slf4j:2.0.17@jar",
 	springBootAutoconfigure: "org.springframework.boot:spring-boot-autoconfigure:${springBootVersion}@jar",
 	
 	//SpringBoot uses Jakarta Annotations.
@@ -35,13 +40,17 @@ ext.libraries = [
 	tomcatEmbedCore: "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}@jar",
 	tomcatEmbedEl: "org.apache.tomcat.embed:tomcat-embed-el:${tomcatVersion}@jar",
 
+	//Additional Spring boot dependencies
+	commonsCollections4: "org.apache.commons:commons-collections4:4.4@jar",
+	commonLang3: "org.apache.commons:commons-lang3:3.12.0@jar",
+
 
 	// jackson-datatype-jsr310: "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}@jar",
 	// jackson-module-parameter-names: "com.fasterxml.jackson.module:jackson-module-parameter-names:${jacksonVersion}@jar",
-	// jackson-annotations: "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}@jar",
+	jacksonAnnotations: "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}@jar",
 	jacksonCore: "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}@jar",
 	// jackson-datatype-jdk8: "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${jacksonVersion}@jar",
-	// jackson-databind: "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}@jar",
+	jacksonDatabind: "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}@jar",
 	// jakarta.annotation-api: "jakarta.annotation:jakarta.annotation-api:${jacksonVersion}@jar",
 
 // com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.18.3/cc57924cccf42fc852081c36215272f84ffcd991/jackson-datatype-jsr310-2.18.3.jar
@@ -85,6 +94,9 @@ ext.libraries = [
 
     //commonsIo: "commons-io:commons-io:2.8.0@jar",
 
+	userAgentParser: "nl.basjes.parse.useragent:yauaa:6.4@jar",
+	prefixmap: "nl.basjes.collections:prefixmap:2.0@jar", // Required for user agent parser
+
 
 	// spring-boot-starter-logging: "org.springframework.boot:spring-boot-starter-logging@jar",
 	// snakeyaml: "org.yaml:snakeyaml@jar",
@@ -106,6 +118,14 @@ ext.libraries = [
 // org.slf4j/slf4j-api/2.0.17/d9e58ac9c7779ba3bf8142aff6c830617a7fe60f/slf4j-api-2.0.17.jar
 // org.apache.logging.log4j/log4j-api/2.24.3/b02c125db8b6d295adf72ae6e71af5d83bce2370/log4j-api-2.24.3.jar
 
+	restAssured: "io.rest-assured:rest-assured:5.4.0",
+    junitApi: "org.junit.jupiter:junit-jupiter-api:5.10.0",
+    junitEngine: "org.junit.jupiter:junit-jupiter-engine:5.10.0",
+	junitPlatformCommons: "org.junit.platform:junit-platform-commons:1.10.0@jar",
+	// Required for some JUnit 5 internals
+    opentest4j: "org.opentest4j:opentest4j:1.2.0",
+	hamcrest: "org.hamcrest:hamcrest:2.2@jar",
+
 ]
 
 libraries << [
@@ -116,11 +136,15 @@ libraries << [
 		libraries.springBootStarterWeb,
 		libraries.springBootStarterJson,
 		libraries.springBootStarterTomcat,
+		libraries.springBootStarterLog4j2,
+		libraries.slf4jJul,
 		libraries.micrometerObservation,
 		libraries.micrometerCommons,
 		libraries.jakartaAnnotation,
 		libraries.tomcatEmbedCore,
 		libraries.tomcatEmbedEl,
+		libraries.commonsCollections4,
+		libraries.commonLang3,
 	],
 	springFrameworkWeb: [
 		libraries.springFrameworkWebJar,
@@ -144,10 +168,20 @@ libraries << [
 		libraries.slf4jApi,
         libraries.log4j2Slf4jImpl,
         libraries.apacheLog4jApi,
-        libraries.apacheLog4jCore
+        libraries.apacheLog4jCore,
 	],
 	jackson: [
 		libraries.jacksonCore,
+		libraries.jacksonAnnotations,
+		libraries.jacksonDatabind,
+	], 
+	integTest: [
+		libraries.restAssured,
+        libraries.junitApi,
+        libraries.junitEngine,
+		libraries.junitPlatformCommons,
+		libraries.opentest4j,
+		libraries.hamcrest,
 	]
 ]
 

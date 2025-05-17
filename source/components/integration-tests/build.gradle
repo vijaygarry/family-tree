@@ -1,0 +1,22 @@
+dependencies {
+    testImplementation libraries.integTest
+}
+
+test {
+    useJUnitPlatform()
+
+    testLogging {
+        events "passed", "skipped", "failed", "standard_out", "standard_error"
+        showStandardStreams = true
+    }
+}
+
+eclipse {
+    def repoSource = "${rootDir.path}"
+    // Fix windows directory delimiters
+    repoSource = repoSource.replaceAll( "\\\\", "/" )
+
+    project {
+        name = 'integration-tests'
+    }
+}

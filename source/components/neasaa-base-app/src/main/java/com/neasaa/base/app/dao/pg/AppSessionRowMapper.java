@@ -17,7 +17,8 @@ public class AppSessionRowMapper implements RowMapper<AppSession> {
 				.sessionId(aRs.getLong("SESSIONID"))
 				.userId(aRs.getInt("USERID"))
 				.channelId(aRs.getString("CHANNELID"))
-				.active(aRs.getString("ISACTIVE"))
+				.active(aRs.getBoolean("ACTIVE"))
+				.authenticated(aRs.getBoolean("AUTHENTICATED"))
 				.sessionCreationTime(AbstractDao.getTimestampFromResultSet(aRs, "SESSIONCREATIONTIME"))
 				.logoutTime(AbstractDao.getTimestampFromResultSet(aRs, "LOGOUTTIME"))
 				.lastAccessTime(AbstractDao.getTimestampFromResultSet(aRs, "LASTACCESSTIME"))
@@ -26,7 +27,6 @@ public class AppSessionRowMapper implements RowMapper<AppSession> {
 				.clientIpAddress(aRs.getString("CLIENTIPADDRESS"))
 				.userAgent(aRs.getString("USER_AGENT"))
 				.build();
-
 		return appSession;
 	}
 
