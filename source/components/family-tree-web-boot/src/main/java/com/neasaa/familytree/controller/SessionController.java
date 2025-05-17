@@ -1,10 +1,29 @@
 package com.neasaa.familytree.controller;
 
+import org.springframework.http.HttpStatus;
+
+//import javax.servlet.http.HttpServletRequest;
+//import javax.servlet.http.HttpSession;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.neasaa.base.app.operation.session.LoginOperation;
+import com.neasaa.base.app.operation.session.model.LoginRequest;
+import com.neasaa.base.app.operation.session.model.LoginResponse;
+import com.neasaa.base.app.operation.session.model.UserSessionDetails;
+import com.neasaa.base.app.utils.ValidationUtils;
+import com.neasaa.familytree.WebRequestHandler;
+import com.neasaa.familytree.utils.AppSessionWebWrapper;
+import com.neasaa.familytree.utils.HttpSessionUtils;
+import com.neasaa.familytree.utils.WebUtils;
+
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
 
 @RestController
 @RequestMapping(value = "/session")
@@ -17,43 +36,38 @@ public class SessionController {
 		return "Logout Success";
 	}
 	
-//	@RequestMapping(value = "/login")
-//	@ResponseBody
-//	public ResponseEntity<OperationResponse<SessionDetailsOutput>> login ( @RequestBody LoginInput aLoginDetails,
-//			HttpServletRequest aRequest ) throws Exception {
-//		
-//		HttpSession httpSession = aRequest.getSession(false);
-//		if(httpSession != null) {
-//			AppSessionWebWrapper existingAppSession = HttpSessionUtils.getAppSessionFromHttpSession(httpSession);
-//			if(existingAppSession != null ) {
-//				logoutUserFromDb(SessionExitCode.RELOGIN, httpSession);
-//			} else {
-//				httpSession.invalidate();
-//			}
-//		}
-//		httpSession = aRequest.getSession(true);
-//		
-//		aLoginDetails.setClientIpAddress( aRequest.getRemoteAddr() );
-//		//TODO: Parse the userAgent from request and populate the below attributes
-//		aLoginDetails.setClientOsName( null );
-//		aLoginDetails.setClientBrowserName( null );
-//		aLoginDetails.setChannel(ChannelEnum.BROWSER.name());
-//		ResponseEntity<OperationResponse<SessionDetailsOutput>> operationResponse =
-//				OperationExecutor.executeOperation( CreateSessionOperation.class, aLoginDetails );
-//
-//		if ( operationResponse != null && operationResponse.getStatusCode() == HttpStatus.OK ) {
-//			
-//			OperationResponse<SessionDetailsOutput> opResponse = operationResponse.getBody();
-//			if ( opResponse != null ) {
-//				SessionDetailsOutput output = opResponse.getOperationOutput();
-//				if(output != null) {
-//					HttpSessionUtils.bindAppSessionToHttpSession(output.getSessionDetails(), httpSession);
-//				}
-//			}
-//		}
-//		
-//		return operationResponse;
-//	}
+	@RequestMapping(value = "/login")
+	@ResponseBody
+	public ResponseEntity<LoginResponse> login ( @RequestBody LoginRequest loginRequest,
+			HttpServletRequest aRequest ) throws Exception {
+		
+		HttpSession httpSession = aRequest.getSession(false);
+		if(httpSession != null) {
+			AppSessionWebWrapper existingAppSession = HttpSessionUtils.getAppSessionFromHttpSession(httpSession);
+			if(existingAppSession != null ) {
+				ValidationUtils.addToDoLog("Add logic to logout from database when user try to login with active session", "SessionController");
+				//logoutUserFromDb(SessionExitCode.RELOGIN, httpSession);
+			} else {
+				httpSession.invalidate();
+			}
+		}
+		httpSession = aRequest.getSession(true);
+		
+		loginRequest.setClientInformation(WebUtils.getClientInformation(aRequest));
+		ResponseEntity<LoginResponse> operationResponse =
+				WebRequestHandler.processRequest(LoginOperation.class, loginRequest );
+
+		if ( operationResponse != null && operationResponse.getStatusCode() == HttpStatus.OK ) {
+			
+			LoginResponse opResponse = operationResponse.getBody();
+			if ( opResponse != null ) {
+				UserSessionDetails userSessionDetails = UserSessionDetails.getUserSessionDetails(opResponse); 
+				HttpSessionUtils.bindAppSessionToHttpSession(userSessionDetails, httpSession);
+			}
+		}
+		
+		return operationResponse;
+	}
 	
 //	@RequestMapping(value = "/logout")
 //	@ResponseBody
@@ -63,11 +77,11 @@ public class SessionController {
 //	}
 	
 //	private static ResponseEntity<OperationResponse<EmptyDto>> logoutUserFromDb (SessionExitCode aSessionExitCode, HttpSession aHttpSession) {
-//		LogoutInput input = new LogoutInput();
+//		LogoutRequest input = new LogoutRequest();
 //		input.setSessionExitCode(aSessionExitCode);
 //		
 //		ResponseEntity<OperationResponse<EmptyDto>> operationResponse = OperationExecutor
-//				.executeOperation(LogoutSessionOperation.class, input);
+//				.executeOperation(LogoutOperation.class, input);
 //		
 //		AppSessionWebWrapper appSessionWrapper = HttpSessionUtils.getAppSessionFromHttpSession(aHttpSession);
 //		if(appSessionWrapper != null) {

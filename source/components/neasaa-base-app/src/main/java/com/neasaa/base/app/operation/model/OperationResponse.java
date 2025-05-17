@@ -2,6 +2,8 @@ package com.neasaa.base.app.operation.model;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,5 +27,6 @@ public abstract class OperationResponse implements Serializable {
 		
 	}
 	
+	@JsonIgnore
 	public abstract String getAuditString();
 }

@@ -12,9 +12,9 @@ public class OperationExecutor {
 
 	
 	
-	public static <OP extends Operation<OperationRequest, OperationResponse>> OperationResponse executeOperation (
+	public static <Request extends OperationRequest, Response extends OperationResponse, OP extends Operation<Request, Response>> Response executeOperation (
 			Class<OP> aClazz, 
-			OperationRequest request, 
+			Request request, 
 			OperationContext operationContext
 	) throws OperationException {
 		
@@ -24,8 +24,8 @@ public class OperationExecutor {
 		
 		
 		//TODO: Set logging parameters in Log Thread Context
-		Operation<OperationRequest, OperationResponse> operation = null;
-		OperationResponse operationResponse = null;
+		Operation<Request, Response> operation = null;
+		Response operationResponse = null;
 		
 		try {
 			log.debug("Creating operation for class {} ", aClazz.getName());

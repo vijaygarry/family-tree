@@ -1,9 +1,10 @@
 package com.neasaa.base.app.operation;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.neasaa.base.app.entity.AppSession;
 import com.neasaa.base.app.entity.OperationEntity;
 import com.neasaa.base.app.operation.exception.AccessDeniedException;
 import com.neasaa.base.app.operation.exception.InternalServerException;
@@ -11,6 +12,7 @@ import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.base.app.operation.model.OperationRequest;
 import com.neasaa.base.app.operation.model.OperationResponse;
+import com.neasaa.base.app.operation.session.model.UserSessionDetails;
 import com.neasaa.base.app.service.AuthorizationService;
 import com.neasaa.base.app.service.SessionService;
 
@@ -24,10 +26,14 @@ public abstract class AbstractOperation<Request extends OperationRequest, Respon
 	private OperationContext context;
 	private Request request;
 	private Response response;
-	private AppSession appSession;
+	private UserSessionDetails userSessionDetails;
 	
+	@Autowired 
+	@Qualifier(BeanNames.AUTHORIZATION_SERVICE_BEAN)
 	private AuthorizationService authorizationService;
+	
 	private SessionService sessionService;
+	
 	
 	@Override
 	@Transactional(value = "transactionManager", propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -43,7 +49,7 @@ public abstract class AbstractOperation<Request extends OperationRequest, Respon
 			
 			this.request = opRequest;
 			
-			this.appSession = this.context.getAppSession();
+			this.userSessionDetails = this.context.getUserSessionDetails();
 			String operationName = this.getOperationName();
 			
 			operationEntity = getOperationEntityByName(operationName);
@@ -54,7 +60,7 @@ public abstract class AbstractOperation<Request extends OperationRequest, Respon
 				throw new InternalServerException(msg);
 			}
 			
-			if(!this.authorizationService.isOperationAllowedForUser( operationEntity, this.appSession )) {
+			if(!this.authorizationService.isOperationAllowedForUser( operationEntity, this.userSessionDetails )) {
 				throw new AccessDeniedException("Operation " + operationName + " not allowed. Please contact administrator.");
 			}
 			

@@ -1,14 +1,18 @@
 package com.neasaa.base.app.service;
 
-import com.neasaa.base.app.entity.AppRole;
-import com.neasaa.base.app.entity.AppSession;
-import com.neasaa.base.app.entity.OperationEntity;
-import com.neasaa.base.app.operation.exception.OperationException;
+import org.springframework.stereotype.Service;
 
+import com.neasaa.base.app.entity.AppRole;
+import com.neasaa.base.app.entity.OperationEntity;
+import com.neasaa.base.app.operation.BeanNames;
+import com.neasaa.base.app.operation.exception.OperationException;
+import com.neasaa.base.app.operation.session.model.UserSessionDetails;
+
+@Service (BeanNames.AUTHORIZATION_SERVICE_BEAN)
 public class AuthorizationServiceImpl implements AuthorizationService {
 
 	@Override
-	public boolean isOperationAllowedForUser(OperationEntity aOperationEntity, AppSession aAppSession)
+	public boolean isOperationAllowedForUser(OperationEntity aOperationEntity, UserSessionDetails userSessionDetails)
 			throws OperationException {
 		return false;
 	}

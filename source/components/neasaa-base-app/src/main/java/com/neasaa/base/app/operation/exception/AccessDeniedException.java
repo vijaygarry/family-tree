@@ -10,7 +10,7 @@ public class AccessDeniedException extends OperationException {
 
 	@Override
 	public int getHttpResponseCode() {
-		return 0;
+		return BaseErrorCodes.ACCESS_DENIED;
 	}
 
 }

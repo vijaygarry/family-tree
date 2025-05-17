@@ -4,12 +4,16 @@
 
 package com.neasaa.base.app.dao.pg;
 
-import java.sql.SQLException;
 import java.sql.Connection;
-import com.neasaa.base.app.entity.AppUser;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.stereotype.Repository;
+
+import com.neasaa.base.app.entity.AppUser;
+
+@Repository
 public class AppUserDao extends AbstractDao {
 	
 	private static final String GET_USER_BY_LOGON_NAME = "SELECT "

@@ -3,12 +3,14 @@ package com.neasaa.base.app.service;
 import java.sql.SQLException;
 import java.util.Map;
 
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.neasaa.base.app.dao.pg.AppUserDao;
 import com.neasaa.base.app.entity.AppUser;
 import com.neasaa.base.app.enums.UserStatusEnum;
+import com.neasaa.base.app.operation.BeanNames;
 import com.neasaa.base.app.operation.exception.AccessDeniedException;
 import com.neasaa.base.app.operation.exception.InternalServerException;
 import com.neasaa.base.app.operation.exception.OperationException;
@@ -17,6 +19,7 @@ import com.neasaa.base.app.utils.PasswordUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
+@Service (BeanNames.AUTHENTICATION_SERVICE_BEAN)
 public class DBAuthenticationServiceImpl implements AuthenticationService {
 	
 	// User can try login with invalid password for 5 time. 

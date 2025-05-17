@@ -1,6 +1,9 @@
 package com.neasaa.base.app.operation.session.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.neasaa.base.app.operation.OperationContext.ClientInformation;
 import com.neasaa.base.app.operation.model.OperationRequest;
+import com.neasaa.base.app.utils.ValidationUtils;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,16 +15,14 @@ public class LoginRequest extends OperationRequest {
 	private static final long serialVersionUID = -2726566735228218285L;
 	
 	private String loginName;
-	//@JsonIgnore
+	@JsonIgnore
 	private String password;
-	private String channel;
-	private String clientIpAddress;
-	private String clientOsName;
-	private String clientBrowserName;
+	private ClientInformation clientInformation;
 	
 	@Override
 	public String getAuditString() {
-		//TODO: Add logic to convert whole object to json object
+		//This should be implemented in operation executor.
+		ValidationUtils.addToDoLog("GetAuditString not yet implemented.", "LoginRequest");
 		return "loginName:" + loginName;
 	}
 

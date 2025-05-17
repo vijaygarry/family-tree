@@ -14,7 +14,7 @@ public class InternalServerException extends OperationException {
 
 	@Override
 	public int getHttpResponseCode() {
-		return 0;
+		return BaseErrorCodes.INTERNAL_ERROR;
 	}
 
 }

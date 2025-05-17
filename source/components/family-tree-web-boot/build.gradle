@@ -4,9 +4,14 @@ jar {
 
 dependencies {
     implementation project(':components:family-tree')
-    implementation libraries.springBoot
+    implementation project(':components:neasaa-base-app')
+    implementation (libraries.springBoot)
+    //exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     implementation libraries.springFrameworkWeb
+    implementation libraries.springFramework
     implementation libraries.jackson
+    implementation libraries.userAgentParser
+    implementation libraries.prefixmap
 }
 
 apply plugin: 'eclipse-wtp'

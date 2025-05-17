@@ -1,0 +1,7 @@
+package com.neasaa.base.app.operation;
+
+public interface BeanNames {
+	String AUTHORIZATION_SERVICE_BEAN = "AUTHORIZATION_SERVICE";
+	String AUTHENTICATION_SERVICE_BEAN = "AUTHENTICATION_SERVICE_BEAN";
+	String SESSION_SERVICE_BEAN = "SESSION_SERVICE_BEAN";
+}

@@ -2,25 +2,28 @@ package com.neasaa.base.app.operation;
 
 import java.util.Date;
 
-import com.neasaa.base.app.entity.AppSession;
+import com.neasaa.base.app.enums.ChannelEnum;
+import com.neasaa.base.app.operation.session.model.UserSessionDetails;
 
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 public class OperationContext {
 
-	private final AppSession appSession;
+	private final UserSessionDetails userSessionDetails;
 	private final Date startTime;
 	/**
 	 * Processing end time for this request
 	 */
 	private Date endTime;
-	private final String clientUserIpAddr;
 	
-	public OperationContext (AppSession aAppSession , String aClientUserIpAddr) {
+	private String appHostName;
+	
+	public OperationContext (UserSessionDetails userSessionDetails , String appHostName) {
 		this.startTime = new Date();
-		this.appSession = aAppSession;
-		this.clientUserIpAddr = aClientUserIpAddr;
+		this.userSessionDetails = userSessionDetails;
+		this.appHostName = appHostName;
 	}
 	
 	public long getResponseTime () {
@@ -33,5 +36,17 @@ public class OperationContext {
 
 	public void markComplete() {
 		this.endTime = new Date();
+	}
+	
+	@Builder
+	@Getter
+	public static class ClientInformation {
+		private final String clientUserIpAddr;
+		private final String userAgentString;
+		private final ChannelEnum channel; //Derived from user agent
+		private final String browserName; // e.g. Chrome, Firefox, Safari, Edge, Opera
+		private final String browserVersion; //e.g. 117.0.5938.92, 118.0
+		private final String operatingSystem; //e.g. Windows NT 10.0, Mac OS X 10_15_7, Android 13, iOS 16
+		private final String deviceType;// e.g. Sometimes included: Mobile, Tablet, Desktop
 	}
 }

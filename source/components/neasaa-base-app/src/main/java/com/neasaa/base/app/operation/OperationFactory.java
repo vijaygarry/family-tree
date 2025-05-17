@@ -1,8 +1,8 @@
 package com.neasaa.base.app.operation;
 
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 
 import com.neasaa.base.app.operation.exception.InternalServerException;
 import com.neasaa.base.app.operation.exception.OperationException;
@@ -10,12 +10,14 @@ import com.neasaa.base.app.operation.exception.OperationException;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
+@Component
 public class OperationFactory implements ApplicationContextAware {
 	
 	private static ApplicationContext applicationContext;
 	
 	@Override
-	public void setApplicationContext ( ApplicationContext aApplicationContext ) throws BeansException {
+	public void setApplicationContext ( ApplicationContext aApplicationContext ) {
+		log.info("Injecting spring context in OperationFactory");
 		applicationContext = aApplicationContext;
 	}
 	
@@ -39,7 +41,9 @@ public class OperationFactory implements ApplicationContextAware {
 	
 	private static String getBeanNameFromClass (Class<?> aClazz) {
 		String className = aClazz.getSimpleName();
-		className = className.substring( 0, 1 ).toLowerCase() + className.substring( 1 );
+		System.out.println("Loading operation class for " + className);
+//		className = className.substring( 0, 1 ).toLowerCase() + className.substring( 1 );
+//		System.out.println("Updated Loading operation class for " + className);
 		return className;
 	}
 }

@@ -9,4 +9,14 @@ public class ValidationUtils {
 			throw new ValidationException ("Required field " + fieldName + " is not provided");
 		}
 	}
+	
+	public static void checkObjectPresent (Object aValue, String fieldName) {
+		if(aValue == null) {
+			throw new ValidationException ("Required field " + fieldName + " is not provided");
+		}
+	}
+	
+	public static final void addToDoLog (String todoText, String className) {
+		System.out.println("**** TODO: " + todoText + " in class: " + className);
+	}
 }
