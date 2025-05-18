@@ -16,7 +16,7 @@ public enum UserStatusEnum {
 	
 	public static UserStatusEnum getUserStatusByCode (String statusCode) {
 		for(UserStatusEnum status : UserStatusEnum.values()) {
-			if(status.name().equalsIgnoreCase(statusCode)) {
+			if(status.statusCode.equalsIgnoreCase(statusCode)) {
 				return status;
 			}
 		}

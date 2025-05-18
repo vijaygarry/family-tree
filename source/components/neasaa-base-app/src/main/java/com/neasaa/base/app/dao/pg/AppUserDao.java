@@ -7,6 +7,7 @@ package com.neasaa.base.app.dao.pg;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.stereotype.Repository;
@@ -20,16 +21,16 @@ public class AppUserDao extends AbstractDao {
 			+ " USERID , LOGONNAME , HASHPASSWORD , FIRSTNAME , LASTNAME , EMAILID , AUTHENTICATIONTYPE , "
 			+ "SINGLESIGNONID , INVALIDLOGINATTEMPTS , LASTLOGINTIME , LASTPASSWORDCHANGETIME , STATUS , "
 			+ "CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE"
-			+ " FROM APPUSER"
+			+ " FROM " + BASE_SCHEMA_NAME + "APPUSER"
 			+ " WHERE LOGONNAME = ? ";
 	
-	private static final String UPDATE_INVALID_LOGIN_ATTEMPTS_STATEMENT = "UPDATE APPUSER "
+	private static final String UPDATE_INVALID_LOGIN_ATTEMPTS_STATEMENT = "UPDATE " + BASE_SCHEMA_NAME + "APPUSER "
 			+ "SET INVALIDLOGINATTEMPTS = ?, "
 			+ "STATUS = ?, "
 			+ "LASTUPDATEDDATE = NOW() "
 			+ "WHERE LOGONNAME = ?";
 	
-	private static final String UPDATE_LAST_SUCCESS_LOGIN_TIME_STATEMENT = "UPDATE APPUSER "
+	private static final String UPDATE_LAST_SUCCESS_LOGIN_TIME_STATEMENT = "UPDATE " + BASE_SCHEMA_NAME + "APPUSER "
 			+ "SET INVALIDLOGINATTEMPTS = 0, "
 			+ "LASTLOGINTIME = NOW(), "
 			+ "LASTUPDATEDDATE = NOW(), "
@@ -37,7 +38,14 @@ public class AppUserDao extends AbstractDao {
 			+ "WHERE LOGONNAME = ?";
 	
 	public AppUser getUserByLogonName(String logonName) throws SQLException {
-		return getJdbcTemplate().queryForObject(GET_USER_BY_LOGON_NAME, new AppUserRowMapper(), logonName);
+		List<AppUser> userList= getJdbcTemplate().query(GET_USER_BY_LOGON_NAME, new AppUserRowMapper(), logonName);
+		if(userList == null || userList.size() == 0) {
+			return null;
+		}
+		if(userList.size() > 1) {
+			throw new RuntimeException("Invalid user entry");
+		}
+		return userList.get(0);
 	}
 	
 	/** Update invalid login attempt for logon name.

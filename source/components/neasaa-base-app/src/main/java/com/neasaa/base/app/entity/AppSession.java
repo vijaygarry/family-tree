@@ -6,6 +6,8 @@ package com.neasaa.base.app.entity;
 
 import java.util.Date;
 
+import com.neasaa.base.app.enums.ChannelEnum;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,7 +18,7 @@ public class AppSession extends BaseEntity {
 	public static final long serialVersionUID = 1747019378044L;
 	private long sessionId;
 	private int userId;
-	private String channelId;
+	private ChannelEnum channel;
 	private boolean active;
 	private boolean authenticated;
 	private Date sessionCreationTime;

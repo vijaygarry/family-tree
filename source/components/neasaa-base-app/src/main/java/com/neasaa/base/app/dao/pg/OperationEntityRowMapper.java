@@ -5,6 +5,8 @@
 package com.neasaa.base.app.dao.pg;
 
 import com.neasaa.base.app.entity.OperationEntity;
+import com.neasaa.base.app.enums.AuthorizationType;
+
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import org.springframework.jdbc.core.RowMapper;
@@ -19,7 +21,7 @@ public class OperationEntityRowMapper implements RowMapper<OperationEntity> {
 		operationEntity.setBeanName(aRs.getString("BEANNAME"));
 		operationEntity.setAuthorizationRequired(aRs.getBoolean("ISAUTHORIZATIONREQUIRED"));
 		operationEntity.setAuditRequired(aRs.getBoolean("ISAUDITREQUIRED"));
-		operationEntity.setAuthorizationType(aRs.getString("AUTHORIZATIONTYPE"));
+		operationEntity.setAuthorizationType(AuthorizationType.valueOf(aRs.getString("AUTHORIZATIONTYPE")));
 		operationEntity.setActive(aRs.getBoolean("ACTIVE"));
 		operationEntity.setCreatedBy(aRs.getInt("CREATEDBY"));
 		operationEntity.setCreatedDate(AbstractDao.getTimestampFromResultSet(aRs, "CREATEDDATE"));

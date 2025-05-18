@@ -12,6 +12,7 @@ public interface BaseErrorCodes {
 	
 	// HTTP 400 = Bad Request, Input validation
 	int HTTP_400 = 400;
+	int UNAUTHORIZED_ACCESS = 401;
 	int ACCESS_DENIED = 403;
 	int INTERNAL_ERROR = 500;
 		

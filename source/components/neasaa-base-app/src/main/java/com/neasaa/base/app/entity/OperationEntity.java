@@ -8,6 +8,8 @@ import lombok.Setter;
 import lombok.Getter;
 import java.util.Date;
 
+import com.neasaa.base.app.enums.AuthorizationType;
+
 @Getter
 @Setter
 public class OperationEntity extends BaseEntity {
@@ -18,7 +20,7 @@ public class OperationEntity extends BaseEntity {
 	private String beanName;
 	private boolean authorizationRequired;
 	private boolean auditRequired;
-	private String authorizationType;
+	private AuthorizationType authorizationType;
 	private boolean active;
 	private int createdBy;
 	private Date createdDate;

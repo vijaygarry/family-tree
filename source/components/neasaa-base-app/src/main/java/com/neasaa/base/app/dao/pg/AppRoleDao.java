@@ -4,14 +4,48 @@
 
 package com.neasaa.base.app.dao.pg;
 
-import java.sql.SQLException;
 import java.sql.Connection;
-import com.neasaa.base.app.entity.AppRole;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.stereotype.Repository;
+
+import com.neasaa.base.app.entity.AppRole;
+
+@Repository
 public class AppRoleDao extends AbstractDao {
-
+	private static final String SELECT_ALL_ACTIVE_ROLES_QUERY = "select  ROLEID , ROLEDESC , ENABLE , "
+			+ "CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
+			+ "from " + BASE_SCHEMA_NAME + "LKPROLE where enable = true";
+	private static final String SELECT_OPERATIONS_FOR_A_ROLE_QUERY = "select  OPERATIONID "
+			+ "from " + BASE_SCHEMA_NAME + "LKPROLEOPERATIONMAP where ROLEID = ?";
+	
+	public List<AppRole> getAllActiveRoles () {
+		List<AppRole> roles =  getJdbcTemplate().query(SELECT_ALL_ACTIVE_ROLES_QUERY, new AppRoleRowMapper());
+		List<AppRole> rolesWithOperaions = new ArrayList<>();
+		
+		for(AppRole role : roles) {
+			List<String> operationIds = getJdbcTemplate().query(SELECT_OPERATIONS_FOR_A_ROLE_QUERY, new StringRowMapper(), role.getRoleId());
+			
+			AppRole roleWithOperations = new AppRole();
+			roleWithOperations.setRoleId(role.getRoleId());
+			roleWithOperations.setRoledesc(role.getRoledesc());
+			roleWithOperations.setEnable(role.isEnable());
+			roleWithOperations.setCreatedBy(role.getCreatedBy());
+			roleWithOperations.setCreatedDate(role.getCreatedDate());
+			roleWithOperations.setLastupdatedBy(role.getLastupdatedBy());
+			roleWithOperations.setLastupdatedDate(role.getLastupdatedDate());
+			roleWithOperations.setOperationIds(operationIds);
+			
+			rolesWithOperaions.add(roleWithOperations);
+		}
+		
+		return rolesWithOperaions;
+	}
+	
 	private PreparedStatement buildInsertStatement(Connection aConection, AppRole aAppRole) throws SQLException {
 		String sqlStatement = "INSERT INTO LKPROLE (ROLEID, ROLEDESC, ENABLE, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE) VALUES (?, ?, ?, ?, ?, ?, ?)";
 

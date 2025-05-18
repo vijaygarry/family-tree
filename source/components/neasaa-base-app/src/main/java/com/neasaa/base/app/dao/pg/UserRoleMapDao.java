@@ -5,13 +5,25 @@
 package com.neasaa.base.app.dao.pg;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.sql.Connection;
 import com.neasaa.base.app.entity.UserRoleMap;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.stereotype.Repository;
+
 import java.sql.PreparedStatement;
 
+@Repository
 public class UserRoleMapDao extends AbstractDao {
 
+	private static final String SELECT_USER_ROLES_BY_USERID = "select  USERID , ROLEID , "
+			+ "CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
+			+ "from " + BASE_SCHEMA_NAME + "MSTUSERROLEMAP where USERID = ?";
+	
+	public List<String> getRoleIdsByUserId (int userId) throws SQLException {
+		return getJdbcTemplate().query(SELECT_USER_ROLES_BY_USERID, new StringRowMapper(), userId);
+	}
+	
 	private PreparedStatement buildInsertStatement(Connection aConection, UserRoleMap aUserRoleMap) throws SQLException {
 		String sqlStatement = "INSERT INTO MSTUSERROLEMAP (USERID, ROLEID, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE) VALUES (?, ?, ?, ?, ?, ?)";
 

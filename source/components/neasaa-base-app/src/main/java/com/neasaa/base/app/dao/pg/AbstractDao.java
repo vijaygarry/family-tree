@@ -7,17 +7,21 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import com.neasaa.base.app.operation.BeanNames;
 import com.neasaa.util.DateUtils;
 import com.neasaa.util.StringUtils;
 
 public class AbstractDao {
-	private JdbcTemplate jdbcTemplate;
-
-	public void setJdbcTemplate(JdbcTemplate aJdbcTemplate) {
-		this.jdbcTemplate = aJdbcTemplate;
-	}
+	
+	public static final String BASE_SCHEMA_NAME = "shared_schema.";
+	
+	@Autowired
+	@Qualifier(BeanNames.JDBC_TEMPLATE_BEAN)
+	protected JdbcTemplate jdbcTemplate;
 
 	public JdbcTemplate getJdbcTemplate() {
 		return this.jdbcTemplate;

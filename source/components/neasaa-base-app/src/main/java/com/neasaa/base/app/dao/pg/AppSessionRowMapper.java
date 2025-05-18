@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.ResultSet;
 import org.springframework.jdbc.core.RowMapper;
 import com.neasaa.base.app.entity.AppSession;
+import com.neasaa.base.app.enums.ChannelEnum;
 
 public class AppSessionRowMapper implements RowMapper<AppSession> {
 
@@ -16,7 +17,7 @@ public class AppSessionRowMapper implements RowMapper<AppSession> {
 		AppSession appSession = AppSession.builder()
 				.sessionId(aRs.getLong("SESSIONID"))
 				.userId(aRs.getInt("USERID"))
-				.channelId(aRs.getString("CHANNELID"))
+				.channel(ChannelEnum.valueOf(aRs.getString("CHANNELID")))
 				.active(aRs.getBoolean("ACTIVE"))
 				.authenticated(aRs.getBoolean("AUTHENTICATED"))
 				.sessionCreationTime(AbstractDao.getTimestampFromResultSet(aRs, "SESSIONCREATIONTIME"))
