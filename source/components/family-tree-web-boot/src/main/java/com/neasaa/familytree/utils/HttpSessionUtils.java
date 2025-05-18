@@ -1,7 +1,7 @@
 package com.neasaa.familytree.utils;
 
 
-import com.neasaa.base.app.operation.session.model.UserSessionDetails;
+import com.neasaa.base.app.service.AppSessionUser;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -10,9 +10,9 @@ public class HttpSessionUtils {
 	public static final String APP_SESSION_ATTRIBUTE_NAME = "APP_SESSION";
 	
 	
-	public static void bindAppSessionToHttpSession (UserSessionDetails userSessionDetails, HttpSession aHttpSession) {
-		if ( userSessionDetails != null ) {
-			aHttpSession.setAttribute( APP_SESSION_ATTRIBUTE_NAME, new AppSessionWebWrapper( userSessionDetails) );
+	public static void bindAppSessionToHttpSession (AppSessionUser appSessionUser, HttpSession aHttpSession) {
+		if ( appSessionUser != null ) {
+			aHttpSession.setAttribute( APP_SESSION_ATTRIBUTE_NAME, new AppSessionWebWrapper( appSessionUser) );
 		}
 	}
 	

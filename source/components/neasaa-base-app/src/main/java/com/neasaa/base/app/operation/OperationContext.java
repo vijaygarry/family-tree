@@ -3,15 +3,15 @@ package com.neasaa.base.app.operation;
 import java.util.Date;
 
 import com.neasaa.base.app.enums.ChannelEnum;
-import com.neasaa.base.app.operation.session.model.UserSessionDetails;
+import com.neasaa.base.app.service.AppSessionUser;
 
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 public class OperationContext {
-
-	private final UserSessionDetails userSessionDetails;
+	// 
+	private final AppSessionUser appSessionUser;
 	private final Date startTime;
 	/**
 	 * Processing end time for this request
@@ -20,9 +20,9 @@ public class OperationContext {
 	
 	private String appHostName;
 	
-	public OperationContext (UserSessionDetails userSessionDetails , String appHostName) {
+	public OperationContext (AppSessionUser appSessionUser , String appHostName) {
 		this.startTime = new Date();
-		this.userSessionDetails = userSessionDetails;
+		this.appSessionUser = appSessionUser;
 		this.appHostName = appHostName;
 	}
 	

@@ -13,7 +13,7 @@ import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.model.EmptyOperationResponse;
 import com.neasaa.base.app.operation.model.OperationRequest;
 import com.neasaa.base.app.operation.model.OperationResponse;
-import com.neasaa.base.app.operation.session.model.UserSessionDetails;
+import com.neasaa.base.app.service.AppSessionUser;
 import com.neasaa.base.app.utils.ValidationUtils;
 import com.neasaa.familytree.utils.AppSessionWebWrapper;
 import com.neasaa.familytree.utils.HttpSessionUtils;
@@ -35,13 +35,13 @@ public class WebRequestHandler {
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
 		HttpSession session = attr.getRequest().getSession();
 		AppSessionWebWrapper appSessionWrapper = HttpSessionUtils.getAppSessionFromHttpSession(session);
-		UserSessionDetails userSessionDetails = null;
+		AppSessionUser appSessionUser = null;
 		if(appSessionWrapper != null) {
-			userSessionDetails = appSessionWrapper.getUserSessionDetails();
+			appSessionUser = appSessionWrapper.getAppSessionUser();
 		}
 		// Create instance of OperationContext
 		ValidationUtils.addToDoLog("Implement AppHostname (on which host this application is running)", "WebRequestHandler");
-		OperationContext operationContext = new OperationContext(userSessionDetails, "AppHostname");
+		OperationContext operationContext = new OperationContext(appSessionUser, "AppHostname");
 		Response response = null;
 		try {
 			response = OperationExecutor.executeOperation(operationClass, request, operationContext);

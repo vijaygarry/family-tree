@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.neasaa.base.app.dao.pg.AppSessionDao;
 import com.neasaa.base.app.entity.AppSession;
+import com.neasaa.base.app.entity.AppUser;
 import com.neasaa.base.app.enums.ChannelEnum;
 import com.neasaa.base.app.operation.BeanNames;
 import com.neasaa.base.app.operation.exception.OperationException;
@@ -24,14 +25,14 @@ public class SessionService {
 		this.sessionDao = sessionDao;
 	}
 	
-	public AppSession createSession(AuthenticatedUser authenticatedUser, boolean aAuthenticated, boolean sessionActive, ChannelEnum aChannel,
+	public AppSession createSession(AppUser authenticatedUser, boolean aAuthenticated, boolean sessionActive, ChannelEnum aChannel,
 			String aAppHostName, String aClientIpAddress, String aClientOsName, String aClientBrowserName)
 			throws OperationException {
 		
 		Date currentTime = new Date();
 		AppSession appSession = AppSession.builder()
 				.userId(authenticatedUser.getUserId())
-				.channelId(aChannel.name())
+				.channel(aChannel)
 				.active(sessionActive)
 				.authenticated(aAuthenticated)
 				.sessionCreationTime(currentTime)

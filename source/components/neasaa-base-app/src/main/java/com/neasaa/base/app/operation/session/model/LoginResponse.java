@@ -4,9 +4,11 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.neasaa.base.app.operation.model.OperationResponse;
+import com.neasaa.base.app.service.AppSessionUser;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Builder
@@ -29,6 +31,10 @@ public class LoginResponse extends OperationResponse {
 	@JsonIgnore
 	private Date sessionCreationTime;
 	private Date lastAccessTime;
+	
+	@Setter
+	@JsonIgnore	
+	private AppSessionUser appSessionUser;
 	
 	@Override
 	public String getAuditString() {

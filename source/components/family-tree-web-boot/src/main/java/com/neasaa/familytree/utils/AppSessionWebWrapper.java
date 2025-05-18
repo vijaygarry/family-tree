@@ -1,11 +1,8 @@
 package com.neasaa.familytree.utils;
 
-import com.neasaa.base.app.entity.AppSession;
 import com.neasaa.base.app.enums.SessionExitCode;
-import com.neasaa.base.app.operation.OperationExecutor;
-import com.neasaa.base.app.operation.session.LogoutOperation;
 import com.neasaa.base.app.operation.session.model.LogoutRequest;
-import com.neasaa.base.app.operation.session.model.UserSessionDetails;
+import com.neasaa.base.app.service.AppSessionUser;
 import com.neasaa.base.app.utils.ValidationUtils;
 
 import jakarta.servlet.http.HttpSessionBindingEvent;
@@ -16,15 +13,15 @@ import lombok.extern.log4j.Log4j2;
 public class AppSessionWebWrapper implements HttpSessionBindingListener {
 
 	
-	private UserSessionDetails userSessionDetails;
+	private AppSessionUser appSessionUser;
 	private SessionExitCode exitCode = SessionExitCode.SESSION_TIMEOUT;
 	
 	/**
 	 * @param aAppSUserSessionDetailsession
 	 */
-	public AppSessionWebWrapper ( UserSessionDetails userSessionDetails ) {
+	public AppSessionWebWrapper ( AppSessionUser appSessionUser ) {
 		super();
-		this.userSessionDetails = userSessionDetails;
+		this.appSessionUser = appSessionUser;
 	}
 
 	@Override
@@ -50,7 +47,7 @@ public class AppSessionWebWrapper implements HttpSessionBindingListener {
 	public void valueUnbound ( HttpSessionBindingEvent aEvent ) {
 		//This method will be called when user perform logout operation as well as when HTTP Timeout try to close the session.
 		// During user logout, controller will set the appSession to null, so do not call logout when appSession object is null.
-		if(this.userSessionDetails != null) {
+		if(this.appSessionUser != null) {
 			LogoutRequest request = new LogoutRequest();
 			request.setSessionExitCode(this.exitCode);
 			
@@ -60,19 +57,19 @@ public class AppSessionWebWrapper implements HttpSessionBindingListener {
 			} catch (Exception ex) {
 				log.info( "Failed to logout user while unbound from http session. Exit code " + this.exitCode, ex );
 			}
-			this.userSessionDetails.invalidate();
+			this.appSessionUser.invalidate();
 		}
 	}
 
-	public UserSessionDetails getUserSessionDetails() {
-		return userSessionDetails;
+	public AppSessionUser getAppSessionUser() {
+		return appSessionUser;
 	}
 	
 	/**
 	 * Logout operation call this to make appSession null. This way, if Session Binder calls valueUnbound should not trigger logout again.
 	 */
 	public void removeAppSession () {
-		this.userSessionDetails = null;
+		this.appSessionUser = null;
 	}
 	
 //	/**

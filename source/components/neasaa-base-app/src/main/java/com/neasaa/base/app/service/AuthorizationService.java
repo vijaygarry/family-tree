@@ -3,11 +3,10 @@ package com.neasaa.base.app.service;
 import com.neasaa.base.app.entity.AppRole;
 import com.neasaa.base.app.entity.OperationEntity;
 import com.neasaa.base.app.operation.exception.OperationException;
-import com.neasaa.base.app.operation.session.model.UserSessionDetails;
 
 public interface AuthorizationService {
 
-	boolean isOperationAllowedForUser (OperationEntity aOperationEntity, UserSessionDetails userSessionDetails) throws OperationException;
+	boolean isOperationAllowedForUser (OperationEntity aOperationEntity, AppSessionUser appSessionUser) throws OperationException;
 	
 	/**
 	 * Return the operation entity specific to specified operation name.
