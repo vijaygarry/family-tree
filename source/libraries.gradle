@@ -80,6 +80,11 @@ ext.libraries = [
 	micrometerCommons: "io.micrometer:micrometer-commons:1.14.5@jar",
 	
 
+	postgresqlDriver: "org.postgresql:postgresql:42.6.0@jar",
+	hikariConnectionPool: "com.zaxxer:HikariCP:5.0.1@jar",
+	// jasypt to encrypt/decrypt database password
+	jasypt: "org.jasypt:jasypt:1.9.3@jar",
+
 	// SLF4J API used by application to log.
     slf4jApi: "org.slf4j:slf4j-api:2.0.17@jar", 
     // Log4j2 API
@@ -174,7 +179,11 @@ libraries << [
 		libraries.jacksonCore,
 		libraries.jacksonAnnotations,
 		libraries.jacksonDatabind,
-	], 
+	],
+	jdbcLibs: [
+		libraries.postgresqlDriver,
+        libraries.hikariConnectionPool,
+	],
 	integTest: [
 		libraries.restAssured,
         libraries.junitApi,

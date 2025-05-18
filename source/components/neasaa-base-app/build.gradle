@@ -9,6 +9,8 @@ dependencies {
     implementation libraries.neasaaUtils
     implementation libraries.bouncycastleProvider
     implementation libraries.jackson
+    implementation libraries.jdbcLibs
+    implementation libraries.jasypt
 }
 
 eclipse {
