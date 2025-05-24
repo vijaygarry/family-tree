@@ -13,6 +13,8 @@ allprojects {
 	dependencies {
         compileOnly libraries.lombok
     	annotationProcessor libraries.lombokProcessor
+		testCompileOnly libraries.lombok
+    	testAnnotationProcessor libraries.lombokProcessor
     }
 
 	java {

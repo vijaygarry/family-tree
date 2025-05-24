@@ -4,10 +4,11 @@
 
 CREATE TABLE IF NOT EXISTS shared_schema.txtsession
 (
-    sessionid bigint NOT NULL DEFAULT nextval('shared_schema.txtsession_sessionid_seq'::regclass),
+    sessionid bigserial NOT NULL,
     userid integer,
     channelid character varying(64) COLLATE pg_catalog."default" NOT NULL,
-    isactive character(1) COLLATE pg_catalog."default" NOT NULL DEFAULT 'Y'::bpchar,
+    active boolean NOT NULL DEFAULT true,
+    authenticated boolean NOT NULL DEFAULT false,
     sessioncreationtime timestamp with time zone NOT NULL,
     logouttime timestamp with time zone,
     lastaccesstime timestamp with time zone,
@@ -39,8 +40,11 @@ COMMENT ON COLUMN shared_schema.txtsession.userid
 COMMENT ON COLUMN shared_schema.txtsession.channelid
     IS 'Channel this session is created for. E.g. Server, Browser, Mobile';
 
-COMMENT ON COLUMN shared_schema.txtsession.isactive
-    IS 'To see if session is active.';
+COMMENT ON COLUMN shared_schema.txtsession.active
+    IS 'Flag indicate if this is active session.';
+
+COMMENT ON COLUMN shared_schema.txtsession.authenticated
+    IS 'Flag indicate if this is authenticated session.';
 
 COMMENT ON COLUMN shared_schema.txtsession.sessioncreationtime
     IS 'Session creation time';
@@ -52,7 +56,7 @@ COMMENT ON COLUMN shared_schema.txtsession.lastaccesstime
     IS 'Last access session time to see if session should be kept active.';
 
 COMMENT ON COLUMN shared_schema.txtsession.exitcode
-    IS 'How the session is terminated. Possible values 1-> User Logout, 2-> Session Timeout, 3-> Override by new session, 4-> Kill by Admin';
+    IS 'How the session is terminated. Possible values 0-> Session is active, 1-> User Logout, 2-> Session Timeout, 3-> Override by new session, 4-> Kill by Admin';
 
 COMMENT ON COLUMN shared_schema.txtsession.apphostname
     IS 'application Hostname or IP of Application from where this session is created';

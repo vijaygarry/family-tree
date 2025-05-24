@@ -60,5 +60,6 @@ public class AppSessionUser {
 	
 	public void invalidate() {
 		this.authenticated = false;
+		this.sessionActive = false;
 	}
 }

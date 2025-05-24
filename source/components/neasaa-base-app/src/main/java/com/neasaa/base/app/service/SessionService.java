@@ -11,6 +11,7 @@ import com.neasaa.base.app.dao.pg.AppSessionDao;
 import com.neasaa.base.app.entity.AppSession;
 import com.neasaa.base.app.entity.AppUser;
 import com.neasaa.base.app.enums.ChannelEnum;
+import com.neasaa.base.app.enums.SessionExitCode;
 import com.neasaa.base.app.operation.BeanNames;
 import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.utils.ExceptionUtils;
@@ -19,7 +20,6 @@ import com.neasaa.base.app.utils.ExceptionUtils;
 public class SessionService {
 	
 	private final AppSessionDao sessionDao;
-//	private UserDAO userDAO;
 
 	public SessionService (AppSessionDao sessionDao) {
 		this.sessionDao = sessionDao;
@@ -51,20 +51,11 @@ public class SessionService {
 		}
 	}
 	
-//	public AppSession createSession(AppUserDto aSessionUser, boolean aAuthenticated, ChannelEnum aChannel,
-//			String aAppHostName, String aClientIpAddress, String aClientOsName, String aClientBrowserName)
-//			throws OperationException {
-//		AppSessionEntity sessionEntity = this.sessionDAO.createSession(aSessionUser, aAuthenticated, aChannel,
-//				aAppHostName, aClientIpAddress, aClientOsName, aClientBrowserName);
-//		this.userDAO.updateLastSuccessLoginTime(aSessionUser.getLogonName());
-//
-//		return EntityDtoMapper.getAppSessionDtoFromEntity(sessionEntity, aSessionUser);
-//	}
-//
-//	@Override
-//	public boolean logoutSession(AppSession aAppSession, SessionExitCode aSessionExitCode) {
-//		return this.sessionDAO.logoutSession(aAppSession, aSessionExitCode);
-//	}
+
+	public boolean logoutSession(AppSessionUser appSessionUser, SessionExitCode aSessionExitCode) {
+		return sessionDao.logoutSession(appSessionUser.getSessionId(), aSessionExitCode);
+	}
+	
 
 //	@Override
 //	public boolean isSessionValidAndAuthenticated(AppSession aAppSession) {

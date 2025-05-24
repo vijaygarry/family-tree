@@ -12,7 +12,7 @@ import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.base.app.operation.model.OperationRequest;
 import com.neasaa.base.app.operation.model.OperationResponse;
-import com.neasaa.base.app.operation.session.model.UserSessionDetails;
+import com.neasaa.base.app.service.AppSessionUser;
 import com.neasaa.base.app.service.AuthorizationService;
 import com.neasaa.base.app.service.SessionService;
 
@@ -26,13 +26,14 @@ public abstract class AbstractOperation<Request extends OperationRequest, Respon
 	private OperationContext context;
 	private Request request;
 	private Response response;
-	private UserSessionDetails userSessionDetails;
 	
 	@Autowired 
 	@Qualifier(BeanNames.AUTHORIZATION_SERVICE_BEAN)
 	private AuthorizationService authorizationService;
 	
-	private SessionService sessionService;
+//	@Autowired
+//	@Qualifier(BeanNames.SESSION_SERVICE_BEAN)
+//	private SessionService sessionService;
 	
 	
 	@Override
@@ -49,18 +50,19 @@ public abstract class AbstractOperation<Request extends OperationRequest, Respon
 			
 			this.request = opRequest;
 			
-			this.userSessionDetails = this.context.getUserSessionDetails();
+			AppSessionUser appSessionUser = this.context.getAppSessionUser();
 			String operationName = this.getOperationName();
 			
 			operationEntity = getOperationEntityByName(operationName);
 			
+			// getOperationEntityByName make sure operationEntity is not null.
 			if(operationEntity.getAuthorizationType() ==  null) {
 				String msg = "Authtype is not define for Operation name " + operationName; 
 				log.info(msg);
 				throw new InternalServerException(msg);
 			}
 			
-			if(!this.authorizationService.isOperationAllowedForUser( operationEntity, this.userSessionDetails )) {
+			if(!this.authorizationService.isOperationAllowedForUser( operationEntity, appSessionUser )) {
 				throw new AccessDeniedException("Operation " + operationName + " not allowed. Please contact administrator.");
 			}
 			
@@ -111,7 +113,9 @@ public abstract class AbstractOperation<Request extends OperationRequest, Respon
 	/**
 	 * This method will be called after doExecute even if doExecute returns exception
 	 */
-	public abstract void postExecute();
+	public void postExecute() {
+		
+	}
 	
 	/**
 	 * This method should not throw any exception.

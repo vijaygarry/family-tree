@@ -5,8 +5,10 @@
 package com.neasaa.base.app.dao.pg;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.sql.Connection;
+
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import com.neasaa.base.app.entity.AppSession;
+import com.neasaa.base.app.enums.SessionExitCode;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -24,6 +27,11 @@ public class AppSessionDao extends AbstractDao {
 	private static final String GET_SESSION_BYID = "SELECT  SESSIONID , USERID , CHANNELID , ACTIVE , "
 			+ "AUTHENTICATED , SESSIONCREATIONTIME , LOGOUTTIME , LASTACCESSTIME , EXITCODE , APPHOSTNAME , "
 			+ "CLIENTIPADDRESS , USER_AGENT  from " + BASE_SCHEMA_NAME + "TXTSESSION where SESSIONID = ? ";
+	
+	private static final String LOGOUT_SESSION_QUERY = " update " + BASE_SCHEMA_NAME + "TXTSESSION "
+			+ " set active = false, authenticated = false, "
+			+ "exitcode = ?, logouttime = ?, lastaccesstime = ?  where sessionid = ?";
+	
 	
 	public boolean isSessionValidAndAuthenticated(long sessionId) {
 				AppSession sessionEntity = getSessionById(sessionId);
@@ -48,6 +56,16 @@ public class AppSessionDao extends AbstractDao {
 		}
 		log.info("New session created with session id " + sessionId);
 		return getSessionById(sessionId);
+	}
+	
+	public boolean logoutSession(long sessionId, SessionExitCode aSessionExitCode) {
+		Date currDate = new Date();
+		int rowsUpdated = getJdbcTemplate().update(LOGOUT_SESSION_QUERY,
+				aSessionExitCode.getExitCode(), currDate, currDate, sessionId);
+		if (rowsUpdated > 0) {
+			return true;
+		}
+		return false;
 	}
 	
 	private PreparedStatement buildInsertStatement(Connection aConection, AppSession aAppSession) throws SQLException {

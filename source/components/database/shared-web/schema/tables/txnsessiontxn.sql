@@ -4,7 +4,7 @@
 
 CREATE TABLE IF NOT EXISTS shared_schema.txtsessiontxn
 (
-    txnid bigint NOT NULL DEFAULT nextval('shared_schema.txtsessiontxn_txnid_seq'::regclass),
+    txnid bigserial NOT NULL,
     sessionid bigint NOT NULL,
     operationid character varying(55) COLLATE pg_catalog."default" NOT NULL,
     userid integer,

@@ -1,5 +1,6 @@
 dependencies {
     testImplementation libraries.integTest
+    testImplementation libraries.jackson
 }
 
 test {
