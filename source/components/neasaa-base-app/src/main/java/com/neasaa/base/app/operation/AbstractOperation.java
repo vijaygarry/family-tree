@@ -5,6 +5,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.neasaa.base.app.entity.OperationEntity;
 import com.neasaa.base.app.operation.exception.AccessDeniedException;
 import com.neasaa.base.app.operation.exception.InternalServerException;
@@ -14,6 +17,7 @@ import com.neasaa.base.app.operation.model.OperationRequest;
 import com.neasaa.base.app.operation.model.OperationResponse;
 import com.neasaa.base.app.service.AppSessionUser;
 import com.neasaa.base.app.service.AuthorizationService;
+import com.neasaa.base.app.service.SessionService;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -21,22 +25,20 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public abstract class AbstractOperation<Request extends OperationRequest, Response extends OperationResponse> implements Operation<Request, Response> {
 	
-	@Getter
-	private OperationContext context;
-	private Request request;
-	private Response response;
-	
 	@Autowired 
 	@Qualifier(BeanNames.AUTHORIZATION_SERVICE_BEAN)
 	private AuthorizationService authorizationService;
 	
-//	@Autowired
-//	@Qualifier(BeanNames.SESSION_SERVICE_BEAN)
-//	private SessionService sessionService;
+	@Autowired
+	@Qualifier(BeanNames.SESSION_SERVICE_BEAN)
+	private SessionService sessionService;
+
 	
+	@Getter
+	private OperationContext context;
 	
 	@Override
-	@Transactional(value = "transactionManager", propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+	@Transactional(transactionManager = BeanNames.TRANSACTION_MANAGER, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public Response execute(Request opRequest, OperationContext context) throws OperationException {
 		this.context = context;
 		if(context == null) {
@@ -44,13 +46,14 @@ public abstract class AbstractOperation<Request extends OperationRequest, Respon
 			throw new ValidationException ("Operation context is not set");
 		}
 		OperationEntity operationEntity = null;
-		boolean operationSuccess = false;
+	
+		Request request = opRequest;
+		Response response = null;
+		OperationException operationException = null;
+		AppSessionUser appSessionUser = this.context.getAppSessionUser();
+		String operationName = this.getOperationName();
+		
 		try {
-			
-			this.request = opRequest;
-			
-			AppSessionUser appSessionUser = this.context.getAppSessionUser();
-			String operationName = this.getOperationName();
 			
 			operationEntity = getOperationEntityByName(operationName);
 			
@@ -69,26 +72,29 @@ public abstract class AbstractOperation<Request extends OperationRequest, Respon
 			doValidate(request);
 			
 			response = doExecute (request);
-			operationSuccess = true;
 			return response;
 		}
 		catch ( OperationException e ) {
 			log.debug( "Failed to execute operation with error " + e.getMessage());
+			operationException = e;
 			throw e;
 		}
 		catch ( Throwable th ) {
 			log.info( "Internal unhandle exception in executing the operation. Error:" + th.getMessage(), th);
-			throw new InternalServerException(th.getMessage(), th);
+			operationException = new InternalServerException(th.getMessage(), th);
+			throw operationException;
 		} finally {
 			try {
 				postExecute();
 			} catch (Throwable th) {
 				log.error( "Internal unhandle exception in doing post process. Error:" + th.getMessage(), th);
 			}
-			updateSessionLastAccessTime ();
+			context.markComplete();
+			
+			updateSessionLastAccessTime (appSessionUser);
 			
 			try {
-				auditTransaction (operationSuccess);
+				auditTransaction (operationEntity, request, response, operationException, appSessionUser, context);
 			} catch (Throwable th) {
 				log.error( "Internal unhandle exception while auditing. Error:" + th.getMessage(), th);
 			}
@@ -119,17 +125,64 @@ public abstract class AbstractOperation<Request extends OperationRequest, Respon
 	/**
 	 * This method should not throw any exception.
 	 */
-	private void updateSessionLastAccessTime () {
+	private void updateSessionLastAccessTime (AppSessionUser appSessionUser) {
 		try {
-//			if(this.appSession != null && this.appSession.isAuthenticated()) {
-//				this.sessionService.updateLastAccessTime( this.appSession );
-//			}
+			if(appSessionUser != null && appSessionUser.isAuthenticated()) {
+				this.sessionService.updateLastAccessTime( appSessionUser );
+			}
 		} catch (Throwable th) {
 			log.error( "Internal unhandle exception in doing post process. Error:" + th.getMessage(), th);
 		}
 	}
 	
-	private void auditTransaction (boolean operationSuccess) {
+	private void auditTransaction(OperationEntity operationEntity, Request request, Response response,
+			OperationException exception, AppSessionUser appSessionUser, OperationContext context) {
 		
+		if(operationEntity == null || !operationEntity.isAuditRequired()) {
+			log.info("Audit not enabled for operation {}, skipping auditing", operationEntity);
+			return;
+		}
+		
+		if(appSessionUser == null) {
+			log.info("AppSession is null, skipping auditing");
+			return;
+		}
+		if(context == null) {
+			log.info("Operation Context is null, skipping auditing");
+			return;
+		}
+		
+		String responseString = null;
+		int httpResponseCode = 200;
+		if(exception != null) {
+			httpResponseCode = 	exception.getHttpResponseCode();
+			responseString =  "{\"operationMessage\": \"" + exception.getMessage() + "\"}";
+		}
+		
+        
+		String requestString = null;
+		if(request != null) {
+			requestString = getJsonString(request); 
+		}
+		if(response != null) {
+			responseString = getJsonString(response); 
+		}
+		
+		sessionService.auditTransaction(appSessionUser.getSessionId(), operationEntity.getOperationId(),
+				appSessionUser.getUserId(), context.getStartTime(), context.getResponseTime(), httpResponseCode,
+				requestString, responseString);
+		
+	    
+	}
+	
+	private String getJsonString (Object obj) {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+		try {
+			return mapper.writeValueAsString(obj);
+		} catch (JsonProcessingException e) {
+			log.info("Failed to build json string for auditing", e);
+			return "Failed to build json string for auditing";
+		} 
 	}
 }

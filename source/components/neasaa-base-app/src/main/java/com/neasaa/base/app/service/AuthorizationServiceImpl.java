@@ -3,16 +3,15 @@ package com.neasaa.base.app.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.neasaa.base.app.cache.CacheManager;
-import com.neasaa.base.app.dao.pg.AppSessionDao;
 import com.neasaa.base.app.entity.AppRole;
 import com.neasaa.base.app.entity.OperationEntity;
 import com.neasaa.base.app.operation.BeanNames;
 import com.neasaa.base.app.operation.exception.AccessDeniedException;
 import com.neasaa.base.app.operation.exception.OperationException;
-import com.neasaa.base.app.operation.exception.UnauthorizedException;
 import com.neasaa.base.app.utils.ExceptionUtils;
 
 import lombok.extern.log4j.Log4j2;
@@ -21,8 +20,10 @@ import lombok.extern.log4j.Log4j2;
 @Service (BeanNames.AUTHORIZATION_SERVICE_BEAN)
 public class AuthorizationServiceImpl implements AuthorizationService {
 	
-	@Autowired 
-	private AppSessionDao sessionDAO;
+	
+	@Autowired
+	@Qualifier(BeanNames.SESSION_SERVICE_BEAN)
+	private SessionService sessionService;
 	
 	@Override
 	public boolean isOperationAllowedForUser(OperationEntity aOperationEntity, AppSessionUser appSessionUser)
@@ -32,20 +33,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 		case NO_AUTHORIZATION:
 			return true;
 		case ROLE_BASE:
-			if(appSessionUser == null) {
-				throw new UnauthorizedException("Please login to perform this operation.");
-			}
-			if(!appSessionUser.isAuthenticated()) {
-				throw new UnauthorizedException("Invalid session, please login to perform this operation.");
-			}
-			if(appSessionUser.getSessionId() <= 0) {
-				throw new UnauthorizedException("Invalid session, please login to perform this operation.");
-			}
-			
-			if(!this.sessionDAO.isSessionValidAndAuthenticated( appSessionUser.getSessionId() )){
-				throw new UnauthorizedException("Session expired, please login to perform this operation.");	
-			}
-			
+			sessionService.checkSessionValidity(appSessionUser);
 			
 			//AppUserDto userDto = getSessionUser(aAppSession);
 			boolean operationAllowed =  checkOperationAllowedForUserAndChannel(appSessionUser, aOperationEntity);

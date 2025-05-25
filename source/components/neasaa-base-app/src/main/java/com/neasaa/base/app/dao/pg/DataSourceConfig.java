@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import com.neasaa.base.app.operation.BeanNames;
 import com.neasaa.base.app.utils.DBEncryptionUtil;
@@ -51,4 +52,11 @@ public class DataSourceConfig {
 	public JdbcTemplate getJdbcTemplate (@Qualifier(BeanNames.DATASOURCE_BEAN) DataSource dataSource) {
 		return new JdbcTemplate(dataSource);
 	}
+	
+	
+	@Bean(name = BeanNames.TRANSACTION_MANAGER)
+    public DataSourceTransactionManager transactionManager(
+    		@Qualifier(BeanNames.DATASOURCE_BEAN) DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
+    }
 }

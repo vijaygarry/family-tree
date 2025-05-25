@@ -4,16 +4,28 @@
 
 package com.neasaa.base.app.dao.pg;
 
-import java.sql.SQLException;
 import java.sql.Connection;
-import com.neasaa.base.app.entity.AppSessionTxn;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Date;
 
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.stereotype.Repository;
+
+import com.neasaa.base.app.entity.AppSessionTxn;
+
+@Repository
 public class AppSessionTxnDao extends AbstractDao {
 
+	public void auditTransaction(long sessionId, String operationId, int userId, Date txnStartTime, long txnLatency,
+			int httpResponseCode, String request, String response) throws SQLException {
+		insertAppSessionTxn(AppSessionTxn.builder().sessionId(sessionId).operationId(operationId).userId(userId)
+				.txnStartTime(txnStartTime).txnLatencyMillis(txnLatency).httpResponseCode(httpResponseCode)
+				.request(request).response(response).build());
+	}
+	
 	private PreparedStatement buildInsertStatement(Connection aConection, AppSessionTxn aAppSessionTxn) throws SQLException {
-		String sqlStatement = "INSERT INTO TXTSESSIONTXN (SESSIONID, OPERATIONID, USERID, TXNSTARTTIME, TXNLATENCYMILLIS, HTTPRESPONSECODE, REQUEST, RESPONSE) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		String sqlStatement = "INSERT INTO " + BASE_SCHEMA_NAME + "TXTSESSIONTXN (SESSIONID, OPERATIONID, USERID, TXNSTARTTIME, TXNLATENCYMILLIS, HTTPRESPONSECODE, REQUEST, RESPONSE) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
 		PreparedStatement prepareStatement = aConection.prepareStatement(sqlStatement);
 		setLongInStatement(prepareStatement, 1, aAppSessionTxn.getSessionId());

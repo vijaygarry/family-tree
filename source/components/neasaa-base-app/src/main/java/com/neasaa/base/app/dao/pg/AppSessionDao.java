@@ -32,14 +32,8 @@ public class AppSessionDao extends AbstractDao {
 			+ " set active = false, authenticated = false, "
 			+ "exitcode = ?, logouttime = ?, lastaccesstime = ?  where sessionid = ?";
 	
-	
-	public boolean isSessionValidAndAuthenticated(long sessionId) {
-				AppSession sessionEntity = getSessionById(sessionId);
-		if (sessionEntity == null) {
-			return false;
-		}
-		return sessionEntity.isAuthenticated();
-	}
+	private static final String UPDATE_LAST_ACCESS_TIME_QUERY = "update " + BASE_SCHEMA_NAME + "TXTSESSION "
+			+ " set LASTACCESSTIME = now() where sessionid = ?";
 	
 	public AppSession addAppSession(AppSession aAppSession) throws SQLException {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -66,6 +60,10 @@ public class AppSessionDao extends AbstractDao {
 			return true;
 		}
 		return false;
+	}
+	
+	public void updateLastAccessTime(long sessionId) throws SQLException {
+		getJdbcTemplate().update(UPDATE_LAST_ACCESS_TIME_QUERY, sessionId);
 	}
 	
 	private PreparedStatement buildInsertStatement(Connection aConection, AppSession aAppSession) throws SQLException {
