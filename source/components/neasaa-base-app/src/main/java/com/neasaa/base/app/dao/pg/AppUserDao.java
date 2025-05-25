@@ -37,6 +37,14 @@ public class AppUserDao extends AbstractDao {
 			+ "LASTUPDATEDBY = ? "
 			+ "WHERE LOGONNAME = ?";
 	
+	private static final String UPDATE_USER_PASSWORD_STATEMENT = "UPDATE " + BASE_SCHEMA_NAME + "APPUSER "
+			+ "SET hashpassword = ?, "
+			+ "lastpasswordchangetime = NOW(), "
+			+ "lastupdateddate = NOW(), "
+			+ "lastupdatedby = (select userid from " + BASE_SCHEMA_NAME + "APPUSER where LOGONNAME = ?) "
+			+ "WHERE LOGONNAME = ?";
+	  
+	
 	public AppUser getUserByLogonName(String logonName) throws SQLException {
 		List<AppUser> userList= getJdbcTemplate().query(GET_USER_BY_LOGON_NAME, new AppUserRowMapper(), logonName);
 		if(userList == null || userList.size() == 0) {
@@ -75,6 +83,19 @@ public class AppUserDao extends AbstractDao {
 				PreparedStatement prepareStatement = aCon.prepareStatement(UPDATE_LAST_SUCCESS_LOGIN_TIME_STATEMENT);
 				setIntInStatement(prepareStatement, 1, userId);
 				setStringInStatement(prepareStatement, 2, logonName);
+				return prepareStatement;
+			}
+		});
+	}
+	
+	public int updateUserPassword(String logonName, String hashPassword) throws SQLException {
+		return getJdbcTemplate().update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {
+				PreparedStatement prepareStatement = aCon.prepareStatement(UPDATE_USER_PASSWORD_STATEMENT);
+				setStringInStatement(prepareStatement, 1, hashPassword);
+				setStringInStatement(prepareStatement, 2, logonName);
+				setStringInStatement(prepareStatement, 3, logonName);
 				return prepareStatement;
 			}
 		});

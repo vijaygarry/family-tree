@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.neasaa.base.app.enums.SessionExitCode;
 import com.neasaa.base.app.operation.model.EmptyOperationResponse;
+import com.neasaa.base.app.operation.session.ChangePasswordOperation;
 import com.neasaa.base.app.operation.session.LoginOperation;
 import com.neasaa.base.app.operation.session.LogoutOperation;
+import com.neasaa.base.app.operation.session.model.ChangePasswordRequest;
 import com.neasaa.base.app.operation.session.model.LoginRequest;
 import com.neasaa.base.app.operation.session.model.LoginResponse;
 import com.neasaa.base.app.operation.session.model.LogoutRequest;
@@ -89,7 +91,7 @@ public class SessionController {
 		return operationResponse;
 	}
 	
-//	
+	
 //	@RequestMapping(value = "/getsessiondetails")
 //	@ResponseBody
 //	public ResponseEntity<OperationResponse<SessionDetailsOutput>> getSessionDetails ( ) throws Exception {
@@ -106,16 +108,11 @@ public class SessionController {
 //	}
 	
 	
-//	@RequestMapping(value = "/changepwd")
-//	@ResponseBody
-//	public ResponseEntity<OperationResponse<EmptyDto>> changePwd ( @RequestBody ChangePasswordInput aChangePasswordInput) throws Exception {
-//		
-//		
-//		ResponseEntity<OperationResponse<EmptyDto>> operationResponse = WebOperationHelper
-//				.executeOperation(ChangePasswordOperation.class, aChangePasswordInput);
-//		return operationResponse;
-//		
-//	}
+	@RequestMapping(value = "/changepassword")
+	@ResponseBody
+	public ResponseEntity<EmptyOperationResponse> changePwd ( @RequestBody ChangePasswordRequest changePasswordRequest) throws Exception {
+		return WebRequestHandler.processRequest(ChangePasswordOperation.class, changePasswordRequest);
+	}
 	
 	
 }

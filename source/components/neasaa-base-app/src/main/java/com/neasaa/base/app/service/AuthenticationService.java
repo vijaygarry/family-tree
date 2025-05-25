@@ -22,10 +22,10 @@ public interface AuthenticationService {
 	/**
 	 * Verify the existing password and if valid, change it to new password.
 	 * 
-	 * @param aLogonName
-	 * @param aOldPassword
-	 * @param aNewPassword
+	 * @param logonName
+	 * @param currentPassword
+	 * @param newPassword
 	 * @throws OperationException - Throws exception if failed to update the password.
 	 */
-	void changePassword (String aLogonName, String aOldPassword, String aNewPassword) throws OperationException;
+	void changePassword (String logonName, String currentPassword, String newPassword) throws OperationException;
 }

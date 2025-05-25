@@ -14,7 +14,6 @@ import com.neasaa.base.app.operation.model.OperationRequest;
 import com.neasaa.base.app.operation.model.OperationResponse;
 import com.neasaa.base.app.service.AppSessionUser;
 import com.neasaa.base.app.service.AuthorizationService;
-import com.neasaa.base.app.service.SessionService;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;

@@ -15,6 +15,7 @@ import com.neasaa.base.app.operation.BeanNames;
 import com.neasaa.base.app.operation.exception.InternalServerException;
 import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.UnauthorizedException;
+import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.base.app.utils.PasswordUtil;
 
 import lombok.extern.log4j.Log4j2;
@@ -69,8 +70,29 @@ public class DBAuthenticationServiceImpl implements AuthenticationService {
 	}
 
 	@Override
-	public void changePassword(String aLogonName, String aOldPassword, String aNewPassword) throws OperationException {
-		
+	public void changePassword(String logonName, String currentPassword, String newPassword) throws OperationException {
+		try {
+			AppUser appUser = this.appUserDao.getUserByLogonName(logonName);
+			if (appUser == null) {
+				log.info("User {} not found.", logonName);
+				// This should not happen, that's why internal exception
+				throw new InternalServerException("User not found.");
+			}
+			
+			boolean pwdValid = PasswordUtil.matchPassword(currentPassword, appUser.getHashPassword());
+			if (!pwdValid) {
+				log.info("User password does not match.");
+				throw new ValidationException("Current password does not match.");
+			}
+			String hashPassword = PasswordUtil.hashPassword(newPassword);
+			int recordsUpdated = this.appUserDao.updateUserPassword(logonName, hashPassword);
+			if(recordsUpdated != 1) {
+				throw new InternalServerException("Failed to update password");
+			}
+			
+		} catch (SQLException se) {
+			throw new InternalServerException("Internal exception please contact administrator", se);
+		}
 	}
 
 }

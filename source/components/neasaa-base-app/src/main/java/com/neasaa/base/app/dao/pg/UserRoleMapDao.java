@@ -16,8 +16,7 @@ import java.sql.PreparedStatement;
 @Repository
 public class UserRoleMapDao extends AbstractDao {
 
-	private static final String SELECT_USER_ROLES_BY_USERID = "select  USERID , ROLEID , "
-			+ "CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
+	private static final String SELECT_USER_ROLES_BY_USERID = "select  ROLEID "
 			+ "from " + BASE_SCHEMA_NAME + "MSTUSERROLEMAP where USERID = ?";
 	
 	public List<String> getRoleIdsByUserId (int userId) throws SQLException {
