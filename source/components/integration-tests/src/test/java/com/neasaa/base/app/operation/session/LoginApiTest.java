@@ -4,6 +4,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static com.neasaa.base.app.operation.session.TestHelper.getLoginRequestBody;
+import static com.neasaa.base.app.operation.session.TestHelper.logoutUser;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -85,6 +86,29 @@ public class LoginApiTest {
         	.log().all() // Logs full response
         	.statusCode(200)
         	.body("operationMessage", equalTo("No session exists"));
+    }
+    
+    @Test
+    public void testGetSessionDetail() {
+
+    	String sessionId = TestHelper.loginAndGetJSessionId(Config.SUPER_ADMIN_USER_NAME_1, Config.SUPER_ADMIN_USER_PWD_1);
+        
+        given()
+        	.contentType(ContentType.JSON)
+        	.cookie("JSESSIONID", sessionId) 
+        	.log().all() // Logs full request
+        .when()
+        	.post("/session/getsessiondetail")
+        .then()
+	        .log().all() // Logs full response
+	        .statusCode(200)
+	        .body("firstName", equalTo("Vijay"))
+            .body("lastName", equalTo("Garothaya"))
+            .body("emailId", equalTo("vijay_garry@hotmail.com"))
+            .body("logonName", equalTo("vijay.garry"))
+            .body("sessionActive", equalTo(true));
+        
+        logoutUser(sessionId);
     }
     
     @Builder

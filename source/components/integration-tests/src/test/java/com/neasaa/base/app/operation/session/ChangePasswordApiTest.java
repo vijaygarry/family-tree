@@ -3,6 +3,7 @@ package com.neasaa.base.app.operation.session;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static com.neasaa.base.app.operation.session.TestHelper.getChangePasswordRequestBody;
+import static com.neasaa.base.app.operation.session.TestHelper.logoutUser;
 
 import org.junit.jupiter.api.Test;
 
@@ -58,7 +59,8 @@ public class ChangePasswordApiTest {
         .then()
 	        .log().all()
 	        .statusCode(400)
-	        .body("operationMessage", equalTo("Current and new password can not be same.")); 
+	        .body("operationMessage", equalTo("Current and new password can not be same."));
+        logoutUser(sessionId);
     }
 	
 	@Test
@@ -90,5 +92,6 @@ public class ChangePasswordApiTest {
 	        .log().all() // Logs full response
 	        .statusCode(200)
 	        .body("operationMessage", equalTo("Password change successfully !!!"));
+        logoutUser(sessionId);
     }
 }

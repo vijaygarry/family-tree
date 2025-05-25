@@ -9,4 +9,6 @@ public interface BeanNames {
 	String JDBC_TEMPLATE_BEAN = "JDBC_TEMPLATE";
 	
 	String CACHE_MANAGER_BEAN = "CACHE_MANAGER";
+	
+	String TRANSACTION_MANAGER = "transactionManager";
 }

@@ -7,6 +7,7 @@ import com.neasaa.base.app.operation.session.LoginApiTest.ChangePasswordRequest;
 import com.neasaa.base.app.operation.session.LoginApiTest.LoginRequest;
 
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 
 public class TestHelper {
 	
@@ -36,5 +37,14 @@ public class TestHelper {
 	            .extract()
 	            .cookie("JSESSIONID");
 		return sessionId;
+	}
+	
+	public static Response logoutUser (String sessionId) {
+		return given()
+	    	.contentType(ContentType.JSON)
+	    	.cookie("JSESSIONID", sessionId) 
+	    	.log().all() // Logs full request
+	    .when()
+    		.post("/session/logout");    	
 	}
 }

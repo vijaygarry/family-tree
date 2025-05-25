@@ -9,11 +9,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.neasaa.base.app.enums.SessionExitCode;
+import com.neasaa.base.app.operation.model.EmptyOperationRequest;
 import com.neasaa.base.app.operation.model.EmptyOperationResponse;
 import com.neasaa.base.app.operation.session.ChangePasswordOperation;
+import com.neasaa.base.app.operation.session.GetSessionDetailOperation;
 import com.neasaa.base.app.operation.session.LoginOperation;
 import com.neasaa.base.app.operation.session.LogoutOperation;
 import com.neasaa.base.app.operation.session.model.ChangePasswordRequest;
+import com.neasaa.base.app.operation.session.model.GetSessionDetailResponse;
 import com.neasaa.base.app.operation.session.model.LoginRequest;
 import com.neasaa.base.app.operation.session.model.LoginResponse;
 import com.neasaa.base.app.operation.session.model.LogoutRequest;
@@ -92,12 +95,12 @@ public class SessionController {
 	}
 	
 	
-//	@RequestMapping(value = "/getsessiondetails")
-//	@ResponseBody
-//	public ResponseEntity<OperationResponse<SessionDetailsOutput>> getSessionDetails ( ) throws Exception {
-//		ResponseEntity<OperationResponse<SessionDetailsOutput>> operationResponse = OperationExecutor.executeOperation( SessionDetailOperation.class, new EmptyDto() );
-//		return operationResponse;
-//	}
+	@RequestMapping(value = "/getsessiondetail")
+	@ResponseBody
+	public ResponseEntity<GetSessionDetailResponse> getSessionDetail ( ) throws Exception {
+		return WebRequestHandler.processRequest(GetSessionDetailOperation.class, new EmptyOperationRequest() );
+		
+	}
 //	
 //	@RequestMapping(value = "/isvalid")
 //	@ResponseBody
