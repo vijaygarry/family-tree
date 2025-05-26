@@ -1,8 +1,6 @@
-## Family Registration
-Only the **Super Admin** can register new families. This feature may later be opened to **App Admins** as adoption increases.
+## Family
 
-The first family will be added through the backend.
-Every user of the application must belong to a family.
+Represents a single family unit, comprising a group of family members. This entity may also include pets as part of the family structure.
 
 ## Family Attributes
 
@@ -40,7 +38,7 @@ Every user of the application must belong to a family.
   **Example**: *Bhagwatnarayan Garothaya – Amravati, MH*
 
 - **Family photo**:
-  Family photo
+  Family photo (600 * 1200 pixels)
   
 - **Pets**:
   List pets in the family with image
@@ -61,3 +59,10 @@ Every user of the application must belong to a family.
 
 - **Change Log**:  
   Maintain family change history in FamilyHistory table.
+
+
+## Family Registration
+Only the **Super Admin** can register new families. This feature may later be opened to **App Admins** as adoption increases.
+
+The first family will be added through the backend.
+Every family member must belong to a family.
