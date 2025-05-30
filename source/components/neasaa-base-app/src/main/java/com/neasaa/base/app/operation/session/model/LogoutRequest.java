@@ -14,8 +14,4 @@ public class LogoutRequest extends OperationRequest {
 	@Getter
 	private SessionExitCode sessionExitCode;
 
-	@Override
-	public String getAuditString() {
-		return null;
-	}
 }

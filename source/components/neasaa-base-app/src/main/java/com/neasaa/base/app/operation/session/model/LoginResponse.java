@@ -35,11 +35,5 @@ public class LoginResponse extends OperationResponse {
 	@Setter
 	@JsonIgnore	
 	private AppSessionUser appSessionUser;
-	
-	@Override
-	public String getAuditString() {
-		
-		return null;
-	}
 
 }

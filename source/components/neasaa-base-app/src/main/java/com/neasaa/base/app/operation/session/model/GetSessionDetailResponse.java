@@ -20,9 +20,4 @@ public class GetSessionDetailResponse extends OperationResponse {
 	private boolean sessionActive;
 	private Date lastAccessTime;
 	
-	@Override
-	public String getAuditString() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

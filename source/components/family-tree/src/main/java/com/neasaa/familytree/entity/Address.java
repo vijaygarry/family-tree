@@ -5,13 +5,20 @@
 package com.neasaa.familytree.entity;
 
 import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.util.Date;
 
 import com.neasaa.base.app.entity.BaseEntity;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Address extends BaseEntity {
 
 	public static final long serialVersionUID = 1748576601270L;

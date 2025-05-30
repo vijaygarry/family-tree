@@ -3,9 +3,9 @@ jar {
 }
 
 dependencies {
-    implementation libraries.springFramework
+    api libraries.springFramework
     implementation libraries.springLogger
-    implementation libraries.log4j
+    api libraries.log4j
     implementation libraries.neasaaUtils
     implementation libraries.bouncycastleProvider
     implementation libraries.jackson

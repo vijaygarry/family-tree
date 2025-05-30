@@ -1,0 +1,10 @@
+package com.neasaa.familytree.operation;
+
+public interface OperationNames {
+	String ADD_FAMILY = "ADD_FAMILY";
+	String UPDATE_FAMILY_ADDRESS = "UPDATE_FAMILY_ADDRESS";
+	String GET_FAMILY_PROFILE = "GET_FAMILY_PROFILE";
+	
+	String ADD_FAMILY_MEMBER = "ADD_FAMILY_MEMBER";
+	String GET_FAMILY_MEMBER_PROFILE = "GET_FAMILY_MEMBER_PROFILE";
+}

@@ -10,6 +10,9 @@ import lombok.Getter;
 
 @Getter
 public class OperationContext {
+	
+	//We will be using this user id if user is not logged in to application.
+	private final int NOT_LOGGED_IN_USER_ID = -1;
 	// 
 	private final AppSessionUser appSessionUser;
 	private final Date startTime;
@@ -19,11 +22,19 @@ public class OperationContext {
 	private Date endTime;
 	
 	private String appHostName;
+	private AuditInfo auditInfo;
 	
 	public OperationContext (AppSessionUser appSessionUser , String appHostName) {
 		this.startTime = new Date();
 		this.appSessionUser = appSessionUser;
 		this.appHostName = appHostName;
+		
+		this.auditInfo = AuditInfo.builder()
+				.createdBy(appSessionUser == null ? NOT_LOGGED_IN_USER_ID : appSessionUser.getUserId())
+				.createdDate(startTime)
+				.lastUpdatedBy(appSessionUser == null ? NOT_LOGGED_IN_USER_ID : appSessionUser.getUserId())
+				.lastUpdatedDate(startTime)
+				.build();
 	}
 	
 	public long getResponseTime () {

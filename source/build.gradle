@@ -5,6 +5,7 @@ apply from: "libraries.gradle"
 // Common for all project define here
 allprojects {
 	apply plugin: 'java'
+	apply plugin: 'java-library'
 	apply plugin: 'eclipse'
 	//apply plugin: 'idea'
 	//apply plugin: 'distribution'
@@ -38,7 +39,8 @@ allprojects {
 	task checkVersion {
 		doLast {
 			if(!hasVersion("version")) {
-				throw new GradleException ("Property 'version' is missing. Specify using '-Pversion=' command line option")
+				// TODO: Add this validation later once development is done.
+				//throw new GradleException ("Property 'version' is missing. Specify using '-Pversion=' command line option")
 			}
 		}
 	}

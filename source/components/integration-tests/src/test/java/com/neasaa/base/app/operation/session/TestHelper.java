@@ -1,5 +1,6 @@
 package com.neasaa.base.app.operation.session;
 
+import static com.neasaa.base.app.operation.session.TestHelper.getChangePasswordRequestBody;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -46,5 +47,16 @@ public class TestHelper {
 	    	.log().all() // Logs full request
 	    .when()
     		.post("/session/logout");    	
+	}
+	
+	
+	public static Response executeOperation (Object request, String jSessionId, String operationUrl) {
+		return given()
+				.contentType(ContentType.JSON)
+				.body(request)
+				.cookie("JSESSIONID", jSessionId) 
+				.log().all()
+			.when()
+				.post(operationUrl);
 	}
 }

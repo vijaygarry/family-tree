@@ -101,6 +101,10 @@ public abstract class AbstractOperation<Request extends OperationRequest, Respon
 		}
 	}
 	
+	protected AuditInfo getAuditInfo () {
+		return context.getAuditInfo();
+	}
+	
 	protected OperationEntity getOperationEntityByName (String aOperationName) throws OperationException {
 		OperationEntity operationEntity = this.authorizationService.getOperationByName(aOperationName);
 		if (operationEntity == null) {

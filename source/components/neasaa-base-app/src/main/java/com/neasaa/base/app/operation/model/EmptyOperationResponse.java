@@ -8,9 +8,4 @@ public class EmptyOperationResponse extends OperationResponse {
 		super(message);
 	}
 
-	@Override
-	public String getAuditString() {
-		return null;
-	}
-
 }

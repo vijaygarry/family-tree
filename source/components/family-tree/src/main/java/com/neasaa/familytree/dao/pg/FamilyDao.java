@@ -10,15 +10,23 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 
 import com.neasaa.base.app.dao.pg.AbstractDao;
 import com.neasaa.familytree.entity.Family;
 
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
+@Repository
 public class FamilyDao extends AbstractDao {
+	
 	private static final String SELECT_FAMILY_BY_FAMILYID = "select FAMILYID, FAMILYNAME, GOTRA, ADDRESSID, "
 			+ "REGION, PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, FAMILYDISPLAYNAME, ACTIVE, FAMILYIMAGE, IMAGELASTUPDATED, "
 			+ "CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE "
-			+ "from FAMILY where FAMILYID = ? ";
+			+ "from " + BASE_SCHEMA_NAME + "FAMILY where FAMILYID = ? ";
 	
 	public Family getFamilyByFamilyId(int familyId) {
 		List<Family> familyList = getJdbcTemplate().query(SELECT_FAMILY_BY_FAMILYID, new FamilyRowMapper(), familyId);
@@ -32,19 +40,28 @@ public class FamilyDao extends AbstractDao {
 		return familyList.get(0);		
 	}
 	
-	public int addFamily (Family aFamily) throws SQLException {
-		return getJdbcTemplate().update(new PreparedStatementCreator() {
+	public int addFamily (Family aFamily) {
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		getJdbcTemplate().update(new PreparedStatementCreator() {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {
 				return buildInsertStatement(aCon, aFamily);
 			}
-		});
+		}, keyHolder);
+		int familyId = -1;
+		Number key = keyHolder.getKey();
+		if (key != null) {
+			familyId = key.intValue();
+		}
+		log.info("New family added with id " + familyId);
+		return familyId;
 	}
 	
 	private PreparedStatement buildInsertStatement(Connection aConection, Family aFamily) throws SQLException {
-		String sqlStatement = "INSERT INTO FAMILY (FAMILYNAME, GOTRA, ADDRESSID, REGION, PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, FAMILYDISPLAYNAME, ACTIVE, FAMILYIMAGE, IMAGELASTUPDATED, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String sqlStatement = "INSERT INTO " + BASE_SCHEMA_NAME + "FAMILY (FAMILYNAME, GOTRA, ADDRESSID, REGION, PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, FAMILYDISPLAYNAME, ACTIVE, FAMILYIMAGE, IMAGELASTUPDATED, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-		PreparedStatement prepareStatement = aConection.prepareStatement(sqlStatement);
+		PreparedStatement prepareStatement = aConection.prepareStatement(sqlStatement, new String[] { "familyid" });
 		setStringInStatement(prepareStatement, 1, aFamily.getFamilyName());
 		setStringInStatement(prepareStatement, 2, aFamily.getGotra());
 		setIntInStatement(prepareStatement, 3, aFamily.getAddressId());

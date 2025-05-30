@@ -18,10 +18,5 @@ public class ChangePasswordRequest extends OperationRequest {
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String newPassword;
 
-	@Override
-	public String getAuditString() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }
