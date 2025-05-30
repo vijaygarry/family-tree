@@ -21,7 +21,9 @@ public class FamilyMemberRowMapper implements RowMapper<FamilyMember> {
 		familyMember.setHeadOfFamily(aRs.getBoolean("HEADOFFAMILY"));
 		familyMember.setFirstName(aRs.getString("FIRSTNAME"));
 		familyMember.setLastName(aRs.getString("LASTNAME"));
+		familyMember.setMaidenLastName(aRs.getString("MAIDENLASTNAME"));
 		familyMember.setNickName(aRs.getString("NICKNAME"));
+		familyMember.setAddressSameAsFamily(aRs.getBoolean("ADDRESSSAMEASFAMILY"));
 		familyMember.setMemberAddressId(aRs.getInt("MEMBERADDRESSID"));
 		familyMember.setPhone(aRs.getString("PHONE"));
 		familyMember.setPhoneWhatsappRegistered(aRs.getBoolean("ISPHONEWHATSAPPREGISTERED"));

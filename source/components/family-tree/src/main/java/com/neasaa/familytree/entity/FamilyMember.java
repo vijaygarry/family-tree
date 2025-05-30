@@ -14,13 +14,15 @@ import com.neasaa.base.app.entity.BaseEntity;
 @Setter
 public class FamilyMember extends BaseEntity {
 
-	public static final long serialVersionUID = 1748576601288L;
+	public static final long serialVersionUID = 1748636415588L;
 	private int memberId;
 	private int familyId;
 	private boolean headOfFamily;
 	private String firstName;
 	private String lastName;
+	private String maidenLastName;
 	private String nickName;
+	private boolean addressSameAsFamily;
 	private int memberAddressId;
 	private String phone;
 	private boolean isPhoneWhatsappRegistered;

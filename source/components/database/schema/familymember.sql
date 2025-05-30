@@ -9,7 +9,9 @@ CREATE TABLE IF NOT EXISTS shared_schema.familymember
     headoffamily boolean NOT NULL DEFAULT false,
     firstname character varying(100) COLLATE pg_catalog."default" NOT NULL,
     lastname character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    maidenlastname character varying(100) COLLATE pg_catalog."default",
     nickname character varying(100) COLLATE pg_catalog."default",
+    addresssameasfamily boolean NOT NULL DEFAULT true,
     memberaddressid integer,
     phone character varying(20) COLLATE pg_catalog."default",
     isphonewhatsappregistered boolean NOT NULL DEFAULT false,
@@ -70,8 +72,14 @@ COMMENT ON COLUMN shared_schema.familymember.firstname
 COMMENT ON COLUMN shared_schema.familymember.lastname
     IS 'The family name shared across members of the same family.';
 
+COMMENT ON COLUMN shared_schema.familymember.maidenlastname
+    IS 'Maiden last name before marriage. Ask user to enter maidan last name only if sex is female and maritalstatus is not single. This is going to be optional.';
+
 COMMENT ON COLUMN shared_schema.familymember.nickname
     IS 'An informal or commonly used alternate name.';
+
+COMMENT ON COLUMN shared_schema.familymember.addresssameasfamily
+    IS 'If value of this column is true that means member address is same as family address.';
 
 COMMENT ON COLUMN shared_schema.familymember.memberaddressid
     IS 'The specific address of the member.  Address id = 0 indicate member address is same as family address';
