@@ -1,0 +1,84 @@
+/*
+* Copyright (c) 2018- 2021
+*/
+
+package com.neasaa.familytree.dao.pg;
+
+import com.neasaa.base.app.dao.pg.AbstractDao;
+import com.neasaa.familytree.entity.MemberRelationship;
+import java.sql.SQLException;
+import java.sql.Connection;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import java.sql.PreparedStatement;
+
+public class MemberRelationshipDao extends AbstractDao {
+
+	private PreparedStatement buildInsertStatement(Connection aConection, MemberRelationship aMemberRelationship) throws SQLException {
+		String sqlStatement = "INSERT INTO MEMBERRELATIONSHIP (MEMBERID, RELATIONSHIPTYPE, RELATEDMEMBERID, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+		PreparedStatement prepareStatement = aConection.prepareStatement(sqlStatement);
+		setIntInStatement(prepareStatement, 1, aMemberRelationship.getMemberId());
+		setStringInStatement(prepareStatement, 2, aMemberRelationship.getRelationshipType());
+		setIntInStatement(prepareStatement, 3, aMemberRelationship.getRelatedMemberId());
+		setIntInStatement(prepareStatement, 4, aMemberRelationship.getCreatedBy());
+		setTimestampInStatement(prepareStatement, 5, aMemberRelationship.getCreatedDate());
+		setIntInStatement(prepareStatement, 6, aMemberRelationship.getLastUpdatedBy());
+		setTimestampInStatement(prepareStatement, 7, aMemberRelationship.getLastUpdatedDate());
+		return prepareStatement;
+	}
+
+	public int insertMemberRelationship(MemberRelationship aMemberRelationship) throws SQLException {
+		return getJdbcTemplate().update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {
+				return buildInsertStatement(aCon, aMemberRelationship);
+			}
+		});
+
+	}
+
+	public int deleteMemberRelationship(MemberRelationship aMemberRelationship) throws SQLException {
+		return getJdbcTemplate().update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(Connection aConection) throws SQLException {
+				String deleteSqlQuery = "DELETE FROM MEMBERRELATIONSHIP WHERE MEMBERID = ? and RELATEDMEMBERID = ?";
+				PreparedStatement prepareStatement = aConection.prepareStatement(deleteSqlQuery);
+				setIntInStatement(prepareStatement, 1, aMemberRelationship.getMemberId());
+				setIntInStatement(prepareStatement, 2, aMemberRelationship.getRelatedMemberId());
+				return prepareStatement;
+			}
+		});
+
+	}
+
+	public PreparedStatement buildUpdateStatement(Connection aConection, MemberRelationship aMemberRelationship) throws SQLException {
+		String updateStatement = "UPDATE MEMBERRELATIONSHIP SET RELATIONSHIPTYPE = ? , CREATEDBY = ? , CREATEDDATE = ? , LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  where MEMBERID = ? and RELATEDMEMBERID = ?";
+
+		PreparedStatement prepareStatement = aConection.prepareStatement(updateStatement);
+		setStringInStatement(prepareStatement, 1, aMemberRelationship.getRelationshipType());
+		setIntInStatement(prepareStatement, 2, aMemberRelationship.getCreatedBy());
+		setTimestampInStatement(prepareStatement, 3, aMemberRelationship.getCreatedDate());
+		setIntInStatement(prepareStatement, 4, aMemberRelationship.getLastUpdatedBy());
+		setTimestampInStatement(prepareStatement, 5, aMemberRelationship.getLastUpdatedDate());
+		setIntInStatement(prepareStatement, 6, aMemberRelationship.getMemberId());
+		setIntInStatement(prepareStatement, 7, aMemberRelationship.getRelatedMemberId());
+		return prepareStatement;
+	}
+
+	public int updateMemberRelationship(MemberRelationship aMemberRelationship) throws SQLException {
+		return getJdbcTemplate().update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {
+				return buildUpdateStatement(aCon, aMemberRelationship);
+			}
+		});
+
+	}
+
+	public MemberRelationship fetchMemberRelationship(MemberRelationship aMemberRelationship) throws SQLException {
+		String selectQuery = "select  MEMBERID , RELATIONSHIPTYPE , RELATEDMEMBERID , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  from MEMBERRELATIONSHIP where MEMBERID = ?  and RELATEDMEMBERID = ? ";
+		return getJdbcTemplate().queryForObject(selectQuery, new MemberRelationshipRowMapper(), aMemberRelationship.getMemberId(), aMemberRelationship.getRelatedMemberId());
+
+	}
+
+}

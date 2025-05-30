@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS shared_schema.family
     familydisplayname character varying(255) COLLATE pg_catalog."default",
     active boolean NOT NULL DEFAULT true,
     familyimage character varying(120) COLLATE pg_catalog."default",
-	  imagelastupdated timestamp with time zone NOT NULL,
+	imagelastupdated timestamp with time zone NOT NULL,
     createdby integer NOT NULL,
     createddate timestamp with time zone NOT NULL,
     lastupdatedby integer NOT NULL,
