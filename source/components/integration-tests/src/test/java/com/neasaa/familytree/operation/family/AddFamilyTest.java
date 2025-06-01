@@ -1,5 +1,7 @@
 package com.neasaa.familytree.operation.family;
 
+import static com.neasaa.base.app.operation.session.TestHelper.logoutUser;
+
 import org.junit.jupiter.api.Test;
 
 import com.neasaa.base.app.operation.session.AssertionUtils;
@@ -17,7 +19,7 @@ public class AddFamilyTest {
 	
 	@Test
 	public void addFamilyInputValidationTest () {
-		FamilyAddress address = FamilyAddress.builder().build();
+		InputAddress address = InputAddress.builder().build();
 		AddFamilyRequest request = AddFamilyRequest.builder().build();
 		String sessionId = TestHelper.loginAndGetJSessionId(Config.SUPER_ADMIN_USER_NAME_1, Config.SUPER_ADMIN_USER_PWD_1);
 		Response response = TestHelper.executeOperation(request, sessionId, addFamilyUrl);
@@ -59,18 +61,22 @@ public class AddFamilyTest {
 		response.then().log().all(); // Logs full response
 		AssertionUtils.assertResponse(response, 400, "Required field postal code is not provided");
 		
-		address.setPostalCode("444601");
-		response = TestHelper.executeOperation(request, sessionId, addFamilyUrl);
-		response.then().log().all(); // Logs full response
-		AssertionUtils.assertResponse(response, 200, "Garothaya family added successfully !!!");
+		logoutUser(sessionId);
 	}
 	
 	
 	@Test
 	public void addFamilySuccessTest () {
-		FamilyAddress address = FamilyAddress.builder().build();
+		String sessionId = TestHelper.loginAndGetJSessionId(Config.SUPER_ADMIN_USER_NAME_1, Config.SUPER_ADMIN_USER_PWD_1);
 		AddFamilyRequest request = AddFamilyRequest.builder().build();
+		request.setFamilyName("Garothaya");
+		request.setGotra("My Gotra");	
+		request.setAddress(InputAddress.getValidTestAddress());
 		
+		Response response = TestHelper.executeOperation(request, sessionId, addFamilyUrl);
+		response.then().log().all(); // Logs full response
+		AssertionUtils.assertResponse(response, 200, "Garothaya family added successfully !!!");
+		logoutUser(sessionId);
 	}
 	
 	@Builder
@@ -82,20 +88,7 @@ public class AddFamilyTest {
 		private String phone;
 		private boolean isPhoneWhatsappRegistered;
 		private String email;
-		private FamilyAddress address;
+		private InputAddress address;
 	}
 	
-	@Builder
-    @Getter
-    @Setter
-	private static class FamilyAddress {
-		private String addressLine1;
-		private String addressLine2;
-		private String addressLine3;
-		private String city;
-		private String district;
-		private String state;
-		private String postalCode;
-		private String country;
-	}
 }

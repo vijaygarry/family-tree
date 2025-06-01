@@ -12,6 +12,9 @@ import io.restassured.response.Response;
 
 public class TestHelper {
 	
+	public static final int VALIDATION_ERROR_CODE = 400;
+	public static final int SUCCESS_HTTP_CODE = 200;
+	
 	public static LoginRequest getLoginRequestBody (String userName, String userPassword) {
 		return LoginRequest.builder().loginName(userName).password(userPassword).build();
 	}

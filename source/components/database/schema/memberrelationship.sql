@@ -11,8 +11,7 @@ CREATE TABLE IF NOT EXISTS shared_schema.memberrelationship
     createddate timestamp with time zone NOT NULL,
     lastupdatedby integer NOT NULL,
     lastupdateddate timestamp with time zone NOT NULL,
-    CONSTRAINT memberrelationship_pkey PRIMARY KEY (memberid)
-        INCLUDE(relatedmemberid),
+    CONSTRAINT memberrelationship_pkey PRIMARY KEY (memberid, relatedmemberid),
     CONSTRAINT memberrelationship_createdby_fkey FOREIGN KEY (createdby)
         REFERENCES shared_schema.appuser (userid) MATCH SIMPLE
         ON UPDATE RESTRICT
@@ -39,10 +38,10 @@ ALTER TABLE IF EXISTS shared_schema.memberrelationship
 COMMENT ON TABLE shared_schema.memberrelationship
     IS 'Table to maintain relationship.
 Read the record as 
-memberid''s relationshiptype is relatedmemberid
-E.g: memberid = Vijay, relationshiptype = Father and relatedmemberid = Bhagwatnarayan
+memberid is relationshiptype of relatedmemberid
+E.g: memberid = Vijay, relationshiptype = Son and relatedmemberid = Bhagwatnarayan
 then read this record as 
-Vijay''s Father is Bhagwatnarayan.';
+Vijay is Son of Bhagwatnarayan.';
 
 
 COMMENT ON COLUMN shared_schema.memberrelationship.memberid
@@ -50,4 +49,4 @@ COMMENT ON COLUMN shared_schema.memberrelationship.memberid
 COMMENT ON COLUMN shared_schema.memberrelationship.relationshiptype
     IS 'Relationship type for this member. Possible options Father, Mother, Son, Daughter, Husband, Wife';
 COMMENT ON COLUMN shared_schema.memberrelationship.relatedmemberid
-    IS 'The other person in the relationship. relatedmemberid is relationshiptype of memberid';
+    IS 'The other person in the relationship. relatedmemberid''s relationshiptype is memberid';

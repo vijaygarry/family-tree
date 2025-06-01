@@ -5,13 +5,22 @@
 package com.neasaa.familytree.entity;
 
 import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.util.Date;
 
 import com.neasaa.base.app.entity.BaseEntity;
+import com.neasaa.familytree.enums.MaritalStatus;
+import com.neasaa.familytree.enums.SexEnum;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class FamilyMember extends BaseEntity {
 
 	public static final long serialVersionUID = 1748636415588L;
@@ -28,11 +37,11 @@ public class FamilyMember extends BaseEntity {
 	private boolean isPhoneWhatsappRegistered;
 	private String email;
 	private String linkedinUrl;
-	private String sex;
+	private SexEnum sex;
 	private short birthDay;
 	private short birthMonth;
 	private short birthYear;
-	private String maritalStatus;
+	private MaritalStatus maritalStatus;
 	private String educationDetails;
 	private String occupation;
 	private String workingAt;
