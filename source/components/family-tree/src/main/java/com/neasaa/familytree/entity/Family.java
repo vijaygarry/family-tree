@@ -21,9 +21,10 @@ import com.neasaa.base.app.entity.BaseEntity;
 @AllArgsConstructor
 public class Family extends BaseEntity {
 
-	public static final long serialVersionUID = 1748576601280L;
+	public static final long serialVersionUID = 1748919840051L;
 	private int familyId;
 	private String familyName;
+	private String familyNameInHindi;
 	private String gotra;
 	private int addressId;
 	private String region;

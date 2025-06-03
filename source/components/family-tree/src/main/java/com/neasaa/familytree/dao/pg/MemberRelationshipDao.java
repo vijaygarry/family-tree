@@ -4,16 +4,16 @@
 
 package com.neasaa.familytree.dao.pg;
 
-import com.neasaa.base.app.dao.pg.AbstractDao;
-import com.neasaa.familytree.entity.FamilyMember;
-import com.neasaa.familytree.entity.MemberRelationship;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-import java.sql.Connection;
+
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
+import com.neasaa.base.app.dao.pg.AbstractDao;
+import com.neasaa.familytree.entity.MemberRelationship;
 
 @Repository
 public class MemberRelationshipDao extends AbstractDao {

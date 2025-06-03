@@ -23,9 +23,9 @@ import lombok.extern.log4j.Log4j2;
 @Repository
 public class FamilyDao extends AbstractDao {
 	
-	private static final String SELECT_FAMILY_BY_FAMILYID = "select FAMILYID, FAMILYNAME, GOTRA, ADDRESSID, "
-			+ "REGION, PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, FAMILYDISPLAYNAME, ACTIVE, FAMILYIMAGE, IMAGELASTUPDATED, "
-			+ "CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE "
+	private static final String SELECT_FAMILY_BY_FAMILYID = "select FAMILYID, FAMILYNAME, FAMILYNAMEINHINDI, GOTRA, ADDRESSID, "
+			+ "REGION, PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, FAMILYDISPLAYNAME, ACTIVE, FAMILYIMAGE, IMAGELASTUPDATED, CREATEDBY, "
+			+ "CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE "
 			+ "from " + BASE_SCHEMA_NAME + "FAMILY where FAMILYID = ? ";
 	
 	public Family getFamilyByFamilyId(int familyId) {
@@ -58,29 +58,30 @@ public class FamilyDao extends AbstractDao {
 	}
 	
 	private PreparedStatement buildInsertStatement(Connection aConection, Family aFamily) throws SQLException {
-		String sqlStatement = "INSERT INTO " + BASE_SCHEMA_NAME + "FAMILY (FAMILYNAME, GOTRA, ADDRESSID, REGION, PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, FAMILYDISPLAYNAME, ACTIVE, FAMILYIMAGE, IMAGELASTUPDATED, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String sqlStatement = "INSERT INTO " + BASE_SCHEMA_NAME + "FAMILY (FAMILYNAME, FAMILYNAMEINHINDI, GOTRA, ADDRESSID, REGION, PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, FAMILYDISPLAYNAME, ACTIVE, FAMILYIMAGE, IMAGELASTUPDATED, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 		PreparedStatement prepareStatement = aConection.prepareStatement(sqlStatement, new String[] { "familyid" });
 		setStringInStatement(prepareStatement, 1, aFamily.getFamilyName());
-		setStringInStatement(prepareStatement, 2, aFamily.getGotra());
-		setIntInStatement(prepareStatement, 3, aFamily.getAddressId());
-		setStringInStatement(prepareStatement, 4, aFamily.getRegion());
-		setStringInStatement(prepareStatement, 5, aFamily.getPhone());
-		setBooleanInStatement(prepareStatement, 6, aFamily.isPhoneWhatsappRegistered());
-		setStringInStatement(prepareStatement, 7, aFamily.getEmail());
-		setStringInStatement(prepareStatement, 8, aFamily.getFamilyDisplayName());
-		setBooleanInStatement(prepareStatement, 9, aFamily.isActive());
-		setStringInStatement(prepareStatement, 10, aFamily.getFamilyImage());
-		setTimestampInStatement(prepareStatement, 11, aFamily.getImageLastUpdated());
-		setIntInStatement(prepareStatement, 12, aFamily.getCreatedBy());
-		setTimestampInStatement(prepareStatement, 13, aFamily.getCreatedDate());
-		setIntInStatement(prepareStatement, 14, aFamily.getLastUpdatedBy());
-		setTimestampInStatement(prepareStatement, 15, aFamily.getLastUpdatedDate());
+		setStringInStatement(prepareStatement, 2, aFamily.getFamilyNameInHindi());
+		setStringInStatement(prepareStatement, 3, aFamily.getGotra());
+		setIntInStatement(prepareStatement, 4, aFamily.getAddressId());
+		setStringInStatement(prepareStatement, 5, aFamily.getRegion());
+		setStringInStatement(prepareStatement, 6, aFamily.getPhone());
+		setBooleanInStatement(prepareStatement, 7, aFamily.isPhoneWhatsappRegistered());
+		setStringInStatement(prepareStatement, 8, aFamily.getEmail());
+		setStringInStatement(prepareStatement, 9, aFamily.getFamilyDisplayName());
+		setBooleanInStatement(prepareStatement, 10, aFamily.isActive());
+		setStringInStatement(prepareStatement, 11, aFamily.getFamilyImage());
+		setTimestampInStatement(prepareStatement, 12, aFamily.getImageLastUpdated());
+		setIntInStatement(prepareStatement, 13, aFamily.getCreatedBy());
+		setTimestampInStatement(prepareStatement, 14, aFamily.getCreatedDate());
+		setIntInStatement(prepareStatement, 15, aFamily.getLastUpdatedBy());
+		setTimestampInStatement(prepareStatement, 16, aFamily.getLastUpdatedDate());
 		return prepareStatement;
 	}
 
-	
+
 
 	public int deleteFamily(Family aFamily) throws SQLException {
 		return getJdbcTemplate().update(new PreparedStatementCreator() {
@@ -96,25 +97,26 @@ public class FamilyDao extends AbstractDao {
 	}
 
 	public PreparedStatement buildUpdateStatement(Connection aConection, Family aFamily) throws SQLException {
-		String updateStatement = "UPDATE FAMILY SET FAMILYNAME = ? , GOTRA = ? , ADDRESSID = ? , REGION = ? , PHONE = ? , ISPHONEWHATSAPPREGISTERED = ? , EMAIL = ? , FAMILYDISPLAYNAME = ? , ACTIVE = ? , FAMILYIMAGE = ? , IMAGELASTUPDATED = ? , CREATEDBY = ? , CREATEDDATE = ? , LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  where FAMILYID = ?";
+		String updateStatement = "UPDATE FAMILY SET FAMILYNAME = ? , FAMILYNAMEINHINDI = ? , GOTRA = ? , ADDRESSID = ? , REGION = ? , PHONE = ? , ISPHONEWHATSAPPREGISTERED = ? , EMAIL = ? , FAMILYDISPLAYNAME = ? , ACTIVE = ? , FAMILYIMAGE = ? , IMAGELASTUPDATED = ? , CREATEDBY = ? , CREATEDDATE = ? , LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  where FAMILYID = ?";
 
 		PreparedStatement prepareStatement = aConection.prepareStatement(updateStatement);
 		setStringInStatement(prepareStatement, 1, aFamily.getFamilyName());
-		setStringInStatement(prepareStatement, 2, aFamily.getGotra());
-		setIntInStatement(prepareStatement, 3, aFamily.getAddressId());
-		setStringInStatement(prepareStatement, 4, aFamily.getRegion());
-		setStringInStatement(prepareStatement, 5, aFamily.getPhone());
-		setBooleanInStatement(prepareStatement, 6, aFamily.isPhoneWhatsappRegistered());
-		setStringInStatement(prepareStatement, 7, aFamily.getEmail());
-		setStringInStatement(prepareStatement, 8, aFamily.getFamilyDisplayName());
-		setBooleanInStatement(prepareStatement, 9, aFamily.isActive());
-		setStringInStatement(prepareStatement, 10, aFamily.getFamilyImage());
-		setTimestampInStatement(prepareStatement, 11, aFamily.getImageLastUpdated());
-		setIntInStatement(prepareStatement, 12, aFamily.getCreatedBy());
-		setTimestampInStatement(prepareStatement, 13, aFamily.getCreatedDate());
-		setIntInStatement(prepareStatement, 14, aFamily.getLastUpdatedBy());
-		setTimestampInStatement(prepareStatement, 15, aFamily.getLastUpdatedDate());
-		setIntInStatement(prepareStatement, 16, aFamily.getFamilyId());
+		setStringInStatement(prepareStatement, 2, aFamily.getFamilyNameInHindi());
+		setStringInStatement(prepareStatement, 3, aFamily.getGotra());
+		setIntInStatement(prepareStatement, 4, aFamily.getAddressId());
+		setStringInStatement(prepareStatement, 5, aFamily.getRegion());
+		setStringInStatement(prepareStatement, 6, aFamily.getPhone());
+		setBooleanInStatement(prepareStatement, 7, aFamily.isPhoneWhatsappRegistered());
+		setStringInStatement(prepareStatement, 8, aFamily.getEmail());
+		setStringInStatement(prepareStatement, 9, aFamily.getFamilyDisplayName());
+		setBooleanInStatement(prepareStatement, 10, aFamily.isActive());
+		setStringInStatement(prepareStatement, 11, aFamily.getFamilyImage());
+		setTimestampInStatement(prepareStatement, 12, aFamily.getImageLastUpdated());
+		setIntInStatement(prepareStatement, 13, aFamily.getCreatedBy());
+		setTimestampInStatement(prepareStatement, 14, aFamily.getCreatedDate());
+		setIntInStatement(prepareStatement, 15, aFamily.getLastUpdatedBy());
+		setTimestampInStatement(prepareStatement, 16, aFamily.getLastUpdatedDate());
+		setIntInStatement(prepareStatement, 17, aFamily.getFamilyId());
 		return prepareStatement;
 	}
 

@@ -23,11 +23,11 @@ import lombok.extern.log4j.Log4j2;
 @Repository
 public class FamilyMemberDao extends AbstractDao {
 
-	private static final String SELECT_ALL_MEMBERS_FOR_FAMILY = "select  MEMBERID , FAMILYID , HEADOFFAMILY , FIRSTNAME , LASTNAME , MAIDENLASTNAME , NICKNAME , ADDRESSSAMEASFAMILY , MEMBERADDRESSID , PHONE , ISPHONEWHATSAPPREGISTERED , EMAIL , LINKEDINURL , GENDER , BIRTHDAY , BIRTHMONTH , BIRTHYEAR , MARITALSTATUS , EDUCATIONDETAILS , OCCUPATION , WORKINGAT , HOBBY , PROFILEIMAGE , PROFILEIMAGETHUMBNAIL , IMAGELASTUPDATED , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
+	private static final String SELECT_ALL_MEMBERS_FOR_FAMILY = "select  MEMBERID , FAMILYID , LOGONNAME , HEADOFFAMILY , FIRSTNAME , FIRSTNAMEINHINDI , LASTNAME , MAIDENLASTNAME , NICKNAME , NICKNAMEINHINDI , ADDRESSSAMEASFAMILY , MEMBERADDRESSID , PHONE , ISPHONEWHATSAPPREGISTERED , EMAIL , LINKEDINURL , GENDER , BIRTHDAY , BIRTHMONTH , BIRTHYEAR , DATEOFDEATH , MARITALSTATUS , EDUCATIONDETAILS , OCCUPATION , WORKINGAT , HOBBY , PROFILEIMAGE , PROFILEIMAGETHUMBNAIL , IMAGELASTUPDATED , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
 			+ "from " + BASE_SCHEMA_NAME + "FAMILYMEMBER "
 					+ "where FAMILYID = ? ";
 	
-	private static final String SELECT_MEMBER_BY_ID = "select  MEMBERID , FAMILYID , HEADOFFAMILY , FIRSTNAME , LASTNAME , MAIDENLASTNAME , NICKNAME , ADDRESSSAMEASFAMILY , MEMBERADDRESSID , PHONE , ISPHONEWHATSAPPREGISTERED , EMAIL , LINKEDINURL , GENDER , BIRTHDAY , BIRTHMONTH , BIRTHYEAR , MARITALSTATUS , EDUCATIONDETAILS , OCCUPATION , WORKINGAT , HOBBY , PROFILEIMAGE , PROFILEIMAGETHUMBNAIL , IMAGELASTUPDATED , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
+	private static final String SELECT_MEMBER_BY_ID = "select  MEMBERID , FAMILYID , LOGONNAME , HEADOFFAMILY , FIRSTNAME , FIRSTNAMEINHINDI , LASTNAME , MAIDENLASTNAME , NICKNAME , NICKNAMEINHINDI , ADDRESSSAMEASFAMILY , MEMBERADDRESSID , PHONE , ISPHONEWHATSAPPREGISTERED , EMAIL , LINKEDINURL , GENDER , BIRTHDAY , BIRTHMONTH , BIRTHYEAR , DATEOFDEATH , MARITALSTATUS , EDUCATIONDETAILS , OCCUPATION , WORKINGAT , HOBBY , PROFILEIMAGE , PROFILEIMAGETHUMBNAIL , IMAGELASTUPDATED , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
 			+ "from " + BASE_SCHEMA_NAME + "FAMILYMEMBER "
 					+ "where MEMBERID = ? ";
 	
@@ -44,9 +44,9 @@ public class FamilyMemberDao extends AbstractDao {
 		if(memberList.size() > 1) {
 			throw new RuntimeException("Invalid member id entry");
 		}
-		return memberList.get(0);		
+		return memberList.get(0);
 	}
-	
+
 	public FamilyMember addFamilyMember(FamilyMember aFamilyMember) {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		getJdbcTemplate().update(new PreparedStatementCreator() {
@@ -67,42 +67,46 @@ public class FamilyMemberDao extends AbstractDao {
 	
 	
 	private PreparedStatement buildInsertStatement(Connection aConection, FamilyMember aFamilyMember) throws SQLException {
-		String sqlStatement = "INSERT INTO " + BASE_SCHEMA_NAME + "FAMILYMEMBER (FAMILYID, HEADOFFAMILY, FIRSTNAME, LASTNAME, MAIDENLASTNAME, NICKNAME, ADDRESSSAMEASFAMILY, MEMBERADDRESSID, PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, LINKEDINURL, GENDER, BIRTHDAY, BIRTHMONTH, BIRTHYEAR, MARITALSTATUS, EDUCATIONDETAILS, OCCUPATION, WORKINGAT, HOBBY, PROFILEIMAGE, PROFILEIMAGETHUMBNAIL, IMAGELASTUPDATED, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String sqlStatement = "INSERT INTO " + BASE_SCHEMA_NAME + "FAMILYMEMBER (FAMILYID, LOGONNAME, HEADOFFAMILY, FIRSTNAME, FIRSTNAMEINHINDI, LASTNAME, MAIDENLASTNAME, NICKNAME, NICKNAMEINHINDI, ADDRESSSAMEASFAMILY, MEMBERADDRESSID, PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, LINKEDINURL, GENDER, BIRTHDAY, BIRTHMONTH, BIRTHYEAR, DATEOFDEATH, MARITALSTATUS, EDUCATIONDETAILS, OCCUPATION, WORKINGAT, HOBBY, PROFILEIMAGE, PROFILEIMAGETHUMBNAIL, IMAGELASTUPDATED, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 		PreparedStatement prepareStatement = aConection.prepareStatement(sqlStatement, new String[] { "memberid" });
 		setIntInStatement(prepareStatement, 1, aFamilyMember.getFamilyId());
-		setBooleanInStatement(prepareStatement, 2, aFamilyMember.isHeadOfFamily());
-		setStringInStatement(prepareStatement, 3, aFamilyMember.getFirstName());
-		setStringInStatement(prepareStatement, 4, aFamilyMember.getLastName());
-		setStringInStatement(prepareStatement, 5, aFamilyMember.getMaidenLastName());
-		setStringInStatement(prepareStatement, 6, aFamilyMember.getNickName());
-		setBooleanInStatement(prepareStatement, 7, aFamilyMember.isAddressSameAsFamily());
-		setIntInStatement(prepareStatement, 8, aFamilyMember.getMemberAddressId());
-		setStringInStatement(prepareStatement, 9, aFamilyMember.getPhone());
-		setBooleanInStatement(prepareStatement, 10, aFamilyMember.isPhoneWhatsappRegistered());
-		setStringInStatement(prepareStatement, 11, aFamilyMember.getEmail());
-		setStringInStatement(prepareStatement, 12, aFamilyMember.getLinkedinUrl());
-		setStringInStatement(prepareStatement, 13, aFamilyMember.getGender().name());
-		setSmallIntInStatement(prepareStatement, 14, aFamilyMember.getBirthDay());
-		setSmallIntInStatement(prepareStatement, 15, aFamilyMember.getBirthMonth());
-		setSmallIntInStatement(prepareStatement, 16, aFamilyMember.getBirthYear());
-		setStringInStatement(prepareStatement, 17, aFamilyMember.getMaritalStatus().name());
-		setStringInStatement(prepareStatement, 18, aFamilyMember.getEducationDetails());
-		setStringInStatement(prepareStatement, 19, aFamilyMember.getOccupation());
-		setStringInStatement(prepareStatement, 20, aFamilyMember.getWorkingAt());
-		setStringInStatement(prepareStatement, 21, aFamilyMember.getHobby());
-		setStringInStatement(prepareStatement, 22, aFamilyMember.getProfileImage());
-		setStringInStatement(prepareStatement, 23, aFamilyMember.getProfileImageThumbnail());
-		setTimestampInStatement(prepareStatement, 24, aFamilyMember.getImageLastUpdated());
-		setIntInStatement(prepareStatement, 25, aFamilyMember.getCreatedBy());
-		setTimestampInStatement(prepareStatement, 26, aFamilyMember.getCreatedDate());
-		setIntInStatement(prepareStatement, 27, aFamilyMember.getLastUpdatedBy());
-		setTimestampInStatement(prepareStatement, 28, aFamilyMember.getLastUpdatedDate());
+		setStringInStatement(prepareStatement, 2, aFamilyMember.getLogonName());
+		setBooleanInStatement(prepareStatement, 3, aFamilyMember.isHeadOfFamily());
+		setStringInStatement(prepareStatement, 4, aFamilyMember.getFirstName());
+		setStringInStatement(prepareStatement, 5, aFamilyMember.getFirstNameInHindi());
+		setStringInStatement(prepareStatement, 6, aFamilyMember.getLastName());
+		setStringInStatement(prepareStatement, 7, aFamilyMember.getMaidenLastName());
+		setStringInStatement(prepareStatement, 8, aFamilyMember.getNickName());
+		setStringInStatement(prepareStatement, 9, aFamilyMember.getNickNameInHindi());
+		setBooleanInStatement(prepareStatement, 10, aFamilyMember.isAddressSameAsFamily());
+		setIntInStatement(prepareStatement, 11, aFamilyMember.getMemberAddressId());
+		setStringInStatement(prepareStatement, 12, aFamilyMember.getPhone());
+		setBooleanInStatement(prepareStatement, 13, aFamilyMember.isPhoneWhatsappRegistered());
+		setStringInStatement(prepareStatement, 14, aFamilyMember.getEmail());
+		setStringInStatement(prepareStatement, 15, aFamilyMember.getLinkedinUrl());
+		setStringInStatement(prepareStatement, 16, aFamilyMember.getGender().name());
+		setSmallIntInStatement(prepareStatement, 17, aFamilyMember.getBirthDay());
+		setSmallIntInStatement(prepareStatement, 18, aFamilyMember.getBirthMonth());
+		setSmallIntInStatement(prepareStatement, 19, aFamilyMember.getBirthYear());
+		setTimestampInStatement(prepareStatement, 20, aFamilyMember.getDateOfDeath());
+		setStringInStatement(prepareStatement, 21, aFamilyMember.getMaritalStatus().name());
+		setStringInStatement(prepareStatement, 22, aFamilyMember.getEducationDetails());
+		setStringInStatement(prepareStatement, 23, aFamilyMember.getOccupation());
+		setStringInStatement(prepareStatement, 24, aFamilyMember.getWorkingAt());
+		setStringInStatement(prepareStatement, 25, aFamilyMember.getHobby());
+		setStringInStatement(prepareStatement, 26, aFamilyMember.getProfileImage());
+		setStringInStatement(prepareStatement, 27, aFamilyMember.getProfileImageThumbnail());
+		setTimestampInStatement(prepareStatement, 28, aFamilyMember.getImageLastUpdated());
+		setIntInStatement(prepareStatement, 29, aFamilyMember.getCreatedBy());
+		setTimestampInStatement(prepareStatement, 30, aFamilyMember.getCreatedDate());
+		setIntInStatement(prepareStatement, 31, aFamilyMember.getLastUpdatedBy());
+		setTimestampInStatement(prepareStatement, 32, aFamilyMember.getLastUpdatedDate());
 		return prepareStatement;
 	}
 
-	
+
 
 	public int deleteFamilyMember(FamilyMember aFamilyMember) throws SQLException {
 		return getJdbcTemplate().update(new PreparedStatementCreator() {
@@ -118,38 +122,42 @@ public class FamilyMemberDao extends AbstractDao {
 	}
 
 	public PreparedStatement buildUpdateStatement(Connection aConection, FamilyMember aFamilyMember) throws SQLException {
-		String updateStatement = "UPDATE FAMILYMEMBER SET FAMILYID = ? , HEADOFFAMILY = ? , FIRSTNAME = ? , LASTNAME = ? , MAIDENLASTNAME = ? , NICKNAME = ? , ADDRESSSAMEASFAMILY = ? , MEMBERADDRESSID = ? , PHONE = ? , ISPHONEWHATSAPPREGISTERED = ? , EMAIL = ? , LINKEDINURL = ? , GENDER = ? , BIRTHDAY = ? , BIRTHMONTH = ? , BIRTHYEAR = ? , MARITALSTATUS = ? , EDUCATIONDETAILS = ? , OCCUPATION = ? , WORKINGAT = ? , HOBBY = ? , PROFILEIMAGE = ? , PROFILEIMAGETHUMBNAIL = ? , IMAGELASTUPDATED = ? , CREATEDBY = ? , CREATEDDATE = ? , LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  where MEMBERID = ?";
+		String updateStatement = "UPDATE FAMILYMEMBER SET FAMILYID = ? , LOGONNAME = ? , HEADOFFAMILY = ? , FIRSTNAME = ? , FIRSTNAMEINHINDI = ? , LASTNAME = ? , MAIDENLASTNAME = ? , NICKNAME = ? , NICKNAMEINHINDI = ? , ADDRESSSAMEASFAMILY = ? , MEMBERADDRESSID = ? , PHONE = ? , ISPHONEWHATSAPPREGISTERED = ? , EMAIL = ? , LINKEDINURL = ? , GENDER = ? , BIRTHDAY = ? , BIRTHMONTH = ? , BIRTHYEAR = ? , DATEOFDEATH = ? , MARITALSTATUS = ? , EDUCATIONDETAILS = ? , OCCUPATION = ? , WORKINGAT = ? , HOBBY = ? , PROFILEIMAGE = ? , PROFILEIMAGETHUMBNAIL = ? , IMAGELASTUPDATED = ? , CREATEDBY = ? , CREATEDDATE = ? , LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  where MEMBERID = ?";
 
 		PreparedStatement prepareStatement = aConection.prepareStatement(updateStatement);
 		setIntInStatement(prepareStatement, 1, aFamilyMember.getFamilyId());
-		setBooleanInStatement(prepareStatement, 2, aFamilyMember.isHeadOfFamily());
-		setStringInStatement(prepareStatement, 3, aFamilyMember.getFirstName());
-		setStringInStatement(prepareStatement, 4, aFamilyMember.getLastName());
-		setStringInStatement(prepareStatement, 5, aFamilyMember.getMaidenLastName());
-		setStringInStatement(prepareStatement, 6, aFamilyMember.getNickName());
-		setBooleanInStatement(prepareStatement, 7, aFamilyMember.isAddressSameAsFamily());
-		setIntInStatement(prepareStatement, 8, aFamilyMember.getMemberAddressId());
-		setStringInStatement(prepareStatement, 9, aFamilyMember.getPhone());
-		setBooleanInStatement(prepareStatement, 10, aFamilyMember.isPhoneWhatsappRegistered());
-		setStringInStatement(prepareStatement, 11, aFamilyMember.getEmail());
-		setStringInStatement(prepareStatement, 12, aFamilyMember.getLinkedinUrl());
-		setStringInStatement(prepareStatement, 13, aFamilyMember.getGender().name());
-		setSmallIntInStatement(prepareStatement, 14, aFamilyMember.getBirthDay());
-		setSmallIntInStatement(prepareStatement, 15, aFamilyMember.getBirthMonth());
-		setSmallIntInStatement(prepareStatement, 16, aFamilyMember.getBirthYear());
-		setStringInStatement(prepareStatement, 17, aFamilyMember.getMaritalStatus().name());
-		setStringInStatement(prepareStatement, 18, aFamilyMember.getEducationDetails());
-		setStringInStatement(prepareStatement, 19, aFamilyMember.getOccupation());
-		setStringInStatement(prepareStatement, 20, aFamilyMember.getWorkingAt());
-		setStringInStatement(prepareStatement, 21, aFamilyMember.getHobby());
-		setStringInStatement(prepareStatement, 22, aFamilyMember.getProfileImage());
-		setStringInStatement(prepareStatement, 23, aFamilyMember.getProfileImageThumbnail());
-		setTimestampInStatement(prepareStatement, 24, aFamilyMember.getImageLastUpdated());
-		setIntInStatement(prepareStatement, 25, aFamilyMember.getCreatedBy());
-		setTimestampInStatement(prepareStatement, 26, aFamilyMember.getCreatedDate());
-		setIntInStatement(prepareStatement, 27, aFamilyMember.getLastUpdatedBy());
-		setTimestampInStatement(prepareStatement, 28, aFamilyMember.getLastUpdatedDate());
-		setIntInStatement(prepareStatement, 29, aFamilyMember.getMemberId());
+		setStringInStatement(prepareStatement, 2, aFamilyMember.getLogonName());
+		setBooleanInStatement(prepareStatement, 3, aFamilyMember.isHeadOfFamily());
+		setStringInStatement(prepareStatement, 4, aFamilyMember.getFirstName());
+		setStringInStatement(prepareStatement, 5, aFamilyMember.getFirstNameInHindi());
+		setStringInStatement(prepareStatement, 6, aFamilyMember.getLastName());
+		setStringInStatement(prepareStatement, 7, aFamilyMember.getMaidenLastName());
+		setStringInStatement(prepareStatement, 8, aFamilyMember.getNickName());
+		setStringInStatement(prepareStatement, 9, aFamilyMember.getNickNameInHindi());
+		setBooleanInStatement(prepareStatement, 10, aFamilyMember.isAddressSameAsFamily());
+		setIntInStatement(prepareStatement, 11, aFamilyMember.getMemberAddressId());
+		setStringInStatement(prepareStatement, 12, aFamilyMember.getPhone());
+		setBooleanInStatement(prepareStatement, 13, aFamilyMember.isPhoneWhatsappRegistered());
+		setStringInStatement(prepareStatement, 14, aFamilyMember.getEmail());
+		setStringInStatement(prepareStatement, 15, aFamilyMember.getLinkedinUrl());
+		setStringInStatement(prepareStatement, 16, aFamilyMember.getGender().name());
+		setSmallIntInStatement(prepareStatement, 17, aFamilyMember.getBirthDay());
+		setSmallIntInStatement(prepareStatement, 18, aFamilyMember.getBirthMonth());
+		setSmallIntInStatement(prepareStatement, 19, aFamilyMember.getBirthYear());
+		setTimestampInStatement(prepareStatement, 20, aFamilyMember.getDateOfDeath());
+		setStringInStatement(prepareStatement, 21, aFamilyMember.getMaritalStatus().name());
+		setStringInStatement(prepareStatement, 22, aFamilyMember.getEducationDetails());
+		setStringInStatement(prepareStatement, 23, aFamilyMember.getOccupation());
+		setStringInStatement(prepareStatement, 24, aFamilyMember.getWorkingAt());
+		setStringInStatement(prepareStatement, 25, aFamilyMember.getHobby());
+		setStringInStatement(prepareStatement, 26, aFamilyMember.getProfileImage());
+		setStringInStatement(prepareStatement, 27, aFamilyMember.getProfileImageThumbnail());
+		setTimestampInStatement(prepareStatement, 28, aFamilyMember.getImageLastUpdated());
+		setIntInStatement(prepareStatement, 29, aFamilyMember.getCreatedBy());
+		setTimestampInStatement(prepareStatement, 30, aFamilyMember.getCreatedDate());
+		setIntInStatement(prepareStatement, 31, aFamilyMember.getLastUpdatedBy());
+		setTimestampInStatement(prepareStatement, 32, aFamilyMember.getLastUpdatedDate());
+		setIntInStatement(prepareStatement, 33, aFamilyMember.getMemberId());
 		return prepareStatement;
 	}
 
@@ -163,10 +171,5 @@ public class FamilyMemberDao extends AbstractDao {
 
 	}
 
-	public FamilyMember fetchFamilyMember(FamilyMember aFamilyMember) throws SQLException {
-		String selectQuery = "select  MEMBERID , FAMILYID , HEADOFFAMILY , FIRSTNAME , LASTNAME , MAIDENLASTNAME , NICKNAME , ADDRESSSAMEASFAMILY , MEMBERADDRESSID , PHONE , ISPHONEWHATSAPPREGISTERED , EMAIL , LINKEDINURL , GENDER , BIRTHDAY , BIRTHMONTH , BIRTHYEAR , MARITALSTATUS , EDUCATIONDETAILS , OCCUPATION , WORKINGAT , HOBBY , PROFILEIMAGE , PROFILEIMAGETHUMBNAIL , IMAGELASTUPDATED , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  from " + BASE_SCHEMA_NAME + "FAMILYMEMBER where MEMBERID = ? ";
-		return getJdbcTemplate().queryForObject(selectQuery, new FamilyMemberRowMapper(), aFamilyMember.getMemberId());
-
-	}
 
 }

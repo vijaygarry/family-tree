@@ -23,14 +23,17 @@ import com.neasaa.familytree.enums.Gender;
 @AllArgsConstructor
 public class FamilyMember extends BaseEntity {
 
-	public static final long serialVersionUID = 1748636415588L;
+	public static final long serialVersionUID = 1748919840065L;
 	private int memberId;
 	private int familyId;
+	private String logonName;
 	private boolean headOfFamily;
 	private String firstName;
+	private String firstNameInHindi;
 	private String lastName;
 	private String maidenLastName;
 	private String nickName;
+	private String nickNameInHindi;
 	private boolean addressSameAsFamily;
 	private int memberAddressId;
 	private String phone;
@@ -41,6 +44,7 @@ public class FamilyMember extends BaseEntity {
 	private short birthDay;
 	private short birthMonth;
 	private short birthYear;
+	private Date dateOfDeath;
 	private MaritalStatus maritalStatus;
 	private String educationDetails;
 	private String occupation;

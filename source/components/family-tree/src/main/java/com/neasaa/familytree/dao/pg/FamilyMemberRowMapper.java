@@ -21,11 +21,14 @@ public class FamilyMemberRowMapper implements RowMapper<FamilyMember> {
 		FamilyMember familyMember = new FamilyMember();
 		familyMember.setMemberId(aRs.getInt("MEMBERID"));
 		familyMember.setFamilyId(aRs.getInt("FAMILYID"));
+		familyMember.setLogonName(aRs.getString("LOGONNAME"));
 		familyMember.setHeadOfFamily(aRs.getBoolean("HEADOFFAMILY"));
 		familyMember.setFirstName(aRs.getString("FIRSTNAME"));
+		familyMember.setFirstNameInHindi(aRs.getString("FIRSTNAMEINHINDI"));
 		familyMember.setLastName(aRs.getString("LASTNAME"));
 		familyMember.setMaidenLastName(aRs.getString("MAIDENLASTNAME"));
 		familyMember.setNickName(aRs.getString("NICKNAME"));
+		familyMember.setNickNameInHindi(aRs.getString("NICKNAMEINHINDI"));
 		familyMember.setAddressSameAsFamily(aRs.getBoolean("ADDRESSSAMEASFAMILY"));
 		familyMember.setMemberAddressId(aRs.getInt("MEMBERADDRESSID"));
 		familyMember.setPhone(aRs.getString("PHONE"));
@@ -36,6 +39,7 @@ public class FamilyMemberRowMapper implements RowMapper<FamilyMember> {
 		familyMember.setBirthDay(aRs.getShort("BIRTHDAY"));
 		familyMember.setBirthMonth(aRs.getShort("BIRTHMONTH"));
 		familyMember.setBirthYear(aRs.getShort("BIRTHYEAR"));
+		familyMember.setDateOfDeath(AbstractDao.getTimestampFromResultSet(aRs, "DATEOFDEATH"));
 		familyMember.setMaritalStatus(MaritalStatus.getMaritalStatus(aRs.getString("MARITALSTATUS")));
 		familyMember.setEducationDetails(aRs.getString("EDUCATIONDETAILS"));
 		familyMember.setOccupation(aRs.getString("OCCUPATION"));

@@ -18,6 +18,7 @@ public class FamilyRowMapper implements RowMapper<Family> {
 		Family family = new Family();
 		family.setFamilyId(aRs.getInt("FAMILYID"));
 		family.setFamilyName(aRs.getString("FAMILYNAME"));
+		family.setFamilyNameInHindi(aRs.getString("FAMILYNAMEINHINDI"));
 		family.setGotra(aRs.getString("GOTRA"));
 		family.setAddressId(aRs.getInt("ADDRESSID"));
 		family.setRegion(aRs.getString("REGION"));
