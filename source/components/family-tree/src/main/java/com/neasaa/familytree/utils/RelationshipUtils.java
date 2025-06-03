@@ -7,7 +7,7 @@ import com.neasaa.base.app.operation.AuditInfo;
 import com.neasaa.familytree.entity.FamilyMember;
 import com.neasaa.familytree.entity.MemberRelationship;
 import com.neasaa.familytree.enums.RelationshipType;
-import com.neasaa.familytree.enums.SexEnum;
+import com.neasaa.familytree.enums.Gender;
 
 public class RelationshipUtils {
 	
@@ -41,19 +41,19 @@ public class RelationshipUtils {
 		switch(relatedRelationshipType) {
 		case Father:
 		case Mother:
-			if(relatedMember.getSex() == SexEnum.Male) {
+			if(relatedMember.getGender() == Gender.Male) {
 				reverseRelationshipType = RelationshipType.Son;
 			}
-			if(relatedMember.getSex() == SexEnum.Female) {
+			if(relatedMember.getGender() == Gender.Female) {
 				reverseRelationshipType = RelationshipType.Daughter;
 			}
 			break;
 		case Son:
 		case Daughter:
-			if(relatedMember.getSex() == SexEnum.Male) {
+			if(relatedMember.getGender() == Gender.Male) {
 				reverseRelationshipType = RelationshipType.Father;
 			}
-			if(relatedMember.getSex() == SexEnum.Female) {
+			if(relatedMember.getGender() == Gender.Female) {
 				reverseRelationshipType = RelationshipType.Mother;
 			}
 			break;

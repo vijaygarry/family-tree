@@ -6,21 +6,25 @@ CREATE TABLE IF NOT EXISTS shared_schema.familymember
 (
     memberid serial NOT NULL,
     familyid integer NOT NULL,
+    logonname character varying(150) UNIQUE,
     headoffamily boolean NOT NULL DEFAULT false,
     firstname character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    firstnameinhindi character varying(100) COLLATE pg_catalog."default",
     lastname character varying(100) COLLATE pg_catalog."default" NOT NULL,
     maidenlastname character varying(100) COLLATE pg_catalog."default",
     nickname character varying(100) COLLATE pg_catalog."default",
+    nicknameinhindi character varying(100) COLLATE pg_catalog."default",
     addresssameasfamily boolean NOT NULL DEFAULT true,
     memberaddressid integer,
     phone character varying(20) COLLATE pg_catalog."default",
     isphonewhatsappregistered boolean NOT NULL DEFAULT false,
     email character varying(100) COLLATE pg_catalog."default",
     linkedinurl character varying(150) COLLATE pg_catalog."default",
-    sex character varying(10) COLLATE pg_catalog."default",
+    gender character varying(10) COLLATE pg_catalog."default",
     birthday smallint,
     birthmonth smallint NOT NULL,
     birthyear smallint NOT NULL,
+    dateofdeath timestamp with time zone,
     maritalstatus character varying(20) NOT NULL,
     educationdetails character varying(255) COLLATE pg_catalog."default",
     occupation character varying(255) COLLATE pg_catalog."default",
@@ -63,21 +67,30 @@ COMMENT ON COLUMN shared_schema.familymember.memberid
 COMMENT ON COLUMN shared_schema.familymember.familyid
     IS 'Family Id to which this member belongs to.';
 
+COMMENT ON COLUMN shared_schema.familymember.logonname
+    IS 'Logon name for this member. This will match with logon name in user table. This is optional and set when user register in application.';
+
 COMMENT ON COLUMN shared_schema.familymember.headoffamily
     IS 'If true, this member is head of family. Only one member can be head of family.';
 
 COMMENT ON COLUMN shared_schema.familymember.firstname
     IS 'The individual''s given name.';
 
+COMMENT ON COLUMN shared_schema.familymember.firstnameinhindi
+    IS 'The individual''s given name in hindi';
+
 COMMENT ON COLUMN shared_schema.familymember.lastname
     IS 'The family name shared across members of the same family.';
 
 COMMENT ON COLUMN shared_schema.familymember.maidenlastname
-    IS 'Maiden last name before marriage. Ask user to enter maidan last name only if sex is female and maritalstatus is not single. This is going to be optional.';
+    IS 'Maiden last name before marriage. Ask user to enter maidan last name only if gender is female and maritalstatus is not single. This is going to be optional.';
 
 COMMENT ON COLUMN shared_schema.familymember.nickname
     IS 'An informal or commonly used alternate name.';
 
+COMMENT ON COLUMN shared_schema.familymember.nicknameinhindi
+    IS 'An informal or commonly used alternate name in hindi';
+    
 COMMENT ON COLUMN shared_schema.familymember.addresssameasfamily
     IS 'If value of this column is true that means member address is same as family address.';
 
@@ -98,8 +111,8 @@ COMMENT ON COLUMN shared_schema.familymember.email
 COMMENT ON COLUMN shared_schema.familymember.linkedinurl
     IS 'Link to the member''s LinkedIn profile (if applicable).';
 
-COMMENT ON COLUMN shared_schema.familymember.sex
-    IS 'Family member sex with possible value Male or Female';
+COMMENT ON COLUMN shared_schema.familymember.gender
+    IS 'Family member gender with possible value Male or Female';
 
 COMMENT ON COLUMN shared_schema.familymember.birthday
     IS 'Day of the birth month value from 1 to 31';
@@ -109,6 +122,9 @@ COMMENT ON COLUMN shared_schema.familymember.birthmonth
 
 COMMENT ON COLUMN shared_schema.familymember.birthyear
     IS 'Year of the birth date, 4 digit number starting from 1900 to current year';
+
+COMMENT ON COLUMN shared_schema.familymember.dateofdeath
+    IS 'Date of death if member deceased. On UI show the `Is Deceased? - Yes/No`. If yes, ask for date. If day is not known, then enter 1st of Month';
 
 COMMENT ON COLUMN shared_schema.familymember.maritalstatus
     IS 'Member marital status with possible values Single, Married, Divorced, Widowed, Separated, Engaged';

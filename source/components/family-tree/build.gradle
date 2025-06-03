@@ -2,10 +2,21 @@ jar {
     archiveBaseName.set('family-tree')
 }
 
+test {
+    useJUnitPlatform()
+
+    testLogging {
+        events "passed", "skipped", "failed", "standard_out", "standard_error"
+        showStandardStreams = true
+    }
+}
+
 dependencies {
     api project(':components:neasaa-base-app')
     //implementation libraries.springFramework
     //implementation libraries.logger
+	
+    testImplementation libraries.junitTest
 }
 
 eclipse {

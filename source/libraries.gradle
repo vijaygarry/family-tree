@@ -184,6 +184,11 @@ libraries << [
 		libraries.postgresqlDriver,
         libraries.hikariConnectionPool,
 	],
+	junitTest: [
+		libraries.junitApi,
+        libraries.junitEngine,
+		libraries.junitPlatformCommons,
+	],
 	integTest: [
 		libraries.restAssured,
         libraries.junitApi,

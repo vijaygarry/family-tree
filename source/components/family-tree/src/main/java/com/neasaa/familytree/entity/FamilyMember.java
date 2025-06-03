@@ -14,7 +14,7 @@ import java.util.Date;
 
 import com.neasaa.base.app.entity.BaseEntity;
 import com.neasaa.familytree.enums.MaritalStatus;
-import com.neasaa.familytree.enums.SexEnum;
+import com.neasaa.familytree.enums.Gender;
 
 @Getter
 @Setter
@@ -37,7 +37,7 @@ public class FamilyMember extends BaseEntity {
 	private boolean isPhoneWhatsappRegistered;
 	private String email;
 	private String linkedinUrl;
-	private SexEnum sex;
+	private Gender gender;
 	private short birthDay;
 	private short birthMonth;
 	private short birthYear;

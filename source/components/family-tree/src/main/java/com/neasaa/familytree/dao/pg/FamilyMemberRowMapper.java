@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import com.neasaa.base.app.dao.pg.AbstractDao;
 import com.neasaa.familytree.entity.FamilyMember;
 import com.neasaa.familytree.enums.MaritalStatus;
-import com.neasaa.familytree.enums.SexEnum;
+import com.neasaa.familytree.enums.Gender;
 
 import java.sql.ResultSet;
 import org.springframework.jdbc.core.RowMapper;
@@ -32,7 +32,7 @@ public class FamilyMemberRowMapper implements RowMapper<FamilyMember> {
 		familyMember.setPhoneWhatsappRegistered(aRs.getBoolean("ISPHONEWHATSAPPREGISTERED"));
 		familyMember.setEmail(aRs.getString("EMAIL"));
 		familyMember.setLinkedinUrl(aRs.getString("LINKEDINURL"));
-		familyMember.setSex(SexEnum.getSexByString(aRs.getString("SEX")));
+		familyMember.setGender(Gender.getGenderByString(aRs.getString("GENDER")));
 		familyMember.setBirthDay(aRs.getShort("BIRTHDAY"));
 		familyMember.setBirthMonth(aRs.getShort("BIRTHMONTH"));
 		familyMember.setBirthYear(aRs.getShort("BIRTHYEAR"));

@@ -25,7 +25,7 @@ import com.neasaa.familytree.entity.FamilyMember;
 import com.neasaa.familytree.entity.MemberRelationship;
 import com.neasaa.familytree.enums.MaritalStatus;
 import com.neasaa.familytree.enums.RelationshipType;
-import com.neasaa.familytree.enums.SexEnum;
+import com.neasaa.familytree.enums.Gender;
 import com.neasaa.familytree.operation.OperationNames;
 import com.neasaa.familytree.operation.family.model.AddFamilyMemberRequest;
 import com.neasaa.familytree.operation.family.model.AddFamilyMemberResponse;
@@ -66,9 +66,9 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 		}
 		checkValueRange(opRequest.getFamilyId(), 1, Integer.MAX_VALUE, "family id");
 		checkValuePresent(opRequest.getFirstName(), "first name");
-		checkValuePresent(opRequest.getSex(), "sex");
-		if(SexEnum.getSexByString(opRequest.getSex()) == null) {
-			throw new ValidationException ("Invalid value for field sex");
+		checkValuePresent(opRequest.getGender(), "gender");
+		if(Gender.getGenderByString(opRequest.getGender()) == null) {
+			throw new ValidationException ("Invalid value for field gender");
 		}
 		log.info("Input birth date: " + opRequest.getBirthDay() + "/" + opRequest.getBirthMonth() + "/" + opRequest.getBirthYear());
 		if(opRequest.getBirthDay() != null) {
@@ -198,7 +198,7 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 				.isPhoneWhatsappRegistered(opRequest.isPhoneWhatsappRegistered())
 				.email(opRequest.getEmail())
 				.linkedinUrl(opRequest.getLinkedinUrl())
-				.sex(SexEnum.getSexByString(opRequest.getSex()))
+				.gender(Gender.getGenderByString(opRequest.getGender()))
 				.birthDay(opRequest.getBirthDay())
 				.birthMonth(opRequest.getBirthMonth())
 				.birthYear(opRequest.getBirthYear())
@@ -234,16 +234,16 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 	}
 	
 	private static String getDefaultImagePath (AddFamilyMemberRequest opRequest) {
-		SexEnum sex = SexEnum.getSexByString(opRequest.getSex());
-		if(sex == SexEnum.Female) {
+		Gender gender = Gender.getGenderByString(opRequest.getGender());
+		if(gender == Gender.Female) {
 			return Constants.DEFALT_FEMALE_MEMBER_IMAGE;
 		}
 		return Constants.DEFALT_MALE_MEMBER_IMAGE;
 	}
 	
 	private static String getDefaultThumbnailImagePath (AddFamilyMemberRequest opRequest) {
-		SexEnum sex = SexEnum.getSexByString(opRequest.getSex());
-		if(sex == SexEnum.Female) {
+		Gender gender = Gender.getGenderByString(opRequest.getGender());
+		if(gender == Gender.Female) {
 			return Constants.DEFALT_FEMALE_MEMBER_IMAGE;
 		}
 		return Constants.DEFALT_MALE_MEMBER_IMAGE;

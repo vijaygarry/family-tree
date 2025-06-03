@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS shared_schema.family
 (
     familyid SERIAL NOT NULL,
     familyname character varying(120) COLLATE pg_catalog."default" NOT NULL,
+    familynameinhindi character varying(120) COLLATE pg_catalog."default",
     gotra character varying(100) COLLATE pg_catalog."default" NOT NULL,
     addressid integer,
     region character varying(200) COLLATE pg_catalog."default",
@@ -46,6 +47,9 @@ COMMENT ON COLUMN shared_schema.family.familyid
 
 COMMENT ON COLUMN shared_schema.family.familyname
     IS 'Family name i.e. last name';
+
+COMMENT ON COLUMN shared_schema.family.familynameinhindi
+    IS 'Optional family name in hindi. This will be display in bracket name to name.';
 
 COMMENT ON COLUMN shared_schema.family.gotra
     IS 'Gotra for this family';

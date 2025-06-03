@@ -23,7 +23,7 @@ public class AddFamilyMemberRequest extends OperationRequest {
 	private boolean isPhoneWhatsappRegistered;
 	private String email;
 	private String linkedinUrl;
-	private String sex;
+	private String gender;
 	private Short birthDay;
 	private Short birthMonth;
 	private Short birthYear;

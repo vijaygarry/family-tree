@@ -38,12 +38,12 @@ public class AddFamilyMemberTest {
 		executeOperationAndAssertResponse(request, sessionId, VALIDATION_ERROR_CODE, "Required field first name is not provided");
 		
 		request.setFirstName("Vijay");
-		executeOperationAndAssertResponse(request, sessionId, VALIDATION_ERROR_CODE, "Required field sex is not provided");
+		executeOperationAndAssertResponse(request, sessionId, VALIDATION_ERROR_CODE, "Required field gender is not provided");
 		
-		request.setSex("wrong value");
-		executeOperationAndAssertResponse(request, sessionId, VALIDATION_ERROR_CODE, "Invalid value for field sex");
+		request.setGender("wrong value");
+		executeOperationAndAssertResponse(request, sessionId, VALIDATION_ERROR_CODE, "Invalid value for field gender");
 		
-		request.setSex("Male");
+		request.setGender("Male");
 		executeOperationAndAssertResponse(request, sessionId, VALIDATION_ERROR_CODE, "Required field birth month is not provided");
 		
 		request.setBirthDay((short)120);
@@ -119,7 +119,7 @@ public class AddFamilyMemberTest {
 				.birthDay((short)20)
 				.birthMonth((short)6)
 				.birthYear((short)1978)
-				.sex("Male")
+				.gender("Male")
 				.maritalStatus("Married")
 				.phone("+91 571-484-3772")
 				.memberAddress(address)
@@ -161,7 +161,7 @@ public class AddFamilyMemberTest {
 		private boolean isPhoneWhatsappRegistered;
 		private String email;
 		private String linkedinUrl;
-		private String sex;
+		private String gender;
 		private Short birthDay;
 		private Short birthMonth;
 		private Short birthYear;
