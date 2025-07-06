@@ -31,7 +31,7 @@ public class FamilyDao extends AbstractDao {
 	public Family getFamilyByFamilyId(int familyId) {
 		List<Family> familyList = getJdbcTemplate().query(SELECT_FAMILY_BY_FAMILYID, new FamilyRowMapper(), familyId);
 		
-		if(familyList == null || familyList.size() == 0) {
+		if(familyList.isEmpty()) {
 			return null;
 		}
 		if(familyList.size() > 1) {

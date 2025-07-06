@@ -1,15 +1,16 @@
 package com.neasaa.base.app.operation.session;
 
+import static com.neasaa.base.app.operation.model.ChangePasswordRequest.getChangePasswordRequestBody;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
-import static com.neasaa.base.app.operation.session.TestHelper.getChangePasswordRequestBody;
-import static com.neasaa.base.app.operation.session.TestHelper.logoutUser;
 
+import com.neasaa.base.app.BaseAppAbstractTest;
+import com.neasaa.base.app.utils.Config;
 import org.junit.jupiter.api.Test;
 
 import io.restassured.http.ContentType;
 
-public class ChangePasswordApiTest {
+public class ChangePasswordApiTest extends BaseAppAbstractTest {
 
 	@Test
     public void testChangePasswordWithNoSession() {
@@ -29,7 +30,7 @@ public class ChangePasswordApiTest {
 	@Test
     public void testChangePassword_InvalidCurrPAssword() {
 
-    	String sessionId = TestHelper.loginAndGetJSessionId(Config.SUPER_ADMIN_USER_NAME_1, Config.SUPER_ADMIN_USER_PWD_1);
+    	String sessionId = loginWithSuperUserAndGetJSessionId();
         
         given()
         	.contentType(ContentType.JSON)
@@ -47,7 +48,7 @@ public class ChangePasswordApiTest {
 	@Test
     public void testChangePassword_CurrentNewSamePwd() {
 
-    	String sessionId = TestHelper.loginAndGetJSessionId(Config.SUPER_ADMIN_USER_NAME_1, Config.SUPER_ADMIN_USER_PWD_1);
+    	String sessionId = loginWithSuperUserAndGetJSessionId();
         
         given()
         	.contentType(ContentType.JSON)
@@ -66,7 +67,7 @@ public class ChangePasswordApiTest {
 	@Test
     public void testChangePasswordSuccess() {
 
-    	String sessionId = TestHelper.loginAndGetJSessionId(Config.SUPER_ADMIN_USER_NAME_1, Config.SUPER_ADMIN_USER_PWD_1);
+    	String sessionId = loginWithSuperUserAndGetJSessionId();
         
         given()
         	.contentType(ContentType.JSON)

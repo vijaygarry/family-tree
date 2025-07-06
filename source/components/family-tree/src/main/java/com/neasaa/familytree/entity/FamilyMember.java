@@ -4,6 +4,7 @@
 
 package com.neasaa.familytree.entity;
 
+import com.neasaa.familytree.enums.Month;
 import lombok.Setter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,9 +42,9 @@ public class FamilyMember extends BaseEntity {
 	private String email;
 	private String linkedinUrl;
 	private Gender gender;
-	private short birthDay;
-	private short birthMonth;
-	private short birthYear;
+	private Short birthDay;
+	private Month birthMonth;
+	private Short birthYear;
 	private Date dateOfDeath;
 	private MaritalStatus maritalStatus;
 	private String educationDetails;
@@ -57,6 +58,4 @@ public class FamilyMember extends BaseEntity {
 	private Date createdDate;
 	private int lastUpdatedBy;
 	private Date lastUpdatedDate;
-
-
 }

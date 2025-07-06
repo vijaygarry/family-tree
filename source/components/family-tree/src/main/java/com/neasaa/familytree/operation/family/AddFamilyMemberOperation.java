@@ -7,6 +7,7 @@ import static com.neasaa.base.app.utils.ValidationUtils.checkValueRange;
 import java.time.Year;
 import java.util.List;
 
+import com.neasaa.familytree.enums.Month;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -76,7 +77,13 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 		}
 		
 		checkObjectPresent(opRequest.getBirthMonth(), "birth month");
-		checkValueRange(opRequest.getBirthMonth().intValue(), 1, 12, "birth month");
+		if(opRequest.getBirthMonth() == null || opRequest.getBirthMonth().isEmpty()) {
+			throw new ValidationException ("Invalid value for field birth month");
+		}
+		//Check if month is valid
+		if(Month.fromName(opRequest.getBirthMonth()) == null) {
+			throw new ValidationException ("Invalid value for field birth month");
+		}
 		
 		checkObjectPresent(opRequest.getBirthYear(), "birth year");
 		int currentYear = Year.now().getValue();
@@ -121,7 +128,7 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 		
 		//Fetch list of family members
 		List<FamilyMember> familyMembers = familyMemberDao.allMembersForFamily(opRequest.getFamilyId());
-		if(familyMembers == null || familyMembers.size() ==0) {
+		if(familyMembers == null || familyMembers.isEmpty()) {
 			// No member in family. So this member should be the head of family.
 			if(!opRequest.isHeadOfFamily()) {
 				throw new ValidationException ("First member should be the head of family");
@@ -131,11 +138,12 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 			if(opRequest.isHeadOfFamily()) {
 				throw new ValidationException ("Other member is already a head of family");
 			}
-			checkObjectPresent(opRequest.getRelashinship(), "relationship");
-			relatedMember = RelationshipUtils.findMemberByIdInList(familyMembers, opRequest.getRelashinship().getRelatedMemberId());
-			if(relatedMember == null) {
-				throw new ValidationException ("Related member does not exists in same family");
-			}
+			// TODO: Uncomment this when relationship is implemented
+//			checkObjectPresent(opRequest.getRelashinship(), "relationship");
+//			relatedMember = RelationshipUtils.findMemberByIdInList(familyMembers, opRequest.getRelashinship().getRelatedMemberId());
+//			if(relatedMember == null) {
+//				throw new ValidationException ("Related member does not exists in same family");
+//			}
 		}
 		
 		
@@ -147,12 +155,13 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 		}
 		
 		FamilyMember newMemberFromDb = familyMemberDao.addFamilyMember(getFamilyMemberFromRequest(opRequest, family, addressId));
-		if(!opRequest.isHeadOfFamily()) {
+//		if(!opRequest.isHeadOfFamily()) {
+			//TODO: Uncomment this when relationship is implemented
 			//Add relationship
-			RelationshipType relationshipType = RelationshipType.getRelationshipType(opRequest.getRelashinship().getRelationshipType());
-			List<MemberRelationship> relationships = RelationshipUtils.buildRelationships(newMemberFromDb, relationshipType, relatedMember, getAuditInfo());
-			updateRelationships(relationships);
-		}
+//			RelationshipType relationshipType = RelationshipType.getRelationshipType(opRequest.getRelashinship().getRelationshipType());
+//			List<MemberRelationship> relationships = RelationshipUtils.buildRelationships(newMemberFromDb, relationshipType, relatedMember, getAuditInfo());
+//			updateRelationships(relationships);
+//		}
 		
 		AddFamilyMemberResponse response = AddFamilyMemberResponse.builder().firstName(opRequest.getFirstName()).lastName(family.getFamilyName()).memberId(newMemberFromDb.getMemberId()).build();
 		response.setOperationMessage(String.format("Member %s %s added successfully !!!", opRequest.getFirstName(), family.getFamilyName()));
@@ -162,6 +171,7 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 	private Address getAddressFromRequest (AddFamilyMemberRequest opRequest) {
 		AddressDto inputAddress = opRequest.getMemberAddress();
 		if(inputAddress ==null) {
+			log.info("Member address is not provided, not creating address for member");
 			return null;
 		}
 		
@@ -200,7 +210,7 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 				.linkedinUrl(opRequest.getLinkedinUrl())
 				.gender(Gender.getGenderByString(opRequest.getGender()))
 				.birthDay(opRequest.getBirthDay())
-				.birthMonth(opRequest.getBirthMonth())
+				.birthMonth(Month.fromName(opRequest.getBirthMonth()))
 				.birthYear(opRequest.getBirthYear())
 				.maritalStatus(MaritalStatus.getMaritalStatus(opRequest.getMaritalStatus()))
 				.educationDetails(opRequest.getEducationDetails())

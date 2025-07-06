@@ -1,25 +1,23 @@
 package com.neasaa.familytree.operation.family;
 
-import static com.neasaa.base.app.operation.session.TestHelper.SUCCESS_HTTP_CODE;
-import static com.neasaa.base.app.operation.session.TestHelper.VALIDATION_ERROR_CODE;
-import static com.neasaa.base.app.operation.session.TestHelper.logoutUser;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 
 import java.time.Year;
 
+import com.neasaa.base.app.BaseAppAbstractTest;
+import com.neasaa.familytree.operation.model.InputAddress;
+import com.neasaa.familytree.operation.model.InputRelationship;
 import org.junit.jupiter.api.Test;
 
-import com.neasaa.base.app.operation.session.AssertionUtils;
-import com.neasaa.base.app.operation.session.Config;
-import com.neasaa.base.app.operation.session.TestHelper;
+import com.neasaa.base.app.utils.AssertionUtils;
 
 import io.restassured.response.Response;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-public class AddFamilyMemberTest {
+public class AddFamilyMemberTest extends BaseAppAbstractTest {
 	
 	private static final String addFamilyMemberUrl = "family/addfamilymember";
 	private static final int validTestFamilyId = 2;
@@ -27,7 +25,7 @@ public class AddFamilyMemberTest {
 	public void addFamilyMemberInputValidationTest () {
 		
 		AddFamilyMemberRequest request = AddFamilyMemberRequest.builder().build();
-		String sessionId = TestHelper.loginAndGetJSessionId(Config.SUPER_ADMIN_USER_NAME_1, Config.SUPER_ADMIN_USER_PWD_1);
+		String sessionId = loginWithSuperUserAndGetJSessionId();
 		
 		executeOperationAndAssertResponse(request, sessionId, VALIDATION_ERROR_CODE, "Invalid value for field family id");
 		
@@ -108,7 +106,7 @@ public class AddFamilyMemberTest {
 	@Test
 	public void addFamilyMemberInvalidValueTest () {
 		
-		String sessionId = TestHelper.loginAndGetJSessionId(Config.SUPER_ADMIN_USER_NAME_1, Config.SUPER_ADMIN_USER_PWD_1);
+		String sessionId = loginWithSuperUserAndGetJSessionId();
 		
 		InputAddress address = InputAddress.getValidTestAddress();
 		InputRelationship relationship = InputRelationship.builder().relatedMemberId(2).relationshipType("Son").relatedMemberFullName("Bhagwatnarayan Garothaya").build();
@@ -139,7 +137,7 @@ public class AddFamilyMemberTest {
 		logoutUser(sessionId);
 	}
 	private Response executeOperationAndAssertResponse (AddFamilyMemberRequest request, String sessionId, int httpResponseCode, String responseMessage) {
-		Response response = TestHelper.executeOperation(request, sessionId, addFamilyMemberUrl);
+		Response response = executeOperation(request, sessionId, addFamilyMemberUrl);
 		response.then().log().all(); // Logs full response
 		AssertionUtils.assertResponse(response, httpResponseCode, responseMessage);
 		return response;

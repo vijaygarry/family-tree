@@ -38,15 +38,15 @@ ALTER TABLE IF EXISTS shared_schema.memberrelationship
 COMMENT ON TABLE shared_schema.memberrelationship
     IS 'Table to maintain relationship.
 Read the record as 
-memberid is relationshiptype of relatedmemberid
-E.g: memberid = Vijay, relationshiptype = Son and relatedmemberid = Bhagwatnarayan
+memberid''s relationshiptype is relatedmemberid
+E.g: memberid = Vijay, relationshiptype = Father and relatedmemberid = Bhagwatnarayan
 then read this record as 
-Vijay is Son of Bhagwatnarayan.';
+Vijay''s Father is Bhagwatnarayan.';
 
 
 COMMENT ON COLUMN shared_schema.memberrelationship.memberid
-    IS 'The person whose relationship is being defined. relatedmemberid is relationshiptype of memberid';
+    IS 'The person whose relationship is being defined. memberid''s relationshiptype is relatedmemberid';
 COMMENT ON COLUMN shared_schema.memberrelationship.relationshiptype
     IS 'Relationship type for this member. Possible options Father, Mother, Son, Daughter, Husband, Wife';
 COMMENT ON COLUMN shared_schema.memberrelationship.relatedmemberid
-    IS 'The other person in the relationship. relatedmemberid''s relationshiptype is memberid';
+    IS 'The other person in the relationship. relatedmemberid is relationshiptype of memberid';

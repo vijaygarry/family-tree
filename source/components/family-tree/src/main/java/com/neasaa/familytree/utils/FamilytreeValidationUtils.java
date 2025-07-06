@@ -24,7 +24,7 @@ public class FamilytreeValidationUtils {
 	}
 	
 	public static void validatePhoneNumber (String phoneNumber) {
-		if(phoneNumber == null) {
+		if(phoneNumber == null || phoneNumber.isEmpty()) {
 			return;
 		}
 		if(!Pattern.matches(PHONE_REGEX, phoneNumber)) {

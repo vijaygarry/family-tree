@@ -12,6 +12,8 @@ import com.neasaa.familytree.enums.MaritalStatus;
 import com.neasaa.familytree.enums.Gender;
 
 import java.sql.ResultSet;
+
+import com.neasaa.familytree.enums.Month;
 import org.springframework.jdbc.core.RowMapper;
 
 public class FamilyMemberRowMapper implements RowMapper<FamilyMember> {
@@ -37,7 +39,7 @@ public class FamilyMemberRowMapper implements RowMapper<FamilyMember> {
 		familyMember.setLinkedinUrl(aRs.getString("LINKEDINURL"));
 		familyMember.setGender(Gender.getGenderByString(aRs.getString("GENDER")));
 		familyMember.setBirthDay(aRs.getShort("BIRTHDAY"));
-		familyMember.setBirthMonth(aRs.getShort("BIRTHMONTH"));
+		familyMember.setBirthMonth(Month.fromNumber(aRs.getShort("BIRTHMONTH")));
 		familyMember.setBirthYear(aRs.getShort("BIRTHYEAR"));
 		familyMember.setDateOfDeath(AbstractDao.getTimestampFromResultSet(aRs, "DATEOFDEATH"));
 		familyMember.setMaritalStatus(MaritalStatus.getMaritalStatus(aRs.getString("MARITALSTATUS")));

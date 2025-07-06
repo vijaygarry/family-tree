@@ -21,6 +21,13 @@ import java.sql.PreparedStatement;
 @Log4j2
 @Repository
 public class AddressDao extends AbstractDao {
+	private static final String  SELECT_ADDRESS_BY_ADDRESS_ID = "select  ADDRESSID , ADDRESSLINE1 , ADDRESSLINE2 , ADDRESSLINE3 , CITY , DISTRICT , STATE , POSTALCODE , COUNTRY , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  " +
+			"from " + BASE_SCHEMA_NAME + "ADDRESS " +
+			"where ADDRESSID = ? ";
+
+	private static final String  SELECT_ADDRESS_BY_FAMILY_ID = "select  A.ADDRESSID , ADDRESSLINE1 , ADDRESSLINE2 , ADDRESSLINE3 , CITY , DISTRICT , STATE , POSTALCODE , COUNTRY , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  " +
+			"from " + BASE_SCHEMA_NAME + "ADDRESS A, " + BASE_SCHEMA_NAME + "FAMILY F " +
+			"where F.FAMILYID = ? AND A.ADDRESSID = F.ADDRESSID ";
 
 	public int addAddress (Address address) {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -38,6 +45,15 @@ public class AddressDao extends AbstractDao {
 		log.info("New Address is added with address id " + addressId);
 		return addressId;
 	}
+
+	public Address getAddressById (int addressId) {
+		return getJdbcTemplate().queryForObject(SELECT_ADDRESS_BY_ADDRESS_ID, new AddressRowMapper(), addressId);
+	}
+
+	public Address getAddressByFamilyId (int familyId) {
+		return getJdbcTemplate().queryForObject(SELECT_ADDRESS_BY_FAMILY_ID, new AddressRowMapper(), familyId);
+	}
+
 	private PreparedStatement buildInsertStatement(Connection aConection, Address aAddress) throws SQLException {
 		String sqlStatement = "INSERT INTO " + BASE_SCHEMA_NAME + "ADDRESS (ADDRESSLINE1, ADDRESSLINE2, ADDRESSLINE3, CITY, DISTRICT, STATE, POSTALCODE, COUNTRY, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -99,12 +115,6 @@ public class AddressDao extends AbstractDao {
 				return buildUpdateStatement(aCon, aAddress);
 			}
 		});
-
-	}
-
-	public Address fetchAddress(Address aAddress) throws SQLException {
-		String selectQuery = "select  ADDRESSID , ADDRESSLINE1 , ADDRESSLINE2 , ADDRESSLINE3 , CITY , DISTRICT , STATE , POSTALCODE , COUNTRY , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  from ADDRESS where ADDRESSID = ? ";
-		return getJdbcTemplate().queryForObject(selectQuery, new AddressRowMapper(), aAddress.getAddressId());
 
 	}
 

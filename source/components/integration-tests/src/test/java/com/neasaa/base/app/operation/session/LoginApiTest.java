@@ -3,27 +3,19 @@ package com.neasaa.base.app.operation.session;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static com.neasaa.base.app.operation.session.TestHelper.getLoginRequestBody;
-import static com.neasaa.base.app.operation.session.TestHelper.logoutUser;
 
+import com.neasaa.base.app.BaseAppAbstractTest;
+import com.neasaa.base.app.utils.Config;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
 
-public class LoginApiTest {
-	
-	// ./gradlew test --tests com.neasaa.base.app.operation.session.LoginApiTest
-	// ./gradlew test --tests com.neasaa.base.app.operation.session.LoginApiTest.testLogoutSuccess
+public class LoginApiTest extends BaseAppAbstractTest {
 	
 	@BeforeAll
     public static void setup() {
-        RestAssured.baseURI = Config.BASE_APP_URL;
-        RestAssured.port = Config.BASE_APP_PORT;
+        setUrl();
     }
 	
 	@Test
@@ -62,7 +54,7 @@ public class LoginApiTest {
     @Test
     public void testLogoutSuccess() {
 
-    	String sessionId = TestHelper.loginAndGetJSessionId(Config.SUPER_ADMIN_USER_NAME_1, Config.SUPER_ADMIN_USER_PWD_1);
+    	String sessionId = loginWithSuperUserAndGetJSessionId();
         
         given()
         	.contentType(ContentType.JSON)
@@ -91,7 +83,7 @@ public class LoginApiTest {
     @Test
     public void testGetSessionDetail() {
 
-    	String sessionId = TestHelper.loginAndGetJSessionId(Config.SUPER_ADMIN_USER_NAME_1, Config.SUPER_ADMIN_USER_PWD_1);
+    	String sessionId = loginWithSuperUserAndGetJSessionId();
         
         given()
         	.contentType(ContentType.JSON)
@@ -110,21 +102,4 @@ public class LoginApiTest {
         
         logoutUser(sessionId);
     }
-    
-    @Builder
-    @Getter
-    @Setter
-    public static class LoginRequest {
-    	private String loginName;
-    	private String password;
-    }
-    
-    @Builder
-    @Getter
-    @Setter
-    public static class ChangePasswordRequest {
-    	private String currentPassword;
-    	private String newPassword;
-    }  
-    
 }

@@ -1,4 +1,4 @@
-package com.neasaa.base.app.operation.session;
+package com.neasaa.base.app.utils;
 
 import static org.hamcrest.Matchers.equalTo;
 

@@ -41,6 +41,10 @@ public class MemberRelationshipDao extends AbstractDao {
 		}
 		return relationshipList.get(0);
 	}
+
+	public List<MemberRelationship> getRelationshipsForMember (int memberId) {
+		return getJdbcTemplate().query(SELECT_RELATIONSHIP_BY_ID, new MemberRelationshipRowMapper(), memberId);
+	}
 	
 	
 	public int addMemberRelationship(MemberRelationship aMemberRelationship) {
@@ -104,12 +108,6 @@ public class MemberRelationshipDao extends AbstractDao {
 				return buildUpdateStatement(aCon, aMemberRelationship);
 			}
 		});
-
-	}
-
-	public MemberRelationship fetchMemberRelationship(MemberRelationship aMemberRelationship) throws SQLException {
-		String selectQuery = "select  MEMBERID , RELATIONSHIPTYPE , RELATEDMEMBERID , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  from MEMBERRELATIONSHIP where MEMBERID = ?  and RELATEDMEMBERID = ? ";
-		return getJdbcTemplate().queryForObject(selectQuery, new MemberRelationshipRowMapper(), aMemberRelationship.getMemberId(), aMemberRelationship.getRelatedMemberId());
 
 	}
 

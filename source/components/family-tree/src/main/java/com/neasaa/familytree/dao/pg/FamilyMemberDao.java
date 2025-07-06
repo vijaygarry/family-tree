@@ -30,6 +30,10 @@ public class FamilyMemberDao extends AbstractDao {
 	private static final String SELECT_MEMBER_BY_ID = "select  MEMBERID , FAMILYID , LOGONNAME , HEADOFFAMILY , FIRSTNAME , FIRSTNAMEINHINDI , LASTNAME , MAIDENLASTNAME , NICKNAME , NICKNAMEINHINDI , ADDRESSSAMEASFAMILY , MEMBERADDRESSID , PHONE , ISPHONEWHATSAPPREGISTERED , EMAIL , LINKEDINURL , GENDER , BIRTHDAY , BIRTHMONTH , BIRTHYEAR , DATEOFDEATH , MARITALSTATUS , EDUCATIONDETAILS , OCCUPATION , WORKINGAT , HOBBY , PROFILEIMAGE , PROFILEIMAGETHUMBNAIL , IMAGELASTUPDATED , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
 			+ "from " + BASE_SCHEMA_NAME + "FAMILYMEMBER "
 					+ "where MEMBERID = ? ";
+
+	private static final String SELECT_MEMBER_BY_LOGON_NAME = "select  MEMBERID , FAMILYID , LOGONNAME , HEADOFFAMILY , FIRSTNAME , FIRSTNAMEINHINDI , LASTNAME , MAIDENLASTNAME , NICKNAME , NICKNAMEINHINDI , ADDRESSSAMEASFAMILY , MEMBERADDRESSID , PHONE , ISPHONEWHATSAPPREGISTERED , EMAIL , LINKEDINURL , GENDER , BIRTHDAY , BIRTHMONTH , BIRTHYEAR , DATEOFDEATH , MARITALSTATUS , EDUCATIONDETAILS , OCCUPATION , WORKINGAT , HOBBY , PROFILEIMAGE , PROFILEIMAGETHUMBNAIL , IMAGELASTUPDATED , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
+			+ "from " + BASE_SCHEMA_NAME + "FAMILYMEMBER "
+			+ "where LOGONNAME = ? ";
 	
 	public List<FamilyMember> allMembersForFamily(int familyId) {
 		return getJdbcTemplate().query(SELECT_ALL_MEMBERS_FOR_FAMILY, new FamilyMemberRowMapper(), familyId);
@@ -38,11 +42,23 @@ public class FamilyMemberDao extends AbstractDao {
 	public FamilyMember getMemberById(int memberId) {
 		List<FamilyMember> memberList = getJdbcTemplate().query(SELECT_MEMBER_BY_ID, new FamilyMemberRowMapper(), memberId);
 		
-		if(memberList == null || memberList.size() == 0) {
+		if(memberList.isEmpty()) {
 			return null;
 		}
 		if(memberList.size() > 1) {
 			throw new RuntimeException("Invalid member id entry");
+		}
+		return memberList.get(0);
+	}
+
+	public FamilyMember getMemberByLogonName(String logonName) {
+		List<FamilyMember> memberList = getJdbcTemplate().query(SELECT_MEMBER_BY_LOGON_NAME, new FamilyMemberRowMapper(), logonName);
+
+		if(memberList.isEmpty()) {
+			throw new RuntimeException("No member found with logon name");
+		}
+		if(memberList.size() > 1) {
+			throw new RuntimeException("Logon name i snot unique, multiple members found with same logon name");
 		}
 		return memberList.get(0);
 	}
@@ -87,8 +103,13 @@ public class FamilyMemberDao extends AbstractDao {
 		setStringInStatement(prepareStatement, 14, aFamilyMember.getEmail());
 		setStringInStatement(prepareStatement, 15, aFamilyMember.getLinkedinUrl());
 		setStringInStatement(prepareStatement, 16, aFamilyMember.getGender().name());
-		setSmallIntInStatement(prepareStatement, 17, aFamilyMember.getBirthDay());
-		setSmallIntInStatement(prepareStatement, 18, aFamilyMember.getBirthMonth());
+		if(aFamilyMember.getBirthDay() == null) {
+			setSmallIntInStatement(prepareStatement, 17, (short)-1);
+		} else {
+			// If birth day is not set, we set it to -1
+			setSmallIntInStatement(prepareStatement, 17, aFamilyMember.getBirthDay());
+		}
+		setSmallIntInStatement(prepareStatement, 18, aFamilyMember.getBirthMonth().getMonthNumber());
 		setSmallIntInStatement(prepareStatement, 19, aFamilyMember.getBirthYear());
 		setTimestampInStatement(prepareStatement, 20, aFamilyMember.getDateOfDeath());
 		setStringInStatement(prepareStatement, 21, aFamilyMember.getMaritalStatus().name());
@@ -142,7 +163,7 @@ public class FamilyMemberDao extends AbstractDao {
 		setStringInStatement(prepareStatement, 15, aFamilyMember.getLinkedinUrl());
 		setStringInStatement(prepareStatement, 16, aFamilyMember.getGender().name());
 		setSmallIntInStatement(prepareStatement, 17, aFamilyMember.getBirthDay());
-		setSmallIntInStatement(prepareStatement, 18, aFamilyMember.getBirthMonth());
+		setSmallIntInStatement(prepareStatement, 18, aFamilyMember.getBirthMonth().getMonthNumber());
 		setSmallIntInStatement(prepareStatement, 19, aFamilyMember.getBirthYear());
 		setTimestampInStatement(prepareStatement, 20, aFamilyMember.getDateOfDeath());
 		setStringInStatement(prepareStatement, 21, aFamilyMember.getMaritalStatus().name());

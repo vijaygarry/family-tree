@@ -12,6 +12,7 @@ public class AddFamilyRequest extends OperationRequest {
 	private static final long serialVersionUID = -6449791531999816806L;
 
 	private String familyName;
+	private String familyNameInHindi;
 	private String gotra;
 	private String phone;
 	private boolean isPhoneWhatsappRegistered;

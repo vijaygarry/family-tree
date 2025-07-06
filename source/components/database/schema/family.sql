@@ -49,7 +49,7 @@ COMMENT ON COLUMN shared_schema.family.familyname
     IS 'Family name i.e. last name';
 
 COMMENT ON COLUMN shared_schema.family.familynameinhindi
-    IS 'Optional family name in hindi. This will be display in bracket name to name.';
+    IS 'Optional family name in hindi. This will be display in bracket next to name.';
 
 COMMENT ON COLUMN shared_schema.family.gotra
     IS 'Gotra for this family';

@@ -1,4 +1,4 @@
-package com.neasaa.base.app.operation.session;
+package com.neasaa.base.app.utils;
 
 public class Config {
 	public static final String BASE_APP_URL = "http://localhost";
