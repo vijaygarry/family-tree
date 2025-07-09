@@ -7,6 +7,8 @@ import MainLayout from "./layout/MainLayout";
 import Login from "./pages/Login";
 //import ChangePassword from "./pages/ChangePassword";
 import FamilyTreeApp from "./pages/FamilyTreeApp";
+import FamilySearch from "./pages/FamilySearch";
+
 //import UserDetails from "./pages/UserDetails";
 
 const App = () => (
@@ -16,11 +18,21 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           {/* Protected routes with layout */}
           <Route
-          path="/family"
+          path="/family/:familyId"
           element={
             <PrivateRoute>
               <MainLayout>
                 <FamilyTreeApp />
+              </MainLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/searchfamily"
+          element={
+            <PrivateRoute>
+              <MainLayout>
+                <FamilySearch />
               </MainLayout>
             </PrivateRoute>
           }

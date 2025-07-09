@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { useParams } from "react-router-dom";
 import { Tree, TreeNode } from "react-organizational-chart";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import api from "../api/axiosInstance";
+import ERROR_MESSAGES from "../constants/messages";
 
 const MemberCard = ({ member }) => (
   <div className="card text-center p-2" style={{ minWidth: "160px" }}>
@@ -85,12 +86,24 @@ function flattenFamilyTree(root) {
 const FamilyTreeApp = () => {
   const [family, setFamily] = useState(null);
   const [error, setError] = useState(null);
+  const { familyId } = useParams();  // ← Get it from URL
   useEffect(() => {
-    api.post("/family/getfamilydetails", { familyId: 25 })
-      .then((res) => setFamily(res.data))
+    if (!familyId) {
+      setError("Family ID not provided.");
+      return;
+    }
+    api.post("/family/getfamilydetails", { familyId: parseInt(familyId) })
+      .then((res) => {
+        setFamily(res.data)
+      })
       .catch((err) => {
         console.error("Failed to load family data", err);
-        setError("Error loading family data. Please login.");
+        if (err.response?.data?.operationMessage) {
+          // API returned an error in payload
+          setError(err.response?.data?.operationMessage);
+        } else {
+          setError(ERROR_MESSAGES.DEFAULT);
+        }
       });
   }, []);
 
