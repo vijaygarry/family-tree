@@ -44,6 +44,12 @@ INSERT INTO shared_schema.lkpoperation(
 INSERT INTO shared_schema.lkpoperation(
 	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype, 
     active, createdby, createddate, lastupdatedby, lastupdateddate)
+	VALUES ('SEARCH_FAMILY', 'Search family', 'SearchFamilyOperation', true, true, 'ROLE_BASE', 
+    true, 1, now(), 1, now());
+    
+INSERT INTO shared_schema.lkpoperation(
+	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype, 
+    active, createdby, createddate, lastupdatedby, lastupdateddate)
 	VALUES ('ADD_FAMILY', 'Add Family', 'AddFamilyBean', true, true, 'ROLE_BASE', 
     true, 1, now(), 1, now());
 

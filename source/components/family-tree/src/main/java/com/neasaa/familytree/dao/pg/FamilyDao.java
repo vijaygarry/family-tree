@@ -27,6 +27,11 @@ public class FamilyDao extends AbstractDao {
 			+ "REGION, PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, FAMILYDISPLAYNAME, ACTIVE, FAMILYIMAGE, IMAGELASTUPDATED, CREATEDBY, "
 			+ "CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE "
 			+ "from " + BASE_SCHEMA_NAME + "FAMILY where FAMILYID = ? ";
+
+	private static final String SEARCH_FAMILY = "select FAMILYID, FAMILYNAME, FAMILYNAMEINHINDI, GOTRA, ADDRESSID, "
+			+ "REGION, PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, FAMILYDISPLAYNAME, ACTIVE, FAMILYIMAGE, IMAGELASTUPDATED, CREATEDBY, "
+			+ "CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE "
+			+ "from " + BASE_SCHEMA_NAME + "FAMILY where FAMILYDISPLAYNAME ilike ? ";
 	
 	public Family getFamilyByFamilyId(int familyId) {
 		List<Family> familyList = getJdbcTemplate().query(SELECT_FAMILY_BY_FAMILYID, new FamilyRowMapper(), familyId);
@@ -38,6 +43,10 @@ public class FamilyDao extends AbstractDao {
 			throw new RuntimeException("Invalid family id entry");
 		}
 		return familyList.get(0);		
+	}
+
+	public List<Family> searchFamily(String searchString) {
+        return getJdbcTemplate().query(SEARCH_FAMILY, new FamilyRowMapper(), "%" + searchString + "%");
 	}
 	
 	public int addFamily (Family aFamily) {

@@ -2,6 +2,7 @@ package com.neasaa.familytree.operation;
 
 public interface OperationNames {
 	String ADD_FAMILY = "ADD_FAMILY";
+	String SEARCH_FAMILY = "SEARCH_FAMILY";
 	String UPDATE_FAMILY_ADDRESS = "UPDATE_FAMILY_ADDRESS";
 	String GET_FAMILY_DETAILS = "GET_FAMILY_DETAILS";
 	

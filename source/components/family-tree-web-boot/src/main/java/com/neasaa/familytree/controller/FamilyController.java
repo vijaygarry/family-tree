@@ -2,6 +2,7 @@ package com.neasaa.familytree.controller;
 
 import com.neasaa.familytree.operation.family.GetFamilyDetailsOperation;
 import com.neasaa.familytree.operation.family.GetMemberProfileOperation;
+import com.neasaa.familytree.operation.family.SearchFamilyOperation;
 import com.neasaa.familytree.operation.family.model.AddFamilyMemberRequest;
 import com.neasaa.familytree.operation.family.model.AddFamilyMemberResponse;
 import com.neasaa.familytree.operation.family.model.AddFamilyRequest;
@@ -10,6 +11,8 @@ import com.neasaa.familytree.operation.family.model.GetFamilyDetailsRequest;
 import com.neasaa.familytree.operation.family.model.GetFamilyDetailsResponse;
 import com.neasaa.familytree.operation.family.model.GetMemberProfileRequest;
 import com.neasaa.familytree.operation.family.model.GetMemberProfileResponse;
+import com.neasaa.familytree.operation.family.model.SearchFamilyRequest;
+import com.neasaa.familytree.operation.family.model.SearchFamilyResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,6 +56,14 @@ public class FamilyController {
 	public ResponseEntity<GetFamilyDetailsResponse> getFamilyDetails (@RequestBody GetFamilyDetailsRequest getFamilyDetailsRequest) throws Exception {
 		return WebRequestHandler.processRequest(GetFamilyDetailsOperation.class, getFamilyDetailsRequest);
 	}
+
+	@RequestMapping(value = "/searchfamily")
+	@ResponseBody
+	public ResponseEntity<SearchFamilyResponse> searchFamily (@RequestBody SearchFamilyRequest searchFamilyRequest) throws Exception {
+		return WebRequestHandler.processRequest(SearchFamilyOperation.class, searchFamilyRequest);
+	}
+
+
 
 
 	

@@ -155,6 +155,8 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 		}
 		
 		FamilyMember newMemberFromDb = familyMemberDao.addFamilyMember(getFamilyMemberFromRequest(opRequest, family, addressId));
+		//TODO: When adding head of family, family display name should be set to head of family name + region
+
 //		if(!opRequest.isHeadOfFamily()) {
 			//TODO: Uncomment this when relationship is implemented
 			//Add relationship
