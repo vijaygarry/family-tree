@@ -1,7 +1,17 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login"); 
+  };
+
   return (
     <header className="bg-primary text-white mb-3 shadow-sm">
       <nav className="navbar navbar-expand-lg navbar-dark container">
@@ -26,7 +36,7 @@ const Header = () => {
               <Link className="nav-link" to="/change-password">Change Password</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/login">Logout</Link>
+              <Link className="nav-link" onClick={logout}>Logout</Link>
             </li>
           </ul>
         </div>

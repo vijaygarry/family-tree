@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 import api from "../api/axiosInstance"; // your axios instance
 
 export const AuthContext = createContext();
@@ -41,7 +41,6 @@ export const AuthProvider = ({ children }) => {
       console.error("Logout error", err);
     } finally {
       setUser(null);
-      window.location.href = "/login";
     }
   };
 
@@ -51,3 +50,5 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+export const useAuth = () => useContext(AuthContext);
