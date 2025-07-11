@@ -33,7 +33,7 @@ const Header = () => {
               <Link className="nav-link" to="/user">User Details</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/change-password">Change Password</Link>
+              <Link className="nav-link" to="/changepassword">Change Password</Link>
             </li>
             <li className="nav-item">
               <Link className="nav-link" onClick={logout}>Logout</Link>
