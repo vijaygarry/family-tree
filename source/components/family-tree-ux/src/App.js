@@ -6,10 +6,10 @@ import MainLayout from "./layout/MainLayout";
 import LoginLayout from "./layout/LoginLayout";
 import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
-//import ChangePassword from "./pages/ChangePassword";
 import FamilyTreeApp from "./pages/FamilyTreeApp";
 import FamilySearch from "./pages/FamilySearch";
 import ChangePassword from './pages/ChangePassword';
+import MemberProfile from "./pages/MemberProfile";
 
 //import UserDetails from "./pages/UserDetails";
 
@@ -56,6 +56,13 @@ const App = () => (
             </PrivateRoute>
           }
         />
+        <Route path="/member/:id" element={
+          <PrivateRoute>
+              <MainLayout>
+                <MemberProfile />
+              </MainLayout>
+            </PrivateRoute>
+        } />
         <Route path="/changepassword" 
           element={
             <PrivateRoute>
