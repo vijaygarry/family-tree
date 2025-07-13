@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Login = () => {
   const { login } = useContext(AuthContext);
@@ -9,6 +9,9 @@ const Login = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from?.pathname || "/";
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -24,8 +27,12 @@ const Login = () => {
     }
     
     try {
-      await login({ loginName, password });
-      navigate("/"); // redirect after login
+      const success = await login({ loginName, password });
+      if (success) {
+        navigate(from, { replace: true });  // Redirect back to original path
+      } else {
+        setError("Invalid credentials");
+      }
     } catch (err) {
       console.error("Login failed:", err);
       if (!err.response) {
