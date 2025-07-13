@@ -15,7 +15,7 @@ public class GetMemberProfileResponse extends OperationResponse {
     private static final long serialVersionUID = -3478291045823901842L;
 
     private MemberProfile memberProfile;
-    private List<RelationshipDto> relationships;
+    private FamilyMemberDto familyTreeRoot;
 
     @Getter
     @Builder

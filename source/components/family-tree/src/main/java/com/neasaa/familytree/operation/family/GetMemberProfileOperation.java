@@ -5,10 +5,14 @@ import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.familytree.dao.pg.AddressDao;
 import com.neasaa.familytree.dao.pg.FamilyMemberDao;
+import com.neasaa.familytree.dao.pg.MemberRelationshipDao;
 import com.neasaa.familytree.entity.Address;
 import com.neasaa.familytree.entity.FamilyMember;
+import com.neasaa.familytree.entity.MemberRelationship;
+import com.neasaa.familytree.enums.RelationshipType;
 import com.neasaa.familytree.operation.OperationNames;
 import com.neasaa.familytree.operation.family.model.AddressDto;
+import com.neasaa.familytree.operation.family.model.FamilyMemberDto;
 import com.neasaa.familytree.operation.family.model.GetMemberProfileRequest;
 import com.neasaa.familytree.operation.family.model.GetMemberProfileResponse;
 import com.neasaa.familytree.operation.family.model.RelationshipDto;
@@ -16,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component("GetMemberProfileOperation")
@@ -27,6 +32,9 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
 
     @Autowired
     private AddressDao addressDao;
+
+    @Autowired
+    private MemberRelationshipDao memberRelationshipDao;
 
     @Override
     public String getOperationName() {
@@ -55,7 +63,8 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
         if (member == null) {
             throw new ValidationException("Member not found.");
         }
-        getRelationships(member);
+
+        FamilyMemberDto familyTreeRoot = getRelationships(member);
 
         GetMemberProfileResponse.MemberProfile profile = GetMemberProfileResponse.MemberProfile.builder()
                 .memberId(member.getMemberId())
@@ -88,15 +97,66 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
                 .lastUpdatedDate(member.getLastUpdatedDate())
                 .build();
 
-        GetMemberProfileResponse response = GetMemberProfileResponse.builder()
+        return GetMemberProfileResponse.builder()
                 .memberProfile(profile)
+                .familyTreeRoot(familyTreeRoot)
                 .build();
-
-        return response;
     }
 
-    private List<RelationshipDto> getRelationships(FamilyMember member) {
+    private FamilyMemberDto getRelationships(FamilyMember memberEntity) {
+        FamilyMemberDto memberDto = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(memberEntity);
+        FamilyMemberDto familyTreeRoot = memberDto;
+
+        //Get all the relationships of the member.
+        List<MemberRelationship> memberDirectRelationships = memberRelationshipDao.getRelationshipByMemberIdOrRelatedMemberId(memberEntity.getMemberId());
+        memberDto.setSpouse(getSpouseDtoForMember(memberEntity, memberDirectRelationships));
+        memberDto.setChildren(getChildrenDtoForMember(memberDto, memberDirectRelationships));
+
+        return memberDto;
+    }
+
+    private FamilyMemberDto getSpouseDtoForMember(FamilyMember memberEntity, List<MemberRelationship> memberDirectRelationships) {
+
+        if (memberDirectRelationships == null || memberDirectRelationships.isEmpty()) {
+            return null;
+        }
+        int spouseMemberId = -1;
+        for (MemberRelationship relationship : memberDirectRelationships) {
+            if (relationship.getRelationshipType() == RelationshipType.Wife || relationship.getRelationshipType() == RelationshipType.Husband) {
+                if (relationship.getMemberId() == memberEntity.getMemberId()) {
+                    spouseMemberId = relationship.getRelatedMemberId();
+                } else {
+                    spouseMemberId = relationship.getMemberId();
+                }
+                FamilyMember spouseMemberEntity = familyMemberDao.getMemberById(spouseMemberId);
+                return FamilyMemberDto.getFamilyMemberDtoFromDBEntity(spouseMemberEntity);
+            }
+        }
         return null;
+    }
+
+    private List<FamilyMemberDto> getChildrenDtoForMember(FamilyMemberDto memberDto, List<MemberRelationship> memberDirectRelationships) {
+        List<FamilyMemberDto> children = null;
+        List<Integer> memberIds = List.of(memberDto.getMemberId());
+        if(memberDto.getSpouse() != null) {
+            memberIds = List.of(memberDto.getMemberId(), memberDto.getSpouse().getMemberId());
+        }
+        List<MemberRelationship> childrenRelationship = memberRelationshipDao.getRelatedMembersByIdAndRelationType(memberIds, List.of(RelationshipType.Son, RelationshipType.Daughter));
+        if(childrenRelationship == null || childrenRelationship.isEmpty()) {
+            return null;
+        }
+        for (MemberRelationship relationship : childrenRelationship) {
+            FamilyMember childMemberEntity = familyMemberDao.getMemberById(relationship.getRelatedMemberId());
+            if (childMemberEntity != null) {
+                if (children == null) {
+                    children = new ArrayList<>();
+                } else if (children.stream().anyMatch(child -> child.getMemberId() == childMemberEntity.getMemberId())) {
+                    continue; // Skip if already added
+                }
+                children.add(FamilyMemberDto.getFamilyMemberDtoFromDBEntity(childMemberEntity));
+            }
+        }
+        return children;
     }
 
     private AddressDto getAddress(FamilyMember member){

@@ -4,35 +4,69 @@
 
 package com.neasaa.familytree.dao.pg;
 
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.neasaa.familytree.enums.RelationshipType;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.stereotype.Repository;
 
 import com.neasaa.base.app.dao.pg.AbstractDao;
 import com.neasaa.familytree.entity.MemberRelationship;
 
+@Log4j2
 @Repository
 public class MemberRelationshipDao extends AbstractDao {
 
 	private static final String SELECT_RELATIONSHIP_BY_ID = "select  MEMBERID , RELATIONSHIPTYPE , RELATEDMEMBERID , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
 			+ "from " + BASE_SCHEMA_NAME + "MEMBERRELATIONSHIP "
-					+ "where MEMBERID = ?";
+					+ "where MEMBERID = ? ";
+
+	private static final String SELECT_RELATIONSHIP_BY_ID_AND_RELATION_TYPE = "select  MEMBERID , RELATIONSHIPTYPE , RELATEDMEMBERID , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
+			+ "from " + BASE_SCHEMA_NAME + "MEMBERRELATIONSHIP "
+			+ "where MEMBERID = ANY(?) and RELATIONSHIPTYPE = ANY(?) ";
 	
 	private static final String SELECT_RELATIONSHIP_BETWEEN_MEMBERS = "select  MEMBERID , RELATIONSHIPTYPE , RELATEDMEMBERID , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
 			+ "from " + BASE_SCHEMA_NAME + "MEMBERRELATIONSHIP "
 					+ "where MEMBERID = ? AND RELATEDMEMBERID = ?";
-	
-	public List<MemberRelationship> getRelationshipByMemberId (int memberId) {
-		return getJdbcTemplate().query(SELECT_RELATIONSHIP_BY_ID, new MemberRelationshipRowMapper(), memberId);
+
+	/**
+	 * This method returns all the relationships define with member id or related member id.
+	 * This method is called from GetMemberProfile API to get all the relationships for selected member.
+	 *
+	 * @param memberId
+	 * @return
+	 */
+	public List<MemberRelationship> getRelationshipByMemberIdOrRelatedMemberId (int memberId) {
+		return getJdbcTemplate().query(SELECT_RELATIONSHIP_BETWEEN_MEMBERS, new MemberRelationshipRowMapper(), memberId, memberId);
+	}
+
+	public List<MemberRelationship> getRelatedMembersByIdAndRelationType (List<Integer> memberIds, List<RelationshipType>  relationshipTypes) {
+		return getJdbcTemplate().query(
+				new PreparedStatementCreator() {
+					@Override
+					public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+						PreparedStatement ps = connection.prepareStatement(SELECT_RELATIONSHIP_BY_ID_AND_RELATION_TYPE);
+						// Convert list to SQL array
+						Array memberIdArray = connection.createArrayOf("INTEGER", memberIds.toArray());
+						Array relationshipTypeArray = connection.createArrayOf("VARCHAR", relationshipTypes.toArray());
+						ps.setArray(1, memberIdArray);
+						ps.setArray(2, relationshipTypeArray);
+						log.info("Executing query: " + ps.toString());
+						return ps;
+					}
+				},
+				new MemberRelationshipRowMapper()
+		);
 	}
 	
 	public MemberRelationship getRelationshipBetweenMembers (int memberId, int relatedMemberId) {
 		List<MemberRelationship> relationshipList = getJdbcTemplate().query(SELECT_RELATIONSHIP_BETWEEN_MEMBERS, new MemberRelationshipRowMapper(), memberId, relatedMemberId);
-		 
+
 		if(relationshipList == null || relationshipList.size() == 0) {
 			return null;
 		}
@@ -42,6 +76,12 @@ public class MemberRelationshipDao extends AbstractDao {
 		return relationshipList.get(0);
 	}
 
+	/**
+	 * This method is called recursively to build family tree from GetFamilyDetails API
+	 * It returns all the relationships for a member.
+	 * @param memberId
+	 * @return
+	 */
 	public List<MemberRelationship> getRelationshipsForMember (int memberId) {
 		return getJdbcTemplate().query(SELECT_RELATIONSHIP_BY_ID, new MemberRelationshipRowMapper(), memberId);
 	}
