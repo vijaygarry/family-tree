@@ -1,0 +1,19 @@
+/* Show dropdown on hover */
+.nav-item.dropdown:hover .dropdown-menu {
+  display: block;
+  margin-top: 0;
+}
+
+/* Optional: Ensure smooth behavior */
+.dropdown-menu {
+  transition: all 0.3s ease;
+}
+
+/* Make navbar link text darker */
+.navbar-dark .navbar-nav .nav-link {
+  color: #e0e0e0; /* Light gray, but darker than default */
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+  color: #ffffff; /* Pure white on hover */
+}

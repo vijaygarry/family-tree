@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Tree, TreeNode } from "react-organizational-chart";
 import api from "../api/axiosInstance";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Link } from "react-router-dom";
 import ERROR_MESSAGES from "../constants/messages";
 
 
@@ -97,12 +98,18 @@ const MemberProfile = () => {
   useEffect(() => {
     const fetchMember = async () => {
       try {
-        const res = await api.post("/family/getmemberprofile", { memberId: parseInt(id) });
+        const requestBody = id ? { memberId: parseInt(id) } : {};
+        const res = await api.post("/family/getmemberprofile", requestBody);
         setMemberData(res.data);
         setError("");
       } catch (err) {
         console.error("Failed to fetch member data", err);
-        setError(err.response?.data?.message || "Failed to load member profile.");
+        if (err.response?.data?.operationMessage) {
+          // API returned an error in payload
+          setError(err.response?.data?.operationMessage);
+        } else {
+          setError(ERROR_MESSAGES.DEFAULT);
+        }
       }
     };
     fetchMember();
@@ -120,21 +127,31 @@ const MemberProfile = () => {
           <h4 className="mb-0">Member Profile</h4>
         </div>
         <div className="card-body">
-          <div className="d-flex align-items-center mb-3">
+          <div className="d-flex align-items-center justify-content-between mb-3">
             {/* <img
               src={`/${member.profileImageThumbnail}`}
               alt={member.firstName}
               className="rounded-circle me-3"
               style={{ width: "80px", height: "80px" }}
             /> */}
-            <div>
-              <h5>{memberProfile.firstName} {memberProfile.lastName}</h5>
+              <div>
+                <h5 className="mb-0">{memberProfile.firstName} {memberProfile.lastName}</h5>
+              </div>
+              {memberProfile.familyId && (
+                <div>
+                  <Link
+                    to={`/family/${memberProfile.familyId}`}
+                    className="btn btn-sm btn-primary"
+                  >
+                    <img src="/family.png" alt="Family" style={{ width: '40px', height: '40px' }} /> View {memberProfile.firstName}'s Family
+                  </Link>
+                </div>
+              )}
+            </div>
               <p className="mb-1 text-muted">{memberProfile.occupation} at {memberProfile.workingAt}</p>
               <p className="mb-1">📞 {memberProfile.phone}</p>
               <p className="mb-1">✉️ {memberProfile.email}</p>
               <p className="mb-0">🎂 {memberProfile.birthDay}/{memberProfile.birthMonth}/{memberProfile.birthYear}</p>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -154,7 +171,11 @@ const MemberProfile = () => {
             <tbody>
               {membersList.map(member => (
                 <tr key={member.memberId}>
-                  <td>{member.firstName} {member.lastName}</td>
+                  <td>
+                    <Link to={`/member/${member.memberId}`} className="text-decoration-none">
+                      {member.firstName} {member.lastName}
+                    </Link>
+                  </td>
                   <td>{member.relationship}</td>
                   <td>{member.phone}</td>
                   <td>{member.email}</td>

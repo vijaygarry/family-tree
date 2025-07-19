@@ -10,6 +10,7 @@ import FamilyTreeApp from "./pages/FamilyTreeApp";
 import FamilySearch from "./pages/FamilySearch";
 import ChangePassword from './pages/ChangePassword';
 import MemberProfile from "./pages/MemberProfile";
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 //import UserDetails from "./pages/UserDetails";
 
@@ -36,6 +37,16 @@ const App = () => (
             </PrivateRoute>
           }
         />
+        <Route
+          path="/family"
+          element={
+            <PrivateRoute>
+              <MainLayout>
+                <FamilyTreeApp />
+              </MainLayout>
+            </PrivateRoute>
+          }
+        />
           <Route
           path="/family/:familyId"
           element={
@@ -56,6 +67,13 @@ const App = () => (
             </PrivateRoute>
           }
         />
+        <Route path="/myProfile" element={
+          <PrivateRoute>
+              <MainLayout>
+                <MemberProfile />
+              </MainLayout>
+            </PrivateRoute>
+        } />
         <Route path="/member/:id" element={
           <PrivateRoute>
               <MainLayout>

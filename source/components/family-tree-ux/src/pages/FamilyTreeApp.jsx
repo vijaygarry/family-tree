@@ -1,24 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Tree, TreeNode } from "react-organizational-chart";
+import './TreeNode.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import api from "../api/axiosInstance";
 import ERROR_MESSAGES from "../constants/messages";
 
-const MemberCard = ({ member }) => (
-  <div className="card text-center p-2" style={{ minWidth: "160px" }}>
+const MemberCard = ({ member, selected }) => (
+  <Link to={`/member/${member.memberId}`} className="text-decoration-none">
+  <div 
+    className={`member-card text-center p-2 ${selected ? "root-node" : ""}`}
+    style={{ minWidth: "160px" }}>
     <div className="card-body p-2">
       <h6 className="card-title mb-1">{member.firstName} {member.lastName}</h6>
-      <p className="card-text small text-muted">{member.occupation}</p>
-      <p className="card-text small">📞 {member.phone}</p>
+      {/* <p className="card-text small text-muted">{member.occupation}</p>
+      <p className="card-text small">📞 {member.phone}</p> */}
     </div>
   </div>
+  </Link>
 );
 
 
-const CoupleNode = ({ member }) => (
+const CoupleNode = ({ member, selected }) => (
   <div className="d-flex justify-content-center gap-2">
-    <MemberCard member={member} />
+    <MemberCard member={member} selected={selected}/>
     {member.spouse && <MemberCard member={member.spouse} />}
   </div>
 );
@@ -88,15 +94,12 @@ const FamilyTreeApp = () => {
   const [error, setError] = useState(null);
   const { familyId } = useParams();  // ← Get it from URL
   useEffect(() => {
-    if (!familyId) {
-      setError("Family ID not provided.");
-      return;
-    }
-    api.post("/family/getfamilydetails", { familyId: parseInt(familyId) })
-      .then((res) => {
-        setFamily(res.data)
-      })
-      .catch((err) => {
+    const fetchFamilyData = async () => {
+      try {
+        const requestBody = familyId ? { familyId: parseInt(familyId) } : {};
+        const response = await api.post("/family/getfamilydetails", requestBody);
+        setFamily(response.data);
+      } catch (err) {
         console.error("Failed to load family data", err);
         if (err.response?.data?.operationMessage) {
           // API returned an error in payload
@@ -104,8 +107,10 @@ const FamilyTreeApp = () => {
         } else {
           setError(ERROR_MESSAGES.DEFAULT);
         }
-      });
-  }, []);
+      }
+    };
+    fetchFamilyData();
+  }, [familyId]);
 
   if (error) return <div style={{ color: "red" }}>{error}</div>;
   if (!family) return <div>Loading family tree...</div>;
@@ -116,8 +121,9 @@ const FamilyTreeApp = () => {
       {/* Family Info Section */}
       <div className="card mb-4" style={{ backgroundColor: '#e7f3ff' }}>
         <div className="card-body">
-          <h2 className="card-title mb-3">{family.familyName}</h2>
-
+          <div>
+            <h2 className="card-title mb-3">{family.familyName}</h2>
+          </div>
           <div className="mb-2">
             <span className="fw-semibold me-2">Gotra:</span>
             <span className="text-secondary">{family.gotra}</span>
@@ -158,7 +164,11 @@ const FamilyTreeApp = () => {
             <tbody>
               {membersList.map(member => (
                 <tr key={member.memberId}>
-                  <td>{member.firstName} {member.lastName}</td>
+                  <td>
+                    <Link to={`/member/${member.memberId}`} className="text-decoration-none">
+                      {member.firstName} {member.lastName}
+                    </Link>
+                  </td>
                   <td>{member.relationship}</td>
                   <td>{member.phone}</td>
                   <td>{member.email}</td>
@@ -176,7 +186,7 @@ const FamilyTreeApp = () => {
           lineWidth={"2px"}
           lineColor={"#ccc"}
           lineBorderRadius={"10px"}
-          label={<CoupleNode member={family.familyTreeRoot} />}
+          label={<CoupleNode member={family.familyTreeRoot} selected={true}/>}
         >
           {family.familyTreeRoot.children && family.familyTreeRoot.children.map((child) => (
             <MemberNode key={child.memberId} member={child} />
