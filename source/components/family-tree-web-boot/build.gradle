@@ -16,6 +16,16 @@ dependencies {
 
 apply plugin: 'eclipse-wtp'
 
+task runApp(type: JavaExec) {
+    group = 'application'
+    description = 'Start Springboot Application'
+    environment 'DB_PASSWORD_ENCRYPTION_SALT_KEY', 'get value'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.neasaa.familytree.FamilyTreeApplication' // 🔁 Use your actual main class
+    //args = ['--spring.profiles.active=dev']             // optional args
+    jvmArgs = ['-Xmx512m']                               // optional JVM args
+}
+
 eclipse {
     def repoSource = "${rootDir.path}"
     // Fix windows directory delimiters
