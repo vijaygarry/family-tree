@@ -2,26 +2,26 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Tree, TreeNode } from "react-organizational-chart";
 import api from "../api/axiosInstance";
+import { getFormattedPhoneDisplay } from '../utils/phoneUtils';
+import './TreeNode.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link } from "react-router-dom";
 import ERROR_MESSAGES from "../constants/messages";
 
-
 const MemberCard = ({ member }) => (
-  <div className="card text-center p-2" style={{ minWidth: "160px" }}>
-    {/* <img
-      src={`/${member.profileImageThumbnail}`}
-      alt={member.firstName}
-      className="rounded-circle mx-auto mt-2"
-      style={{ width: "50px", height: "50px" }}
-    /> */}
+  <Link to={`/member/${member.memberId}`} className="text-decoration-none">
+  <div 
+    className={`member-card text-center p-2 ${member.selectedNode ? "root-node" : ""}`}
+    style={{ minWidth: "160px" }}>
     <div className="card-body p-2">
       <h6 className="card-title mb-1">{member.firstName} {member.lastName}</h6>
-      <p className="card-text small text-muted">{member.occupation}</p>
-      <p className="card-text small">📞 {member.phone}</p>
+      {/* <p className="card-text small text-muted">{member.occupation}</p>
+      <p className="card-text small">📞 {member.phone}</p> */}
     </div>
   </div>
+  </Link>
 );
+
 
 const CoupleNode = ({ member }) => (
   <div className="d-flex justify-content-center gap-2">
@@ -29,6 +29,7 @@ const CoupleNode = ({ member }) => (
     {member.spouse && <MemberCard member={member.spouse} />}
   </div>
 );
+
 
 const MemberNode = ({ member }) => (
   <TreeNode label={<CoupleNode member={member} />}>
@@ -51,6 +52,7 @@ function flattenFamilyTree(root) {
       email: member.email || '',
       occupation: member.occupation || '',
       relationship: relationship === 'Head' ? 'Head of Family' : relationship,
+      phoneWhatsappRegistered: member.phoneWhatsappRegistered,
     });
 
     if (member.spouse) {
@@ -71,6 +73,7 @@ function flattenFamilyTree(root) {
         email: member.spouse.email || '',
         occupation: member.spouse.occupation || '',
         relationship: spouseRel,
+        phoneWhatsappRegistered: member.spouse.phoneWhatsappRegistered,
       });
     }
 
@@ -149,7 +152,7 @@ const MemberProfile = () => {
               )}
             </div>
               <p className="mb-1 text-muted">{memberProfile.occupation} at {memberProfile.workingAt}</p>
-              <p className="mb-1">📞 {memberProfile.phone}</p>
+              <p className="mb-1">{getFormattedPhoneDisplay(memberProfile.phone, memberProfile.phoneWhatsappRegistered)}</p>
               <p className="mb-1">✉️ {memberProfile.email}</p>
               <p className="mb-0">🎂 {memberProfile.birthDay}/{memberProfile.birthMonth}/{memberProfile.birthYear}</p>
         </div>
@@ -177,7 +180,7 @@ const MemberProfile = () => {
                     </Link>
                   </td>
                   <td>{member.relationship}</td>
-                  <td>{member.phone}</td>
+                  <td>{getFormattedPhoneDisplay(member.phone, member.phoneWhatsappRegistered)}</td>
                   <td>{member.email}</td>
                   <td>{member.occupation}</td>
                 </tr>

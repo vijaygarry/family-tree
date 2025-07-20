@@ -2,15 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Tree, TreeNode } from "react-organizational-chart";
+import { FaWhatsapp } from 'react-icons/fa';
+import { getFormattedPhoneDisplay } from '../utils/phoneUtils';
 import './TreeNode.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import api from "../api/axiosInstance";
 import ERROR_MESSAGES from "../constants/messages";
 
-const MemberCard = ({ member, selected }) => (
+const MemberCard = ({ member }) => (
   <Link to={`/member/${member.memberId}`} className="text-decoration-none">
   <div 
-    className={`member-card text-center p-2 ${selected ? "root-node" : ""}`}
+    className={`member-card text-center p-2 ${member.selectedNode ? "root-node" : ""}`}
     style={{ minWidth: "160px" }}>
     <div className="card-body p-2">
       <h6 className="card-title mb-1">{member.firstName} {member.lastName}</h6>
@@ -22,9 +24,9 @@ const MemberCard = ({ member, selected }) => (
 );
 
 
-const CoupleNode = ({ member, selected }) => (
+const CoupleNode = ({ member }) => (
   <div className="d-flex justify-content-center gap-2">
-    <MemberCard member={member} selected={selected}/>
+    <MemberCard member={member}/>
     {member.spouse && <MemberCard member={member.spouse} />}
   </div>
 );
@@ -51,6 +53,7 @@ function flattenFamilyTree(root) {
       email: member.email || '',
       occupation: member.occupation || '',
       relationship: relationship === 'Head' ? 'Head of Family' : relationship,
+      phoneWhatsappRegistered: member.phoneWhatsappRegistered,
     });
 
     if (member.spouse) {
@@ -71,6 +74,7 @@ function flattenFamilyTree(root) {
         email: member.spouse.email || '',
         occupation: member.spouse.occupation || '',
         relationship: spouseRel,
+        phoneWhatsappRegistered: member.spouse.phoneWhatsappRegistered,
       });
     }
 
@@ -122,11 +126,17 @@ const FamilyTreeApp = () => {
       <div className="card mb-4" style={{ backgroundColor: '#e7f3ff' }}>
         <div className="card-body">
           <div>
-            <h2 className="card-title mb-3">{family.familyName}</h2>
+            <h2 className="card-title mb-3">{family.familyName} 
+              {family.familyNameInHindi && ` (${family.familyNameInHindi})`}
+            </h2>
+          </div>
+          <div className="mb-2">
+            <span className="fw-semibold me-2">Head Of Family:</span>
+            <span className="text-secondary">{family.gotra}</span>
           </div>
           <div className="mb-2">
             <span className="fw-semibold me-2">Gotra:</span>
-            <span className="text-secondary">{family.gotra}</span>
+            <span className="text-secondary">{family.headOfFamilyName}</span>
           </div>
           <div className="mb-2">
             <span className="fw-semibold me-2">Email:</span>
@@ -134,13 +144,16 @@ const FamilyTreeApp = () => {
           </div>
           <div className="mb-2">
             <span className="fw-semibold me-2">Phone:</span>
-            <span className="text-secondary">{family.phone}</span>
+            <span className="text-secondary">{getFormattedPhoneDisplay(family.phone, family.phoneWhatsappRegistered)}
+            </span>
           </div>
           <div className="d-flex">
             <span className="fw-semibold me-2">Address:</span>
             <address className="mb-0">
               {family.familyAddress?.addressLine1}<br />
               {family.familyAddress?.addressLine2 && (<>{family.familyAddress.addressLine2}<br /></>)}
+              {family.familyAddress?.addressLine3 && (<>{family.familyAddress.addressLine3}<br /></>)}
+              {family.familyAddress?.district && (<> District: {family.familyAddress.district}<br /></>)}
               {family.familyAddress?.city}, {family.familyAddress?.state} - {family.familyAddress?.postalCode.trim()}<br />
               {family.familyAddress?.country}
             </address>
@@ -170,7 +183,7 @@ const FamilyTreeApp = () => {
                     </Link>
                   </td>
                   <td>{member.relationship}</td>
-                  <td>{member.phone}</td>
+                  <td>{getFormattedPhoneDisplay(member.phone, member.phoneWhatsappRegistered)}</td>
                   <td>{member.email}</td>
                   <td>{member.occupation}</td>
                 </tr>
@@ -180,13 +193,14 @@ const FamilyTreeApp = () => {
         </div>
       </div>
 
-      {/* Tree Section */}
+      {/* Tree View */}
+      <h5 className="mb-3">Family Tree</h5>
       <div className="overflow-auto">
         <Tree
           lineWidth={"2px"}
           lineColor={"#ccc"}
           lineBorderRadius={"10px"}
-          label={<CoupleNode member={family.familyTreeRoot} selected={true}/>}
+          label={<CoupleNode member={family.familyTreeRoot}/>}
         >
           {family.familyTreeRoot.children && family.familyTreeRoot.children.map((child) => (
             <MemberNode key={child.memberId} member={child} />

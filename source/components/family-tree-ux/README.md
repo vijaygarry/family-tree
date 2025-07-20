@@ -96,4 +96,5 @@ npm install react-organizational-chart
 npm install bootstrap
 npm install react-bootstrap
 npm install react-router-dom
+npm install react-icons
 npm start
