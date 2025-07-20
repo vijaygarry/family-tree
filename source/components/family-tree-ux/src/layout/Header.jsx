@@ -18,13 +18,13 @@ const Header = () => {
       <nav className="navbar navbar-expand-lg navbar-dark container">
         <Link className="navbar-brand d-flex align-items-center" to="/">
           <img
-            src="/logo.jpg"
+            src="/logo.png"
             alt="Logo"
-            width="30"
+            width="60"
             height="30"
             className="me-2"
           />
-          <strong>Family Tree</strong>
+          <strong>Rajput Chippa Samaj</strong>
         </Link>
 
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
