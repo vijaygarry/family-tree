@@ -1,6 +1,7 @@
 package com.neasaa.familytree.operation.family.model;
 
 import com.neasaa.base.app.operation.model.OperationResponse;
+import com.neasaa.familytree.entity.FamilyMember;
 import com.neasaa.familytree.enums.Gender;
 import com.neasaa.familytree.enums.MaritalStatus;
 import lombok.Builder;
@@ -48,5 +49,37 @@ public class GetMemberProfileResponse extends OperationResponse {
         private String profileImage;
         private String profileImageThumbnail;
         private Date lastUpdatedDate;
+
+        public static MemberProfile fromFamilyMemberDBEntity(FamilyMember familyMember, AddressDto address) {
+            return MemberProfile.builder()
+                    .memberId(familyMember.getMemberId())
+                    .familyId(familyMember.getFamilyId())
+                    .headOfFamily(familyMember.isHeadOfFamily())
+                    .firstName(familyMember.getFirstName())
+                    .firstNameInHindi(familyMember.getFirstNameInHindi())
+                    .lastName(familyMember.getLastName())
+                    .maidenLastName(familyMember.getMaidenLastName())
+                    .nickName(familyMember.getNickName())
+                    .nickNameInHindi(familyMember.getNickNameInHindi())
+                    .addressSameAsFamily(familyMember.isAddressSameAsFamily())
+                    .memberAddress(address)
+                    .phone(familyMember.getPhone())
+                    .isPhoneWhatsappRegistered(familyMember.isPhoneWhatsappRegistered())
+                    .email(familyMember.getEmail())
+                    .linkedinUrl(familyMember.getLinkedinUrl())
+                    .gender(familyMember.getGender())
+                    .birthDay(familyMember.getBirthDay())
+                    .birthMonth(familyMember.getBirthMonth().getShortMonthName())
+                    .birthYear(familyMember.getBirthYear())
+                    .dateOfDeath(familyMember.getDateOfDeath())
+                    .maritalStatus(familyMember.getMaritalStatus())
+                    .educationDetails(familyMember.getEducationDetails())
+                    .occupation(familyMember.getOccupation())
+                    .workingAt(familyMember.getWorkingAt())
+                    .hobby(familyMember.getHobby())
+                    .profileImage(familyMember.getProfileImage())
+                    .profileImageThumbnail(familyMember.getProfileImageThumbnail())
+                    .build();
+        }
     }
 }

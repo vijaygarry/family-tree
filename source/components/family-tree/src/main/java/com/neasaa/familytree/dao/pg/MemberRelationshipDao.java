@@ -8,6 +8,7 @@ import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.neasaa.familytree.enums.RelationshipType;
@@ -29,10 +30,22 @@ public class MemberRelationshipDao extends AbstractDao {
 	private static final String SELECT_RELATIONSHIP_BY_ID_AND_RELATION_TYPE = "select  MEMBERID , RELATIONSHIPTYPE , RELATEDMEMBERID , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
 			+ "from " + BASE_SCHEMA_NAME + "MEMBERRELATIONSHIP "
 			+ "where MEMBERID = ANY(?) and RELATIONSHIPTYPE = ANY(?) ";
+
+	private static final String SELECT_RELATIONSHIP_BY_RELATED_ID_AND_RELATION_TYPE = "select  MEMBERID , RELATIONSHIPTYPE , RELATEDMEMBERID , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
+			+ "from " + BASE_SCHEMA_NAME + "MEMBERRELATIONSHIP "
+			+ "where RELATEDMEMBERID = ? and RELATIONSHIPTYPE = ANY(?) ";
 	
 	private static final String SELECT_RELATIONSHIP_BETWEEN_MEMBERS = "select  MEMBERID , RELATIONSHIPTYPE , RELATEDMEMBERID , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
 			+ "from " + BASE_SCHEMA_NAME + "MEMBERRELATIONSHIP "
 					+ "where MEMBERID = ? AND RELATEDMEMBERID = ?";
+
+	private static final String SELECT_SPOUSE_FOR_FAMILY_MEMBER_BY_ID = "select  MEMBERID , RELATIONSHIPTYPE , RELATEDMEMBERID  "
+			+ "from " + BASE_SCHEMA_NAME + "MEMBERRELATIONSHIP "
+			+ "where relationshiptype IN ('Husband', 'Wife') and (memberId = ? or relatedmemberid = ?)";
+
+	private static final String SELECT_CHILDREN_FOR_MEMBER_BY_ID = "select  MEMBERID , RELATIONSHIPTYPE , RELATEDMEMBERID  "
+			+ "from " + BASE_SCHEMA_NAME + "MEMBERRELATIONSHIP "
+			+ "where relationshiptype IN ('Son', 'Daughter') and MEMBERID = ANY(?)";
 
 	/**
 	 * This method returns all the relationships define with member id or related member id.
@@ -63,6 +76,24 @@ public class MemberRelationshipDao extends AbstractDao {
 				new MemberRelationshipRowMapper()
 		);
 	}
+
+	public List<MemberRelationship> getRelationByRelatedIdAndRelationType (int relatedMemberId, List<RelationshipType>  relationshipTypes) {
+		return getJdbcTemplate().query(
+				new PreparedStatementCreator() {
+					@Override
+					public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+						PreparedStatement ps = connection.prepareStatement(SELECT_RELATIONSHIP_BY_RELATED_ID_AND_RELATION_TYPE);
+						// Convert list to SQL array
+						Array relationshipTypeArray = connection.createArrayOf("VARCHAR", relationshipTypes.toArray());
+						setIntInStatement(ps, 1, relatedMemberId);
+						ps.setArray(2, relationshipTypeArray);
+						log.info("Executing query: " + ps.toString());
+						return ps;
+					}
+				},
+				new MemberRelationshipRowMapper()
+		);
+	}
 	
 	public MemberRelationship getRelationshipBetweenMembers (int memberId, int relatedMemberId) {
 		List<MemberRelationship> relationshipList = getJdbcTemplate().query(SELECT_RELATIONSHIP_BETWEEN_MEMBERS, new MemberRelationshipRowMapper(), memberId, relatedMemberId);
@@ -74,6 +105,59 @@ public class MemberRelationshipDao extends AbstractDao {
 			throw new RuntimeException("Invalid relationship between members");
 		}
 		return relationshipList.get(0);
+	}
+
+	/**
+	 * This method returns spouse for a family member.
+	 * Return relationship will have memberId as specified member id and relatedMemberId as spouse member id.
+	 * If spouse is not found, it returns null.
+	 * @param memberId
+	 * @return
+	 */
+	public MemberRelationship getSpouseForMemberById (int memberId) {
+		List<MemberRelationship> relationshipList = getJdbcTemplate().query(SELECT_SPOUSE_FOR_FAMILY_MEMBER_BY_ID, new MemberRelationshipRowMapper(), memberId, memberId);
+
+		if(relationshipList.isEmpty()) {
+			return null;
+		}
+		for (MemberRelationship relationship : relationshipList) {
+			if (relationship.getMemberId() == memberId) {
+				return relationship;
+			} else if (relationship.getRelatedMemberId() == memberId) {
+				return MemberRelationship.inverseSpouseRelationship(relationship);
+			}
+		}
+		throw new RuntimeException("Invalid relationship configuration for member " + memberId);
+	}
+
+	public List<MemberRelationship> getChildrenForMemberById (int parent1Id, int parent2Id) {
+		List<Integer> memberIds = new ArrayList<>();
+		if (parent1Id > 0) {
+			memberIds.add(parent1Id);
+		}
+		if (parent2Id > 0) {
+			memberIds.add(parent2Id);
+		}
+
+		List<MemberRelationship> relationshipList = getJdbcTemplate().query(
+				new PreparedStatementCreator() {
+					@Override
+					public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+						PreparedStatement ps = connection.prepareStatement(SELECT_CHILDREN_FOR_MEMBER_BY_ID);
+						// Convert list to SQL array
+						Array memberIdArray = connection.createArrayOf("INTEGER", memberIds.toArray());
+						ps.setArray(1, memberIdArray);
+						return ps;
+					}
+				},
+				new MemberRelationshipRowMapper()
+		);
+
+		if(relationshipList.isEmpty()) {
+			return null;
+		}
+
+		return relationshipList;
 	}
 
 	/**

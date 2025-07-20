@@ -31,5 +31,12 @@ public class MemberRelationship extends BaseEntity {
 	private int lastUpdatedBy;
 	private Date lastUpdatedDate;
 
+	public static MemberRelationship inverseSpouseRelationship (MemberRelationship relationship) {
+		return MemberRelationship.builder()
+				.memberId(relationship.relatedMemberId)
+				.relationshipType(RelationshipType.getReverseRelationship( relationship.relationshipType))
+				.relatedMemberId(relationship.memberId)
+				.build();
+	}
 
 }

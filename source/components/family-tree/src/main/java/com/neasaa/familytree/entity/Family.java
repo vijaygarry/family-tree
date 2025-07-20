@@ -35,6 +35,8 @@ public class Family extends BaseEntity {
 	private boolean active;
 	private String familyImage;
 	private Date imageLastUpdated;
+	// Address details
+	private Address address;
 	private int createdBy;
 	private Date createdDate;
 	private int lastUpdatedBy;

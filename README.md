@@ -1,2 +1,2 @@
-# family-tree
+# Family Tree App
 Family Tree App

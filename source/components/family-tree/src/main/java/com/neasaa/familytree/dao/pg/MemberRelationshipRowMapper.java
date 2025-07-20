@@ -21,10 +21,6 @@ public class MemberRelationshipRowMapper implements RowMapper<MemberRelationship
 		memberRelationship.setMemberId(aRs.getInt("MEMBERID"));
 		memberRelationship.setRelationshipType(RelationshipType.getRelationshipType(aRs.getString("RELATIONSHIPTYPE")));
 		memberRelationship.setRelatedMemberId(aRs.getInt("RELATEDMEMBERID"));
-		memberRelationship.setCreatedBy(aRs.getInt("CREATEDBY"));
-		memberRelationship.setCreatedDate(AbstractDao.getTimestampFromResultSet(aRs, "CREATEDDATE"));
-		memberRelationship.setLastUpdatedBy(aRs.getInt("LASTUPDATEDBY"));
-		memberRelationship.setLastUpdatedDate(AbstractDao.getTimestampFromResultSet(aRs, "LASTUPDATEDDATE"));
 		return memberRelationship;
 	}
 

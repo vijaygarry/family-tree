@@ -10,9 +10,7 @@ import com.neasaa.familytree.dao.pg.MemberRelationshipDao;
 import com.neasaa.familytree.entity.Family;
 import com.neasaa.familytree.entity.FamilyMember;
 import com.neasaa.familytree.entity.MemberRelationship;
-import com.neasaa.familytree.enums.RelationshipType;
 import com.neasaa.familytree.operation.OperationNames;
-import com.neasaa.familytree.operation.family.model.AddressDto;
 import com.neasaa.familytree.operation.family.model.FamilyMemberDto;
 import com.neasaa.familytree.operation.family.model.GetFamilyDetailsRequest;
 import com.neasaa.familytree.operation.family.model.GetFamilyDetailsResponse;
@@ -20,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -57,75 +54,102 @@ public class GetFamilyDetailsOperation extends AbstractOperation<GetFamilyDetail
 
     @Override
     public GetFamilyDetailsResponse doExecute(GetFamilyDetailsRequest opRequest) throws OperationException {
+        int familyId = -1;
+        if(opRequest == null || opRequest.getFamilyId() == null) {
+            FamilyMember memberByLogonName = familyMemberDao.getMemberByLogonName(getContext().getAppSessionUser().getLogonName());
+            familyId = memberByLogonName.getFamilyId();
+        } else {
+            familyId = opRequest.getFamilyId();
+        }
         // Fetch family details using family id.
-        Family familyDetailsFromDB = familyDao.getFamilyByFamilyId(opRequest.getFamilyId());
+        Family familyDetailsFromDB = familyDao.getFamilyByFamilyId(familyId);
         // If family not found, throw ValidationException.
         if (familyDetailsFromDB == null) {
-            throw new ValidationException("Family not found for the provided family id " + opRequest.getFamilyId());
+            throw new ValidationException("Family not found for the provided family id " + familyId);
         }
-        GetFamilyDetailsResponse familyDetailsResponse = new GetFamilyDetailsResponse();
-        setFamilyDetails(familyDetailsResponse, familyDetailsFromDB);
+        GetFamilyDetailsResponse familyDetailsResponse = GetFamilyDetailsResponse.fromFamilyDBEntity(familyDetailsFromDB, null);
 
         // Fetch all the members of the family.
-        List<FamilyMember> familyMembers = familyMemberDao.allMembersForFamily(opRequest.getFamilyId());
-        FamilyMember headOfFamily = getHeadOfFamily(familyMembers);
+        List<FamilyMember> familyMembers = familyMemberDao.allMembersForFamily(familyId);
+        FamilyMember headOfFamily = familyMemberDao.getHeadOfFamilyByFamilyId(familyId);
         // If head of family not found, throw ValidationException.
-        if (headOfFamily != null) {
-            FamilyMemberDto familyTreeRoot = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(headOfFamily);
-            familyDetailsResponse.setFamilyTreeRoot(familyTreeRoot);
-            Map<Integer, FamilyMember> familyMemberMap =  familyMembers.stream().collect(Collectors.toMap(FamilyMember::getMemberId, member -> member));
-            buildFamilyTreeStructure(familyTreeRoot, familyMemberMap);
+        if (headOfFamily == null) {
+            throw new ValidationException("Family members not found for this family " + familyId);
         }
+
+        FamilyMemberDto familyTreeRoot = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(headOfFamily);
+        familyDetailsResponse.setFamilyTreeRoot(familyTreeRoot);
+//        Map<Integer, FamilyMember> familyMemberMap =  familyMembers.stream().collect(Collectors.toMap(FamilyMember::getMemberId, member -> member));
+        buildFamilyTreeStructure(familyTreeRoot);
+
 
         // Fetch the relationships of the family members and build the family tree structure.
         return familyDetailsResponse;
     }
 
-    private void setFamilyDetails(GetFamilyDetailsResponse familyDetailsResponse, Family familyDetailsFromDB) {
-        familyDetailsResponse.setFamilyId(familyDetailsFromDB.getFamilyId());
-        familyDetailsResponse.setFamilyName(familyDetailsFromDB.getFamilyName());
-        familyDetailsResponse.setGotra(familyDetailsFromDB.getGotra());
-        familyDetailsResponse.setFamilyAddress(AddressDto.getAddressDtoFromEntity(addressDao.getAddressById(familyDetailsFromDB.getAddressId())));
-        familyDetailsResponse.setPhone(familyDetailsFromDB.getPhone());
-        familyDetailsResponse.setEmail(familyDetailsFromDB.getEmail());
-        familyDetailsResponse.setFamilyImage(familyDetailsFromDB.getFamilyImage());
-    }
-
-    private FamilyMember getHeadOfFamily(List<FamilyMember> familyMembers) {
-        for (FamilyMember member : familyMembers) {
-            if (member.isHeadOfFamily()) {
-                return member;
-            }
-        }
-        return null;
-    }
-
-    private void buildFamilyTreeStructure(FamilyMemberDto treeNode, Map<Integer, FamilyMember> familyMemberMap) {
-        List<MemberRelationship> relationshipsForMember = memberRelationshipDao.getRelationshipsForMember(treeNode.getMemberId());
-        for (MemberRelationship relationship : relationshipsForMember) {
-            FamilyMember relatedMember = familyMemberMap.get(relationship.getRelatedMemberId());
-            if (relatedMember == null) {
-                continue;
-            }
-            FamilyMemberDto relatedMemberDto = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(relatedMember);
-            switch (relationship.getRelationshipType()) {
-                case Wife:
-                case Husband:
-                    treeNode.setSpouse(relatedMemberDto);
-                    break;
-                case Son:
-                case Daughter:
-                    treeNode.addChild(relatedMemberDto);
-                    break;
-                default:
-                    throw new RuntimeException("Unexpected relationship type: " + relationship.getRelationshipType());
+    private void buildFamilyTreeStructure(FamilyMemberDto treeNode) {
+        int spouseMemberId = -1;
+        if(treeNode.getSpouse() == null) {
+            MemberRelationship spouseForMember = memberRelationshipDao.getSpouseForMemberById(treeNode.getMemberId());
+            if(spouseForMember != null) {
+                spouseMemberId = spouseForMember.getRelatedMemberId();
+                FamilyMember spouse = familyMemberDao.getMemberById(spouseForMember.getRelatedMemberId());
+                if (spouse != null) {
+                    treeNode.setSpouse(FamilyMemberDto.getFamilyMemberDtoFromDBEntity(spouse));
+                }
             }
         }
 
-        if(treeNode.getChildren() != null && !treeNode.getChildren().isEmpty()) {
-            for (FamilyMemberDto child : treeNode.getChildren()) {
-                buildFamilyTreeStructure(child, familyMemberMap);
+        List<MemberRelationship> childrenForMember = memberRelationshipDao.getChildrenForMemberById(treeNode.getMemberId(), spouseMemberId);
+        if (childrenForMember != null) {
+            for (MemberRelationship childRelation : childrenForMember) {
+                FamilyMember child = familyMemberDao.getMemberById(childRelation.getRelatedMemberId());
+                if (child != null) {
+                    FamilyMemberDto childDto = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(child);
+                    treeNode.addChild(childDto);
+                    if(childDto.getFamilyId() == treeNode.getFamilyId()) {
+                        buildFamilyTreeStructure(childDto);
+                    }
+                }
             }
         }
     }
+
+//    private FamilyMember getHeadOfFamily(List<FamilyMember> familyMembers) {
+//        for (FamilyMember member : familyMembers) {
+//            if (member.isHeadOfFamily()) {
+//                return member;
+//            }
+//        }
+//        return null;
+//    }
+
+//    private void buildFamilyTreeStructure(FamilyMemberDto treeNode, Map<Integer, FamilyMember> familyMemberMap) {
+//        List<MemberRelationship> relationshipsForMember = memberRelationshipDao.getRelationshipsForMember(treeNode.getMemberId());
+//        for (MemberRelationship relationship : relationshipsForMember) {
+//            FamilyMember relatedMember = familyMemberMap.get(relationship.getRelatedMemberId());
+//            if (relatedMember == null) {
+//                continue;
+//            }
+//            FamilyMemberDto relatedMemberDto = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(relatedMember);
+//            switch (relationship.getRelationshipType()) {
+//                case Wife:
+//                case Husband:
+//                    treeNode.setSpouse(relatedMemberDto);
+//                    break;
+//                case Son:
+//                case Daughter:
+//                    treeNode.addChild(relatedMemberDto);
+//                    break;
+//                default:
+//                    throw new RuntimeException("Unexpected relationship type: " + relationship.getRelationshipType());
+//            }
+//        }
+//
+//        if(treeNode.getChildren() != null && !treeNode.getChildren().isEmpty()) {
+//            for (FamilyMemberDto child : treeNode.getChildren()) {
+//                buildFamilyTreeStructure(child, familyMemberMap);
+//            }
+//        }
+//    }
 }

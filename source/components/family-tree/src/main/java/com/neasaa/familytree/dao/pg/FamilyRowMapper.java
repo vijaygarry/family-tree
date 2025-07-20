@@ -7,6 +7,7 @@ package com.neasaa.familytree.dao.pg;
 import java.sql.SQLException;
 
 import com.neasaa.base.app.dao.pg.AbstractDao;
+import com.neasaa.familytree.entity.Address;
 import com.neasaa.familytree.entity.Family;
 import java.sql.ResultSet;
 import org.springframework.jdbc.core.RowMapper;
@@ -29,10 +30,20 @@ public class FamilyRowMapper implements RowMapper<Family> {
 		family.setActive(aRs.getBoolean("ACTIVE"));
 		family.setFamilyImage(aRs.getString("FAMILYIMAGE"));
 		family.setImageLastUpdated(AbstractDao.getTimestampFromResultSet(aRs, "IMAGELASTUPDATED"));
-		family.setCreatedBy(aRs.getInt("CREATEDBY"));
-		family.setCreatedDate(AbstractDao.getTimestampFromResultSet(aRs, "CREATEDDATE"));
-		family.setLastUpdatedBy(aRs.getInt("LASTUPDATEDBY"));
-		family.setLastUpdatedDate(AbstractDao.getTimestampFromResultSet(aRs, "LASTUPDATEDDATE"));
+		String addressLine1 = aRs.getString("ADDRESSLINE1");
+		if (addressLine1 == null) {
+			return family; // No address associated with the family
+		}
+		Address address = new Address();
+		address.setAddressLine1(addressLine1);
+		address.setAddressLine2(aRs.getString("ADDRESSLINE2"));
+		address.setAddressLine3(aRs.getString("ADDRESSLINE3"));
+		address.setCity(aRs.getString("CITY"));
+		address.setDistrict(aRs.getString("DISTRICT"));
+		address.setState(aRs.getString("STATE"));
+		address.setPostalCode(aRs.getString("POSTALCODE"));
+		address.setCountry(aRs.getString("COUNTRY"));
+		family.setAddress(address);
 		return family;
 	}
 

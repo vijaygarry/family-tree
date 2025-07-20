@@ -11,4 +11,13 @@ public enum RelationshipType {
 		}
 		return null;
 	}
+
+	public static RelationshipType getReverseRelationship(RelationshipType relationshipType) {
+        return switch (relationshipType) {
+            case Husband -> Wife;
+            case Wife -> Husband;
+            case Son, Daughter -> Father;
+            default -> throw new RuntimeException("Reverse relationship not defined for: " + relationshipType);
+        };
+	}
 }

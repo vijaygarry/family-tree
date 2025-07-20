@@ -34,7 +34,12 @@ public class FamilyMemberDao extends AbstractDao {
 	private static final String SELECT_MEMBER_BY_LOGON_NAME = "select  MEMBERID , FAMILYID , LOGONNAME , HEADOFFAMILY , FIRSTNAME , FIRSTNAMEINHINDI , LASTNAME , MAIDENLASTNAME , NICKNAME , NICKNAMEINHINDI , ADDRESSSAMEASFAMILY , MEMBERADDRESSID , PHONE , ISPHONEWHATSAPPREGISTERED , EMAIL , LINKEDINURL , GENDER , BIRTHDAY , BIRTHMONTH , BIRTHYEAR , DATEOFDEATH , MARITALSTATUS , EDUCATIONDETAILS , OCCUPATION , WORKINGAT , HOBBY , PROFILEIMAGE , PROFILEIMAGETHUMBNAIL , IMAGELASTUPDATED , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
 			+ "from " + BASE_SCHEMA_NAME + "FAMILYMEMBER "
 			+ "where LOGONNAME = ? ";
-	
+
+	private static final String SELECT_HEAD_OF_FAMILY_BY_FAMILY_ID = "select  MEMBERID , FAMILYID , LOGONNAME , HEADOFFAMILY , FIRSTNAME , FIRSTNAMEINHINDI , LASTNAME , MAIDENLASTNAME , NICKNAME , NICKNAMEINHINDI , ADDRESSSAMEASFAMILY , MEMBERADDRESSID , PHONE , ISPHONEWHATSAPPREGISTERED , EMAIL , LINKEDINURL , GENDER , BIRTHDAY , BIRTHMONTH , BIRTHYEAR , DATEOFDEATH , MARITALSTATUS , EDUCATIONDETAILS , OCCUPATION , WORKINGAT , HOBBY , PROFILEIMAGE , PROFILEIMAGETHUMBNAIL , IMAGELASTUPDATED , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
+			+ "from " + BASE_SCHEMA_NAME + "FAMILYMEMBER "
+			+ "where FAMILYID = ? and HEADOFFAMILY = true";
+
+
 	public List<FamilyMember> allMembersForFamily(int familyId) {
 		return getJdbcTemplate().query(SELECT_ALL_MEMBERS_FOR_FAMILY, new FamilyMemberRowMapper(), familyId);
 	}
@@ -42,6 +47,18 @@ public class FamilyMemberDao extends AbstractDao {
 	public FamilyMember getMemberById(int memberId) {
 		List<FamilyMember> memberList = getJdbcTemplate().query(SELECT_MEMBER_BY_ID, new FamilyMemberRowMapper(), memberId);
 		
+		if(memberList.isEmpty()) {
+			return null;
+		}
+		if(memberList.size() > 1) {
+			throw new RuntimeException("Invalid member id entry");
+		}
+		return memberList.get(0);
+	}
+
+	public FamilyMember getHeadOfFamilyByFamilyId(int familyId) {
+		List<FamilyMember> memberList = getJdbcTemplate().query(SELECT_HEAD_OF_FAMILY_BY_FAMILY_ID, new FamilyMemberRowMapper(), familyId);
+
 		if(memberList.isEmpty()) {
 			return null;
 		}

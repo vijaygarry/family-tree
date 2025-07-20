@@ -23,10 +23,13 @@ import lombok.extern.log4j.Log4j2;
 @Repository
 public class FamilyDao extends AbstractDao {
 	
-	private static final String SELECT_FAMILY_BY_FAMILYID = "select FAMILYID, FAMILYNAME, FAMILYNAMEINHINDI, GOTRA, ADDRESSID, "
-			+ "REGION, PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, FAMILYDISPLAYNAME, ACTIVE, FAMILYIMAGE, IMAGELASTUPDATED, CREATEDBY, "
-			+ "CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE "
-			+ "from " + BASE_SCHEMA_NAME + "FAMILY where FAMILYID = ? ";
+	private static final String SELECT_FAMILY_BY_FAMILYID = "SELECT f.familyid, f.familyname, f.familynameinhindi, f.gotra, f.addressid, " +
+			"f.region, f.phone, f.isphonewhatsappregistered, f.email, f.familydisplayname, " +
+			"f.active, f.familyimage, f.imagelastupdated, " +
+			"a.addressline1, a.addressline2, a.addressline3, a.city, a.district, a.state, a.postalcode, a.country " +
+			"FROM " + BASE_SCHEMA_NAME + "FAMILY f " +
+			"LEFT JOIN " + BASE_SCHEMA_NAME + "ADDRESS a on f.addressid = a.addressid " +
+			"WHERE f.familyid = ? and f.active = true";
 
 	private static final String SEARCH_FAMILY = "select FAMILYID, FAMILYNAME, FAMILYNAMEINHINDI, GOTRA, ADDRESSID, "
 			+ "REGION, PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, FAMILYDISPLAYNAME, ACTIVE, FAMILYIMAGE, IMAGELASTUPDATED, CREATEDBY, "

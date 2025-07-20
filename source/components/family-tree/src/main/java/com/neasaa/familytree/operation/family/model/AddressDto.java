@@ -9,7 +9,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddressDto {
-	
+
+	private int addressId;
 	private String addressLine1;
 	private String addressLine2;
 	private String addressLine3;
