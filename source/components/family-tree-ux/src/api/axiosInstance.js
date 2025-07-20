@@ -5,15 +5,19 @@ const api = axios.create({
   withCredentials: true, // 💡 This is critical to send JSESSIONID
 });
 
+let hasRedirectedToLogin = false;
+
 // Add interceptor to redirect to login on 401/403
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    //const isLoginApi = error.config?.url?.includes("/login");
-
-    // if (!isLoginApi && [401].includes(error.response?.status)) {
-    if (error.response?.status === 401) {
-      //window.location.href = "/login";
+    if (
+      error.response?.status === 401 &&
+      !hasRedirectedToLogin &&
+      !window.location.pathname.includes("/login")
+    ) {
+      hasRedirectedToLogin = true;
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   }
