@@ -10,6 +10,8 @@ import com.neasaa.base.app.dao.pg.AbstractDao;
 import com.neasaa.familytree.entity.Address;
 import com.neasaa.familytree.entity.Family;
 import java.sql.ResultSet;
+
+import com.neasaa.familytree.utils.DataFormatter;
 import org.springframework.jdbc.core.RowMapper;
 
 public class FamilyRowMapper implements RowMapper<Family> {
@@ -23,7 +25,8 @@ public class FamilyRowMapper implements RowMapper<Family> {
 		family.setGotra(aRs.getString("GOTRA"));
 		family.setAddressId(aRs.getInt("ADDRESSID"));
 		family.setRegion(aRs.getString("REGION"));
-		family.setPhone(aRs.getString("PHONE"));
+		String phone = aRs.getString("PHONE");
+		family.setPhone(DataFormatter.formatPhoneNumber(phone));
 		family.setPhoneWhatsappRegistered(aRs.getBoolean("ISPHONEWHATSAPPREGISTERED"));
 		family.setEmail(aRs.getString("EMAIL"));
 		family.setFamilyDisplayName(aRs.getString("FAMILYDISPLAYNAME"));

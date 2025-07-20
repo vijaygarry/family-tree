@@ -45,6 +45,7 @@ public class FamilyMemberDto {
     private String hobby;
     private String profileImage;
     private String profileImageThumbnail;
+    private boolean selectedNode;
 
     private FamilyMemberDto spouse;
     private List<FamilyMemberDto> children;

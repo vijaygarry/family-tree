@@ -47,6 +47,12 @@ public class MemberRelationshipDao extends AbstractDao {
 			+ "from " + BASE_SCHEMA_NAME + "MEMBERRELATIONSHIP "
 			+ "where relationshiptype IN ('Son', 'Daughter') and MEMBERID = ANY(?)";
 
+	// This query will return only one parent for a family member. Other parent can be found by finding spouse of first parent.
+	private static final String SELECT_PARENTS_FOR_FAMILY_MEMBER_BY_ID = "select  MEMBERID , RELATIONSHIPTYPE , RELATEDMEMBERID  "
+			+ "from " + BASE_SCHEMA_NAME + "MEMBERRELATIONSHIP "
+			+ "where relationshiptype IN ('Son', 'Daughter') and relatedmemberid = ?";
+
+
 	/**
 	 * This method returns all the relationships define with member id or related member id.
 	 * This method is called from GetMemberProfile API to get all the relationships for selected member.
@@ -105,6 +111,30 @@ public class MemberRelationshipDao extends AbstractDao {
 			throw new RuntimeException("Invalid relationship between members");
 		}
 		return relationshipList.get(0);
+	}
+
+	public List<MemberRelationship> getParentsForMemberById (int memberId) {
+		List<MemberRelationship> relationshipList = getJdbcTemplate().query(SELECT_PARENTS_FOR_FAMILY_MEMBER_BY_ID, new MemberRelationshipRowMapper(), memberId);
+
+		if(relationshipList.isEmpty()) {
+			return null;
+		}
+		if(relationshipList.size() == 2) {
+			//Both parents are found, return both.
+			return relationshipList;
+		}
+		MemberRelationship firstParent = relationshipList.get(0);
+		// If only one parent is found, return found other parent.
+		MemberRelationship spouseForFirstParent = getSpouseForMemberById(firstParent.getMemberId());
+		if(spouseForFirstParent != null) {
+			// getSpouseForMemberById returns relatedMemberId as spouse member id, so create new relationship for second parent
+			MemberRelationship secondParent = MemberRelationship.builder().memberId(spouseForFirstParent.getRelatedMemberId())
+					.relationshipType(firstParent.getRelationshipType()) // both parents will have same relationship type
+					.relatedMemberId(firstParent.getRelatedMemberId())
+					.build();
+			relationshipList.add(secondParent);
+		}
+		return relationshipList;
 	}
 
 	/**

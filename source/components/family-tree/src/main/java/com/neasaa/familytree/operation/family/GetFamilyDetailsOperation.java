@@ -76,8 +76,9 @@ public class GetFamilyDetailsOperation extends AbstractOperation<GetFamilyDetail
         if (headOfFamily == null) {
             throw new ValidationException("Family members not found for this family " + familyId);
         }
-
+        familyDetailsResponse.setHeadOfFamilyName(headOfFamily.getFirstName() + " " + headOfFamily.getLastName());
         FamilyMemberDto familyTreeRoot = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(headOfFamily);
+        familyTreeRoot.setSelectedNode(true);
         familyDetailsResponse.setFamilyTreeRoot(familyTreeRoot);
 //        Map<Integer, FamilyMember> familyMemberMap =  familyMembers.stream().collect(Collectors.toMap(FamilyMember::getMemberId, member -> member));
         buildFamilyTreeStructure(familyTreeRoot);

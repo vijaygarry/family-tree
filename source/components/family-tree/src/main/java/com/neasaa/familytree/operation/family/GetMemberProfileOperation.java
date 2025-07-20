@@ -67,8 +67,12 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
             throw new ValidationException("Member not found.");
         }
         FamilyMemberDto familyTreeRoot = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(memberEntity);
-
+        familyTreeRoot.setSelectedNode(true);
         buildFamilyTreeStructure(familyTreeRoot, 0);
+        //Add parents and siblings to the family tree.
+        familyTreeRoot = addParentsAndSiblingsToFamilyTree(familyTreeRoot, true);
+        // Add grandparents to the family tree.
+        familyTreeRoot = addParentsAndSiblingsToFamilyTree(familyTreeRoot, false);
 
         GetMemberProfileResponse.MemberProfile memberProfile = GetMemberProfileResponse.MemberProfile.fromFamilyMemberDBEntity(memberEntity, getAddress(memberEntity));
 
@@ -114,6 +118,79 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
                 }
             }
         }
+    }
+
+    public FamilyMemberDto addParentsAndSiblingsToFamilyTree(FamilyMemberDto familyMemberDto, boolean includeSiblings) {
+        log.info("Adding parents for member: {}", familyMemberDto.getFirstName());
+        List<MemberRelationship> parents = memberRelationshipDao.getParentsForMemberById(familyMemberDto.getMemberId());
+        if (parents == null || parents.isEmpty()) {
+            log.info("No parents found for member: {}", familyMemberDto.getFirstName());
+            return familyMemberDto;
+        }
+        FamilyMemberDto father = null;
+        FamilyMemberDto mother = null;
+        for (MemberRelationship parentRelationship : parents) {
+            FamilyMember parentEntity = familyMemberDao.getMemberById(parentRelationship.getMemberId());
+            if (parentEntity != null) {
+                FamilyMemberDto parentDto = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(parentEntity);
+                if (parentEntity.getGender() == Gender.Male) {
+                    father = parentDto;
+                } else {
+                    mother = parentDto;
+                }
+            }
+        }
+        FamilyMemberDto primaryParent = null;
+        if(father != null) {
+            log.info("Father found for member {}: {}", familyMemberDto.getFirstName(), father.getFirstName());
+            primaryParent = father;
+            primaryParent.setSpouse(mother);
+        }  else if (mother != null) {
+            log.info("Mother found for member {}: {}", familyMemberDto.getFirstName(), mother.getFirstName());
+            primaryParent = mother;
+            primaryParent.setSpouse(father);
+        } else {
+            log.info("No parents found for member: {}", familyMemberDto.getFirstName());
+            return familyMemberDto;
+        }
+        if(!includeSiblings) {
+            log.info("Skipping siblings for member: {}", familyMemberDto.getFirstName());
+            primaryParent.addChild(familyMemberDto);
+            return primaryParent;
+        }
+
+        List<FamilyMemberDto> childrenForMember = getChildrenForMember(primaryParent.getMemberId(), -1);
+        List<FamilyMemberDto> siblings = new ArrayList<>();
+        siblings.add(familyMemberDto);
+        if (childrenForMember != null) {
+            for (FamilyMemberDto child : childrenForMember) {
+                if (child.getMemberId() != familyMemberDto.getMemberId()) {
+                    log.info("Adding sibling: {} for member: {}", child.getFirstName(), familyMemberDto.getFirstName());
+                    siblings.add(child);
+                }
+            }
+        }
+        primaryParent.setChildren(siblings);
+
+        return primaryParent;
+    }
+
+    private List<FamilyMemberDto> getChildrenForMember(int memberId, int spouseMemberId) {
+        List<FamilyMemberDto> children = new ArrayList<>();
+        List<MemberRelationship> childrenForMember = memberRelationshipDao.getChildrenForMemberById(memberId, spouseMemberId);
+        if (childrenForMember != null) {
+            for (MemberRelationship childRelation : childrenForMember) {
+                FamilyMember child = familyMemberDao.getMemberById(childRelation.getRelatedMemberId());
+                if (child != null) {
+                    FamilyMemberDto childDto = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(child);
+                    children.add(childDto);
+                }
+            }
+        } else {
+            log.info("No children found for member with id: {}", memberId);
+            return null;
+        }
+        return children;
     }
 
 //    private FamilyMemberDto getRelationships(FamilyMember memberEntity) {

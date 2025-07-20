@@ -17,6 +17,7 @@ public class GetFamilyDetailsResponse extends OperationResponse {
     private String familyName;
     private String familyNameInHindi;
     private String gotra;
+    private String headOfFamilyName;
     private String phone;
     private boolean isPhoneWhatsappRegistered;
     private String email;

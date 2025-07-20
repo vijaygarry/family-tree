@@ -14,6 +14,7 @@ import com.neasaa.familytree.enums.Gender;
 import java.sql.ResultSet;
 
 import com.neasaa.familytree.enums.Month;
+import com.neasaa.familytree.utils.DataFormatter;
 import org.springframework.jdbc.core.RowMapper;
 
 public class FamilyMemberRowMapper implements RowMapper<FamilyMember> {
@@ -33,7 +34,8 @@ public class FamilyMemberRowMapper implements RowMapper<FamilyMember> {
 		familyMember.setNickNameInHindi(aRs.getString("NICKNAMEINHINDI"));
 		familyMember.setAddressSameAsFamily(aRs.getBoolean("ADDRESSSAMEASFAMILY"));
 		familyMember.setMemberAddressId(aRs.getInt("MEMBERADDRESSID"));
-		familyMember.setPhone(aRs.getString("PHONE"));
+		String phone = aRs.getString("PHONE");
+		familyMember.setPhone(DataFormatter.formatPhoneNumber(phone));
 		familyMember.setPhoneWhatsappRegistered(aRs.getBoolean("ISPHONEWHATSAPPREGISTERED"));
 		familyMember.setEmail(aRs.getString("EMAIL"));
 		familyMember.setLinkedinUrl(aRs.getString("LINKEDINURL"));
