@@ -60,6 +60,12 @@ INSERT INTO shared_schema.lkpoperation(
 	VALUES ('ADD_FAMILY_MEMBER', 'Add Family Member', 'AddFamilyMemberBean', true, true, 'ROLE_BASE', 
     true, 1, now(), 1, now());
 
+INSERT INTO shared_schema.lkpoperation(
+	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype, 
+    active, createdby, createddate, lastupdatedby, lastupdateddate)
+	VALUES ('GET_EVENTS', 'Get events', 'GetEvents', true, true, 'ROLE_BASE', 
+    true, 1, now(), 1, now());
+
 -- Get Family stats
 -- Total number of families, total number of members.
 -- Registered users

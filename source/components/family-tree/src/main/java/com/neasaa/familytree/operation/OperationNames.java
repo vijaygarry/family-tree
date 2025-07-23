@@ -8,4 +8,6 @@ public interface OperationNames {
 	
 	String ADD_FAMILY_MEMBER = "ADD_FAMILY_MEMBER";
 	String GET_MEMBER_PROFILE = "GET_MEMBER_PROFILE";
+
+	String GET_EVENTS = "GET_EVENTS";
 }
