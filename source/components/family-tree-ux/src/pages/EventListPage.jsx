@@ -48,7 +48,7 @@ function EventListPage() {
           ) : (
             <Row>
               {upcomingEvents.map((event) => (
-                <Col key={event.eventId} md={6} lg={3}>
+                <Col key={event.eventId} md={6} lg={3} className="d-flex">
                   <EventCard event={event} />
                 </Col>
               ))}
@@ -61,7 +61,7 @@ function EventListPage() {
           ) : (
             <Row>
               {pastEvents.map((event) => (
-                <Col key={event.eventId} md={6} lg={3}>
+                <Col key={event.eventId} md={6} lg={3} className="d-flex">
                   <EventCard event={event} />
                 </Col>
               ))}

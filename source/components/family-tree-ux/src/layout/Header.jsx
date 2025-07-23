@@ -13,6 +13,9 @@ const Header = () => {
     navigate("/login"); 
   };
 
+  const userName = "Vijay G."; // Replace with actual user name from context or props
+  const userAvatar = "/user-avatar-man.png"; // Replace with actual user avatar URL
+
   return (
     <header className="bg-primary text-white mb-3 shadow-sm">
       <nav className="navbar navbar-expand-lg navbar-dark container">
@@ -53,13 +56,44 @@ const Header = () => {
               </ul>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/myProfile">My Profile</Link>
+              <Link className="nav-link" to="/events">Events</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/changepassword">Change Password</Link>
+              <Link className="nav-link" to="/accounts">Accounts</Link>
             </li>
-            <li className="nav-item">
-              <Link className="nav-link" onClick={logout}>Logout</Link>
+            {/* User dropdown */}
+            <li className="nav-item dropdown">
+              <a
+                href="#!"
+                className="nav-link dropdown-toggle d-flex align-items-center"
+                id="userDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <span>{userName}</span>
+                <img
+                  src={userAvatar}
+                  alt="User Avatar"
+                  className="rounded-circle me-2"
+                  width="32"
+                  height="32"
+                />
+              </a>
+              <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li>
+                  <Link className="dropdown-item" to="/myProfile">My Profile</Link>
+                </li>
+                <li>
+                  <Link className="dropdown-item" to="/changepassword">Change Password</Link>
+                </li>
+                <li><hr className="dropdown-divider" /></li>
+                <li>
+                  <button className="dropdown-item" onClick={handleLogout}>
+                    Logout
+                  </button>
+                </li>
+              </ul>
             </li>
           </ul>
         </div>
