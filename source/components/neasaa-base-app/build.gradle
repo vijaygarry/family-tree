@@ -8,7 +8,7 @@ dependencies {
     api libraries.log4j
     implementation libraries.neasaaUtils
     implementation libraries.bouncycastleProvider
-    implementation libraries.jackson
+    api libraries.jackson
     implementation libraries.jdbcLibs
     implementation libraries.jasypt
 }
