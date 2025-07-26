@@ -2,13 +2,11 @@ package com.neasaa.familytree.operation.events;
 
 import com.neasaa.base.app.operation.AbstractOperation;
 import com.neasaa.base.app.operation.exception.OperationException;
-import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.familytree.operation.OperationNames;
 import com.neasaa.familytree.operation.events.model.EventDto;
 import com.neasaa.familytree.operation.events.model.GetEventsRequest;
 import com.neasaa.familytree.operation.events.model.GetEventsResponse;
 import com.neasaa.familytree.operation.family.model.AddressDto;
-import com.neasaa.familytree.operation.family.model.GetFamilyDetailsRequest;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 

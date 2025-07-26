@@ -3,6 +3,7 @@ package com.neasaa.familytree.controller;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,13 +31,24 @@ import com.neasaa.familytree.utils.WebUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Log4j2
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping(value = "/session", method = RequestMethod.POST)
-public class SessionController {
+@RequestMapping(value = "/api/session", method = RequestMethod.POST)
+public class SessionController implements WebMvcConfigurer {
 
-	
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+		registry.addMapping("/**")
+				.allowedOrigins("http://localhost:3000") // React app
+				.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+				.allowCredentials(true) // Must be true!
+				.allowedHeaders("*");
+	}
+
 	@RequestMapping(value = "/login")
 	@ResponseBody
 	public ResponseEntity<LoginResponse> login ( @RequestBody LoginRequest loginRequest,
@@ -96,11 +108,10 @@ public class SessionController {
 	}
 	
 	
-	@RequestMapping(value = "/getsessiondetail")
+	@RequestMapping(value = "/getsessiondetail", method = RequestMethod.GET)
 	@ResponseBody
 	public ResponseEntity<GetSessionDetailResponse> getSessionDetail ( ) throws Exception {
 		return WebRequestHandler.processRequest(GetSessionDetailOperation.class, new EmptyOperationRequest() );
-		
 	}
 //	
 //	@RequestMapping(value = "/isvalid")

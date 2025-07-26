@@ -66,6 +66,19 @@ INSERT INTO shared_schema.lkpoperation(
 	VALUES ('GET_EVENTS', 'Get events', 'GetEvents', true, true, 'ROLE_BASE', 
     true, 1, now(), 1, now());
 
+INSERT INTO shared_schema.lkpoperation(
+	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype, 
+    active, createdby, createddate, lastupdatedby, lastupdateddate)
+	VALUES ('GET_ACCOUNT_LIST', 'Get Account List', 'GetAccountList', true, true, 'ROLE_BASE', 
+    true, 1, now(), 1, now());
+
+INSERT INTO shared_schema.lkpoperation(
+	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype, 
+    active, createdby, createddate, lastupdatedby, lastupdateddate)
+	VALUES ('GET_ACCOUNT_STATEMENT', 'Get Account Statement', 'GetAccountStatement', true, true, 'ROLE_BASE', 
+    true, 1, now(), 1, now());
+
+
 -- Get Family stats
 -- Total number of families, total number of members.
 -- Registered users

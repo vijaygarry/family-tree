@@ -1,5 +1,14 @@
 package com.neasaa.familytree.controller;
 
+import com.neasaa.base.app.operation.model.EmptyOperationRequest;
+import com.neasaa.familytree.operation.account.GetAccountListOperation;
+import com.neasaa.familytree.operation.account.GetAccountStatementOperation;
+import com.neasaa.familytree.operation.account.model.GetAccountListResponse;
+import com.neasaa.familytree.operation.account.model.GetAccountStatementRequest;
+import com.neasaa.familytree.operation.account.model.GetAccountStatementResponse;
+import com.neasaa.familytree.operation.events.GetEventsOperation;
+import com.neasaa.familytree.operation.events.model.GetEventsRequest;
+import com.neasaa.familytree.operation.events.model.GetEventsResponse;
 import com.neasaa.familytree.operation.family.GetFamilyDetailsOperation;
 import com.neasaa.familytree.operation.family.GetMemberProfileOperation;
 import com.neasaa.familytree.operation.family.SearchFamilyOperation;
@@ -30,7 +39,7 @@ import com.neasaa.familytree.operation.family.AddFamilyOperation;
 //@Log4j2
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping(value = "/family", method = RequestMethod.POST)
+@RequestMapping(value = "/api/family", method = RequestMethod.POST)
 public class FamilyController {
 	
 	@RequestMapping(value = "/addfamily")
@@ -63,8 +72,23 @@ public class FamilyController {
 		return WebRequestHandler.processRequest(SearchFamilyOperation.class, searchFamilyRequest);
 	}
 
+	@RequestMapping(value = "/getEvents")
+	@ResponseBody
+	public ResponseEntity<GetEventsResponse> getEvents (@RequestBody GetEventsRequest request) throws Exception {
+		return WebRequestHandler.processRequest(GetEventsOperation.class, request);
+	}
+
+	@RequestMapping(value = "/getAccountList")
+	@ResponseBody
+	public ResponseEntity<GetAccountListResponse> getAccountList () throws Exception {
+		return WebRequestHandler.processRequest(GetAccountListOperation.class, new EmptyOperationRequest());
+	}
+
+	@RequestMapping(value = "/getAccountStatement")
+	@ResponseBody
+	public ResponseEntity<GetAccountStatementResponse> getAccountStatement (@RequestBody GetAccountStatementRequest request) throws Exception {
+		return WebRequestHandler.processRequest(GetAccountStatementOperation.class, request);
+	}
 
 
-
-	
 }
