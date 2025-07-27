@@ -1,6 +1,9 @@
 dependencies {
+    api libraries.log4j
     testImplementation libraries.integTest
     testImplementation libraries.jackson
+    testImplementation libraries.excel
+    testImplementation libraries.neasaaUtils
 }
 
 test {

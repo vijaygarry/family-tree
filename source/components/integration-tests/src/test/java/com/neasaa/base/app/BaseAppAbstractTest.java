@@ -2,10 +2,13 @@ package com.neasaa.base.app;
 
 import com.neasaa.base.app.operation.model.LoginRequest;
 import com.neasaa.base.app.utils.Config;
+import com.neasaa.util.OperationUtils;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
+import static com.neasaa.util.Constants.LOGIN_URL;
+import static com.neasaa.util.Constants.LOGOUT_URL;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -39,7 +42,7 @@ public class BaseAppAbstractTest {
                 .body(getLoginRequestBody(Config.SUPER_ADMIN_USER_NAME_1, Config.SUPER_ADMIN_USER_PWD_1))
                 //.log().all() // Logs full request
                 .when()
-                .post("/session/login")
+                .post(LOGIN_URL)
                 .then()
                 //.log().all() // Logs full response
                 .statusCode(200)
@@ -53,12 +56,7 @@ public class BaseAppAbstractTest {
     }
 
     public Response logoutUser (String sessionId) {
-        return given()
-                .contentType(ContentType.JSON)
-                .cookie("JSESSIONID", sessionId)
-                .log().all() // Logs full request
-                .when()
-                .post("/session/logout");
+        return OperationUtils.logoutUser(sessionId);
     }
 
     public static Response executeOperation (Object request, String jSessionId, String operationUrl) {

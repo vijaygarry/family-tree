@@ -1,6 +1,7 @@
 package com.neasaa.base.app.operation.session;
 
 import static com.neasaa.base.app.operation.model.ChangePasswordRequest.getChangePasswordRequestBody;
+import static com.neasaa.util.Constants.CHANGE_PASSWORD_URL;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -20,7 +21,7 @@ public class ChangePasswordApiTest extends BaseAppAbstractTest {
         	.body(getChangePasswordRequestBody("abc", "abc"))
         	.log().all() // Logs full request
         .when()
-        	.post("/session/changepassword")
+        	.post(CHANGE_PASSWORD_URL)
         .then()
 	        .log().all() // Logs full response
 	        .statusCode(401)
@@ -38,7 +39,7 @@ public class ChangePasswordApiTest extends BaseAppAbstractTest {
         	.cookie("JSESSIONID", sessionId) 
         	.log().all()
         .when()
-        	.post("/session/changepassword")
+        	.post(CHANGE_PASSWORD_URL)
         .then()
 	        .log().all()
 	        .statusCode(400)
@@ -56,7 +57,7 @@ public class ChangePasswordApiTest extends BaseAppAbstractTest {
         	.cookie("JSESSIONID", sessionId) 
         	.log().all()
         .when()
-        	.post("/session/changepassword")
+        	.post(CHANGE_PASSWORD_URL)
         .then()
 	        .log().all()
 	        .statusCode(400)
@@ -75,7 +76,7 @@ public class ChangePasswordApiTest extends BaseAppAbstractTest {
         	.cookie("JSESSIONID", sessionId) 
         	.log().all() // Logs full request
         .when()
-        	.post("/session/changepassword")
+        	.post(CHANGE_PASSWORD_URL)
         .then()
 	        .log().all() // Logs full response
 	        .statusCode(200)
@@ -88,7 +89,7 @@ public class ChangePasswordApiTest extends BaseAppAbstractTest {
 	    	.cookie("JSESSIONID", sessionId) 
 	    	.log().all() // Logs full request
 	    .when()
-    		.post("/session/changepassword")
+    		.post(CHANGE_PASSWORD_URL)
 	    .then()
 	        .log().all() // Logs full response
 	        .statusCode(200)

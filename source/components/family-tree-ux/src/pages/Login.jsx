@@ -66,6 +66,10 @@ const Login = () => {
         </div>
         <div className="form-text text-danger">* This field is required</div>
         <button className="btn btn-primary w-100">Login</button>
+        <div className="text-center my-2">
+          <a href="/forgot-password">Forgot Password?</a>
+        </div>
+        <button className="btn btn-secondary w-100 mt-3">Sign-up</button>
       </form>
     </div>
   );
