@@ -10,16 +10,20 @@ import com.neasaa.familytree.dao.pg.MemberRelationshipDao;
 import com.neasaa.familytree.entity.Family;
 import com.neasaa.familytree.entity.FamilyMember;
 import com.neasaa.familytree.entity.MemberRelationship;
+import com.neasaa.familytree.enums.Gender;
 import com.neasaa.familytree.operation.OperationNames;
 import com.neasaa.familytree.operation.family.model.FamilyMemberDto;
 import com.neasaa.familytree.operation.family.model.GetFamilyDetailsRequest;
 import com.neasaa.familytree.operation.family.model.GetFamilyDetailsResponse;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
+@Log4j2
 @Component("GetFamilyDetailsOperation")
 @Scope("prototype")
 public class GetFamilyDetailsOperation extends AbstractOperation<GetFamilyDetailsRequest, GetFamilyDetailsResponse> {
@@ -77,11 +81,10 @@ public class GetFamilyDetailsOperation extends AbstractOperation<GetFamilyDetail
         familyDetailsResponse.setHeadOfFamilyName(headOfFamily.getFirstName() + " " + headOfFamily.getLastName());
         FamilyMemberDto familyTreeRoot = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(headOfFamily);
         familyTreeRoot.setSelectedNode(true);
-        familyDetailsResponse.setFamilyTreeRoot(familyTreeRoot);
-//        Map<Integer, FamilyMember> familyMemberMap =  familyMembers.stream().collect(Collectors.toMap(FamilyMember::getMemberId, member -> member));
         buildFamilyTreeStructure(familyTreeRoot);
+        familyTreeRoot = addParentsAndSiblingsToFamilyTree(familyTreeRoot);
 
-
+        familyDetailsResponse.setFamilyTreeRoot(familyTreeRoot);
         // Fetch the relationships of the family members and build the family tree structure.
         return familyDetailsResponse;
     }
@@ -112,6 +115,44 @@ public class GetFamilyDetailsOperation extends AbstractOperation<GetFamilyDetail
                 }
             }
         }
+    }
+
+    public FamilyMemberDto addParentsAndSiblingsToFamilyTree(FamilyMemberDto familyMemberDto) {
+        log.info("Adding parents for member: {}", familyMemberDto.getFirstName());
+        List<MemberRelationship> parents = memberRelationshipDao.getParentsForMemberById(familyMemberDto.getMemberId());
+        if (parents == null || parents.isEmpty()) {
+            log.info("No parents found for member: {}", familyMemberDto.getFirstName());
+            return familyMemberDto;
+        }
+        FamilyMemberDto father = null;
+        FamilyMemberDto mother = null;
+        for (MemberRelationship parentRelationship : parents) {
+            FamilyMember parentEntity = familyMemberDao.getMemberById(parentRelationship.getMemberId());
+            if (parentEntity != null) {
+                FamilyMemberDto parentDto = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(parentEntity);
+                if (parentEntity.getGender() == Gender.Male) {
+                    father = parentDto;
+                } else {
+                    mother = parentDto;
+                }
+            }
+        }
+        FamilyMemberDto primaryParent = null;
+        if(father != null) {
+            log.info("Father found for member {}: {}", familyMemberDto.getFirstName(), father.getFirstName());
+            primaryParent = father;
+            primaryParent.setSpouse(mother);
+        }  else if (mother != null) {
+            log.info("Mother found for member {}: {}", familyMemberDto.getFirstName(), mother.getFirstName());
+            primaryParent = mother;
+            primaryParent.setSpouse(father);
+        } else {
+            log.info("No parents found for member: {}", familyMemberDto.getFirstName());
+            return familyMemberDto;
+        }
+
+        primaryParent.addChild(familyMemberDto);
+        return primaryParent;
     }
 
 //    private FamilyMember getHeadOfFamily(List<FamilyMember> familyMembers) {

@@ -24,69 +24,110 @@ public class RelationshipUtils {
 	 * Input parameter is interpreted as 
 	 * member is relatedRelationshipType of relatedMember
 	 * 
-	 * Base on this, 2 relationship will be built.
-	 * E.g. 
-	 * x is son of y will result in 
-	 * x is son of y and 
-	 * y is father of x
-	 * 
+	 *
 	 * @param member
 	 * @param relatedRelationshipType
 	 * @param relatedMember
 	 * @return
 	 */
 	public static List<MemberRelationship> buildRelationships (FamilyMember member, RelationshipType relatedRelationshipType, FamilyMember relatedMember, AuditInfo auditInfo) {
-		
+		if(relatedRelationshipType == RelationshipType.Son || relatedRelationshipType == RelationshipType.Daughter || relatedRelationshipType == RelationshipType.Wife) {
+			MemberRelationship memberRelationship = MemberRelationship.builder()
+					.memberId(member.getMemberId())
+					.relationshipType(relatedRelationshipType)
+					.relatedMemberId(relatedMember.getMemberId())
+					.createdBy(auditInfo.getCreatedBy())
+					.createdDate(auditInfo.getCreatedDate())
+					.lastUpdatedBy(auditInfo.getLastUpdatedBy())
+					.lastUpdatedDate(auditInfo.getLastUpdatedDate())
+					.build();
+			return List.of(memberRelationship);
+		}
+
+		 if(relatedRelationshipType == RelationshipType.Husband) {
+			 MemberRelationship memberRelationship = MemberRelationship.builder()
+					 .memberId(relatedMember.getMemberId())
+					 .relationshipType(RelationshipType.Wife)
+					 .relatedMemberId(member.getMemberId())
+					 .createdBy(auditInfo.getCreatedBy())
+					 .createdDate(auditInfo.getCreatedDate())
+					 .lastUpdatedBy(auditInfo.getLastUpdatedBy())
+					 .lastUpdatedDate(auditInfo.getLastUpdatedDate())
+					 .build();
+			 return List.of(memberRelationship);
+		 }
+
 		RelationshipType reverseRelationshipType = null;
-		switch(relatedRelationshipType) {
-		case Father:
-		case Mother:
-			if(relatedMember.getGender() == Gender.Male) {
+		if(relatedRelationshipType == RelationshipType.Father || relatedRelationshipType == RelationshipType.Mother) {
+			if(member.getGender() == Gender.Male) {
 				reverseRelationshipType = RelationshipType.Son;
 			}
-			if(relatedMember.getGender() == Gender.Female) {
+			if(member.getGender() == Gender.Female) {
 				reverseRelationshipType = RelationshipType.Daughter;
 			}
-			break;
-		case Son:
-		case Daughter:
-			if(relatedMember.getGender() == Gender.Male) {
-				reverseRelationshipType = RelationshipType.Father;
-			}
-			if(relatedMember.getGender() == Gender.Female) {
-				reverseRelationshipType = RelationshipType.Mother;
-			}
-			break;
-		case Husband:
-			reverseRelationshipType = RelationshipType.Wife;
-			break;
-		case Wife:
-			reverseRelationshipType = RelationshipType.Husband;
-			break;
+			MemberRelationship memberRelationship = MemberRelationship.builder()
+					.memberId(relatedMember.getMemberId())
+					.relationshipType(reverseRelationshipType)
+					.relatedMemberId(member.getMemberId())
+					.createdBy(auditInfo.getCreatedBy())
+					.createdDate(auditInfo.getCreatedDate())
+					.lastUpdatedBy(auditInfo.getLastUpdatedBy())
+					.lastUpdatedDate(auditInfo.getLastUpdatedDate())
+					.build();
+			return List.of(memberRelationship);
 		}
-		
-		List<MemberRelationship> relationships = new ArrayList<>();
-		MemberRelationship memberRelationship = MemberRelationship.builder()
-				.memberId(member.getMemberId())
-				.relationshipType(relatedRelationshipType)
-				.relatedMemberId(relatedMember.getMemberId())
-				.createdBy(auditInfo.getCreatedBy())
-				.createdDate(auditInfo.getCreatedDate())
-				.lastUpdatedBy(auditInfo.getLastUpdatedBy())
-				.lastUpdatedDate(auditInfo.getLastUpdatedDate())
-				.build();
-		relationships.add(memberRelationship);
-		
-		MemberRelationship reverseRelationship = MemberRelationship.builder()
-				.memberId(relatedMember.getMemberId())
-				.relationshipType(reverseRelationshipType)
-				.relatedMemberId(member.getMemberId())
-				.createdBy(auditInfo.getCreatedBy())
-				.createdDate(auditInfo.getCreatedDate())
-				.lastUpdatedBy(auditInfo.getLastUpdatedBy())
-				.lastUpdatedDate(auditInfo.getLastUpdatedDate())
-				.build();
-		relationships.add(reverseRelationship);
-		return relationships;
+		throw new IllegalArgumentException("Invalid relationship type: " + relatedRelationshipType);
+
+//		RelationshipType reverseRelationshipType = null;
+//		switch(relatedRelationshipType) {
+//		case Father:
+//		case Mother:
+//			if(relatedMember.getGender() == Gender.Male) {
+//				reverseRelationshipType = RelationshipType.Son;
+//			}
+//			if(relatedMember.getGender() == Gender.Female) {
+//				reverseRelationshipType = RelationshipType.Daughter;
+//			}
+//			break;
+//		case Son:
+//		case Daughter:
+//			if(relatedMember.getGender() == Gender.Male) {
+//				reverseRelationshipType = RelationshipType.Father;
+//			}
+//			if(relatedMember.getGender() == Gender.Female) {
+//				reverseRelationshipType = RelationshipType.Mother;
+//			}
+//			break;
+//		case Husband:
+//			reverseRelationshipType = RelationshipType.Wife;
+//			break;
+//		case Wife:
+//			reverseRelationshipType = RelationshipType.Husband;
+//			break;
+//		}
+//
+//		List<MemberRelationship> relationships = new ArrayList<>();
+//		MemberRelationship memberRelationship = MemberRelationship.builder()
+//				.memberId(member.getMemberId())
+//				.relationshipType(relatedRelationshipType)
+//				.relatedMemberId(relatedMember.getMemberId())
+//				.createdBy(auditInfo.getCreatedBy())
+//				.createdDate(auditInfo.getCreatedDate())
+//				.lastUpdatedBy(auditInfo.getLastUpdatedBy())
+//				.lastUpdatedDate(auditInfo.getLastUpdatedDate())
+//				.build();
+//		relationships.add(memberRelationship);
+//
+//		MemberRelationship reverseRelationship = MemberRelationship.builder()
+//				.memberId(relatedMember.getMemberId())
+//				.relationshipType(reverseRelationshipType)
+//				.relatedMemberId(member.getMemberId())
+//				.createdBy(auditInfo.getCreatedBy())
+//				.createdDate(auditInfo.getCreatedDate())
+//				.lastUpdatedBy(auditInfo.getLastUpdatedBy())
+//				.lastUpdatedDate(auditInfo.getLastUpdatedDate())
+//				.build();
+//		relationships.add(reverseRelationship);
+//		return relationships;
 	}
 }

@@ -139,11 +139,13 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 				throw new ValidationException ("Other member is already a head of family");
 			}
 			// TODO: Uncomment this when relationship is implemented
-//			checkObjectPresent(opRequest.getRelashinship(), "relationship");
-//			relatedMember = RelationshipUtils.findMemberByIdInList(familyMembers, opRequest.getRelashinship().getRelatedMemberId());
-//			if(relatedMember == null) {
-//				throw new ValidationException ("Related member does not exists in same family");
-//			}
+			checkObjectPresent(opRequest.getRelashinship(), "relationship");
+
+			relatedMember = familyMemberDao.getMemberById(opRequest.getRelashinship().getRelatedMemberId());
+			if(relatedMember == null) {
+				throw new ValidationException ("Related member does not exists");
+			}
+			log.info("Input Relationship {}'s {} is {} ({})", opRequest.getFirstName() , opRequest.getRelashinship().getRelationshipType(), opRequest.getRelashinship().getRelatedMemberFullName(), opRequest.getRelashinship().getRelatedMemberId());
 		}
 		
 		
@@ -157,13 +159,18 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 		FamilyMember newMemberFromDb = familyMemberDao.addFamilyMember(getFamilyMemberFromRequest(opRequest, family, addressId));
 		//TODO: When adding head of family, family display name should be set to head of family name + region
 
-//		if(!opRequest.isHeadOfFamily()) {
-			//TODO: Uncomment this when relationship is implemented
+		if(opRequest.getRelashinship() != null) {
 			//Add relationship
-//			RelationshipType relationshipType = RelationshipType.getRelationshipType(opRequest.getRelashinship().getRelationshipType());
-//			List<MemberRelationship> relationships = RelationshipUtils.buildRelationships(newMemberFromDb, relationshipType, relatedMember, getAuditInfo());
-//			updateRelationships(relationships);
-//		}
+			RelationshipType relationshipType = RelationshipType.getRelationshipType(opRequest.getRelashinship().getRelationshipType());
+			if(relationshipType == null) {
+				log.info("Invalid relationship type provided: {}", opRequest.getRelashinship().getRelationshipType());
+				throw new ValidationException ("Invalid relationship type provided");
+			}
+			List<MemberRelationship> relationships = RelationshipUtils.buildRelationships(newMemberFromDb, relationshipType, relatedMember, getAuditInfo());
+			MemberRelationship relationship = relationships.get(0);
+			log.info("Member {}'s {} is {}", relationship.getMemberId(), relationship.getRelationshipType(), relationship.getRelatedMemberId());
+			updateRelationships(relationships);
+		}
 		
 		AddFamilyMemberResponse response = AddFamilyMemberResponse.builder().firstName(opRequest.getFirstName()).lastName(family.getFamilyName()).memberId(newMemberFromDb.getMemberId()).build();
 		response.setOperationMessage(String.format("Member %s %s added successfully !!!", opRequest.getFirstName(), family.getFamilyName()));
