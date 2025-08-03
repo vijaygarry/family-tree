@@ -1,6 +1,7 @@
 package com.neasaa.familytree.utils;
 
 import com.neasaa.familytree.entity.Address;
+import com.neasaa.familytree.enums.IndianState;
 
 public class DataFormatter {
 	
@@ -64,8 +65,7 @@ public class DataFormatter {
 			return null;
 		}
 		if(isIndianAddress(address)) {
-			//TODO: State should be 2 digit string
-			return address.getCity() + ", " + address.getState();
+			return address.getCity() + ", " + IndianState.getShortStateName(address.getState());
 		}
 		
 		return address.getCountry();

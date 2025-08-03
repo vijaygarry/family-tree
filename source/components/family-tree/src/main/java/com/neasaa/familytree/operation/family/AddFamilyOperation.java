@@ -91,13 +91,13 @@ public class AddFamilyOperation extends AbstractOperation<AddFamilyRequest, AddF
 		String NO_HEAD_OF_FAMILY = null;
 		return Family.builder()
 				.familyName(opRequest.getFamilyName())
+				.familyNameInHindi(opRequest.getFamilyNameInHindi())
 				.gotra(opRequest.getGotra())
 				.addressId(familyAddress.getAddressId())
 				.region(familyRegion)
 				.phone(phoneNumber)
 				.isPhoneWhatsappRegistered(opRequest.isPhoneWhatsappRegistered())
 				.email(opRequest.getEmail())
-				//TODO: When adding head of family, this field will be set to the head of family name.
 				.familyDisplayName(DataFormatter.getFamilyDisplayName(NO_HEAD_OF_FAMILY, opRequest.getFamilyName(), familyRegion))
 				.active(true)
 				.familyImage(Constants.DEFALT_FAMILY_IMAGE)

@@ -107,6 +107,10 @@ public class GetFamilyDetailsOperation extends AbstractOperation<GetFamilyDetail
             for (MemberRelationship childRelation : childrenForMember) {
                 FamilyMember child = familyMemberDao.getMemberById(childRelation.getRelatedMemberId());
                 if (child != null) {
+                    if(child.getFamilyId() != treeNode.getFamilyId()) {
+                        log.warn("Child {} does not belong to the same family as parent {}", child.getFirstName(), treeNode.getFirstName());
+                        continue; // Skip children that do not belong to the same family
+                    }
                     FamilyMemberDto childDto = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(child);
                     treeNode.addChild(childDto);
                     if(childDto.getFamilyId() == treeNode.getFamilyId()) {

@@ -9,6 +9,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.neasaa.base.app.operation.AuditInfo;
+import com.neasaa.familytree.entity.FamilyMember;
+import com.neasaa.familytree.utils.DataFormatter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -38,7 +41,9 @@ public class FamilyDao extends AbstractDao {
 			"FROM " + BASE_SCHEMA_NAME + "FAMILY f " +
 			"LEFT JOIN " + BASE_SCHEMA_NAME + "ADDRESS a on f.addressid = a.addressid " +
 			"WHERE f.FAMILYDISPLAYNAME ilike ? and f.active = true";
-	
+
+	private static final String UPDATE_FAMILY_DISPLAY_NAME = "UPDATE " + BASE_SCHEMA_NAME + "FAMILY SET region = ?, familydisplayname = ?, LASTUPDATEDBY = ?, lastupdateddate = now() WHERE FAMILYID = ?";
+
 	public Family getFamilyByFamilyId(int familyId) {
 		List<Family> familyList = getJdbcTemplate().query(SELECT_FAMILY_BY_FAMILYID, new FamilyRowMapper(), familyId);
 		
@@ -71,7 +76,14 @@ public class FamilyDao extends AbstractDao {
 		log.info("New family added with id " + familyId);
 		return familyId;
 	}
-	
+
+	public void updateFamilyDisplayName (Family family, FamilyMember familyMember, AuditInfo auditInfo) {
+		String familyRegion = DataFormatter.getRegion(family.getAddress());
+		String displayName = familyMember.getFirstName() + " " + familyMember.getLastName() +  " - " + familyRegion;
+		getJdbcTemplate().update(UPDATE_FAMILY_DISPLAY_NAME, familyRegion, displayName, auditInfo.getLastUpdatedBy(), family.getFamilyId());
+        log.info("Family display name is updated for family id: {}", family.getFamilyId());
+	}
+
 	private PreparedStatement buildInsertStatement(Connection aConection, Family aFamily) throws SQLException {
 		String sqlStatement = "INSERT INTO " + BASE_SCHEMA_NAME + "FAMILY (FAMILYNAME, FAMILYNAMEINHINDI, GOTRA, ADDRESSID, REGION, PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, FAMILYDISPLAYNAME, ACTIVE, FAMILYIMAGE, IMAGELASTUPDATED, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";

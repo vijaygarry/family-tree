@@ -47,6 +47,7 @@ public class FamilyMember extends BaseEntity {
 	private Short birthYear;
 	private Date dateOfDeath;
 	private MaritalStatus maritalStatus;
+	private String weddingDate;
 	private String educationDetails;
 	private String occupation;
 	private String workingAt;

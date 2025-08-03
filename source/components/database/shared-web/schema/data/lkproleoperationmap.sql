@@ -136,3 +136,7 @@ VALUES ('SUPER_ADMIN_ROLE', 'ADD_FAMILY', 1, now(), 1, now());
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('SUPER_ADMIN_ROLE', 'ADD_FAMILY_MEMBER', 1, now(), 1, now());
+
+INSERT INTO shared_schema.lkproleoperationmap(
+	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
+VALUES ('SUPER_ADMIN_ROLE', 'MANAGE_RELATIONSHIP', 1, now(), 1, now());

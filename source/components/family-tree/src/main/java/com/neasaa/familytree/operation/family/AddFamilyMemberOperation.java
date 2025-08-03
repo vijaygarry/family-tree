@@ -145,7 +145,7 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 			if(relatedMember == null) {
 				throw new ValidationException ("Related member does not exists");
 			}
-			log.info("Input Relationship {}'s {} is {} ({})", opRequest.getFirstName() , opRequest.getRelashinship().getRelationshipType(), opRequest.getRelashinship().getRelatedMemberFullName(), opRequest.getRelashinship().getRelatedMemberId());
+			log.info("Input Relationship {}'s {} is {} ({})", opRequest.getFirstName() , opRequest.getRelashinship().getRelationshipType(), opRequest.getRelashinship().getRelatedMemberName(), opRequest.getRelashinship().getRelatedMemberId());
 		}
 		
 		
@@ -157,7 +157,10 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 		}
 		
 		FamilyMember newMemberFromDb = familyMemberDao.addFamilyMember(getFamilyMemberFromRequest(opRequest, family, addressId));
-		//TODO: When adding head of family, family display name should be set to head of family name + region
+		if(newMemberFromDb.isHeadOfFamily()) {
+			familyDao.updateFamilyDisplayName(family, newMemberFromDb, getAuditInfo());
+		}
+
 
 		if(opRequest.getRelashinship() != null) {
 			//Add relationship
@@ -208,9 +211,11 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 				.familyId(family.getFamilyId())
 				.headOfFamily(opRequest.isHeadOfFamily())
 				.firstName(opRequest.getFirstName())
+				.firstNameInHindi(opRequest.getFirstNameInHindi())
 				.lastName(family.getFamilyName())
 				.maidenLastName(opRequest.getMaidenLastName())
 				.nickName(opRequest.getNickName())
+				.nickNameInHindi(opRequest.getNickNameInHindi())
 				.addressSameAsFamily(opRequest.isAddressSameAsFamily())
 				.memberAddressId(addressId)
 				.phone(phoneNumber)
@@ -221,7 +226,9 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 				.birthDay(opRequest.getBirthDay())
 				.birthMonth(Month.fromName(opRequest.getBirthMonth()))
 				.birthYear(opRequest.getBirthYear())
+				.dateOfDeath(opRequest.getDateOfDeath())
 				.maritalStatus(MaritalStatus.getMaritalStatus(opRequest.getMaritalStatus()))
+				.weddingDate(opRequest.getWeddingDate())
 				.educationDetails(opRequest.getEducationDetails())
 				.occupation(opRequest.getOccupation())
 				.workingAt(opRequest.getWorkingAt())

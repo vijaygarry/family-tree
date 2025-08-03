@@ -2,12 +2,16 @@ package com.neasaa.familytree.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.neasaa.base.app.operation.AuditInfo;
 import com.neasaa.familytree.entity.FamilyMember;
 import com.neasaa.familytree.entity.MemberRelationship;
 import com.neasaa.familytree.enums.RelationshipType;
 import com.neasaa.familytree.enums.Gender;
+import com.neasaa.familytree.operation.family.model.RelationshipDto;
+
+import static com.neasaa.familytree.enums.Gender.Male;
 
 public class RelationshipUtils {
 	
@@ -19,7 +23,49 @@ public class RelationshipUtils {
 		}
 		return null;
 	}
-	
+
+	/**
+	 *
+	 * @param relationship - Relationship DTO
+	 * @param member - Family member represents memberId in relationship
+	 * @return
+	 */
+	public static RelationshipDto normalizeRelationship (RelationshipDto relationship, FamilyMember member) {
+		if(relationship == null) {
+			throw new IllegalArgumentException("Invalid relationship provided.");
+		}
+		RelationshipType relationshipType = RelationshipType.getRelationshipType(relationship.getRelationshipType());
+		if(relationshipType == null) {
+			throw new IllegalArgumentException("Invalid relationship type " + relationship.getRelationshipType() + " provided.");
+		}
+		switch (relationshipType) {
+			case Son:
+			case Daughter:
+			case Wife:
+				return relationship;
+			case Husband:
+				return RelationshipDto.builder()
+						.memberId(relationship.getRelatedMemberId())
+						.memberName(relationship.getRelatedMemberName())
+						.relationshipType(RelationshipType.Wife.name())
+						.relatedMemberId(relationship.getMemberId())
+						.relatedMemberName(relationship.getMemberName())
+						.build();
+			case Father:
+			case Mother:
+				RelationshipType childRelationshipType = member.getGender() == Male ? RelationshipType.Son : RelationshipType.Daughter;
+				return RelationshipDto.builder()
+						.memberId(relationship.getRelatedMemberId())
+						.memberName(relationship.getRelatedMemberName())
+						.relationshipType(childRelationshipType.name())
+						.relatedMemberId(relationship.getMemberId())
+						.relatedMemberName(relationship.getMemberName())
+						.build();
+				default:
+					throw new IllegalArgumentException("Invalid relationship type: " + relationshipType);
+		}
+	}
+
 	/**
 	 * Input parameter is interpreted as 
 	 * member is relatedRelationshipType of relatedMember
@@ -59,7 +105,7 @@ public class RelationshipUtils {
 
 		RelationshipType reverseRelationshipType = null;
 		if(relatedRelationshipType == RelationshipType.Father || relatedRelationshipType == RelationshipType.Mother) {
-			if(member.getGender() == Gender.Male) {
+			if(member.getGender() == Male) {
 				reverseRelationshipType = RelationshipType.Son;
 			}
 			if(member.getGender() == Gender.Female) {

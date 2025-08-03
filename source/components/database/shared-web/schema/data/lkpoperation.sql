@@ -79,6 +79,12 @@ INSERT INTO shared_schema.lkpoperation(
     true, 1, now(), 1, now());
 
 
+INSERT INTO shared_schema.lkpoperation(
+	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype, 
+    active, createdby, createddate, lastupdatedby, lastupdateddate)
+	VALUES ('MANAGE_RELATIONSHIP', 'Manage Relationship', 'ManageRelationship', true, true, 'ROLE_BASE', 
+    true, 1, now(), 1, now());
+
 -- Get Family stats
 -- Total number of families, total number of members.
 -- Registered users
