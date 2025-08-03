@@ -11,6 +11,7 @@ import com.neasaa.familytree.operation.events.model.GetEventsRequest;
 import com.neasaa.familytree.operation.events.model.GetEventsResponse;
 import com.neasaa.familytree.operation.family.GetFamilyDetailsOperation;
 import com.neasaa.familytree.operation.family.GetMemberProfileOperation;
+import com.neasaa.familytree.operation.family.ManageRelationshipOperation;
 import com.neasaa.familytree.operation.family.SearchFamilyOperation;
 import com.neasaa.familytree.operation.family.model.AddFamilyMemberRequest;
 import com.neasaa.familytree.operation.family.model.AddFamilyMemberResponse;
@@ -20,6 +21,8 @@ import com.neasaa.familytree.operation.family.model.GetFamilyDetailsRequest;
 import com.neasaa.familytree.operation.family.model.GetFamilyDetailsResponse;
 import com.neasaa.familytree.operation.family.model.GetMemberProfileRequest;
 import com.neasaa.familytree.operation.family.model.GetMemberProfileResponse;
+import com.neasaa.familytree.operation.family.model.ManageRelationshipRequest;
+import com.neasaa.familytree.operation.family.model.ManageRelationshipResponse;
 import com.neasaa.familytree.operation.family.model.SearchFamilyRequest;
 import com.neasaa.familytree.operation.family.model.SearchFamilyResponse;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +56,13 @@ public class FamilyController {
 	public ResponseEntity<AddFamilyMemberResponse> addFamilyMember (@RequestBody AddFamilyMemberRequest addFamilyMemberRequest) throws Exception {
 		return WebRequestHandler.processRequest(AddFamilyMemberOperation.class, addFamilyMemberRequest);
 	}
+
+	@RequestMapping(value = "/manageRelationship")
+	@ResponseBody
+	public ResponseEntity<ManageRelationshipResponse> addFamilyMember (@RequestBody ManageRelationshipRequest manageRelationshipRequest) throws Exception {
+		return WebRequestHandler.processRequest(ManageRelationshipOperation.class, manageRelationshipRequest);
+	}
+
 
 	@RequestMapping(value = "/getmemberprofile")
 	@ResponseBody
