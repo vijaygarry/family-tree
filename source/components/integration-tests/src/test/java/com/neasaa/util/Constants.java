@@ -11,6 +11,6 @@ public class Constants {
     public static final String ADD_FAMILY_URL = "api/family/addfamily";
     public static final String ADD_FAMILY_MEMBER_URL = "api/family/addfamilymember";
     public static final String GET_FAMILY_DETAILS_URL = "api/family/getfamilydetails";
-
+    public static final String MANAGE_RELATIONSHIP_URL = "api/family/manageRelationship";
 
 }

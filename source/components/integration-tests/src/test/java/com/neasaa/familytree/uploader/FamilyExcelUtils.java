@@ -4,6 +4,7 @@ import com.neasaa.excel.ExcelSheet;
 import com.neasaa.familytree.operation.model.AddFamilyRequest;
 import com.neasaa.familytree.operation.model.ExcelFamilyMemberDetails;
 import com.neasaa.familytree.operation.model.InputAddress;
+import com.neasaa.familytree.operation.model.InputRelationship;
 import com.neasaa.util.StringUtils;
 import lombok.extern.log4j.Log4j2;
 import org.apache.poi.ss.usermodel.Cell;
@@ -105,6 +106,27 @@ public class FamilyExcelUtils {
         return familyMembers;
     }
 
+    public static List<InputRelationship> getRelationships(ExcelSheet membersRelationshipSheet) {
+        log.info("Loading relationships from excel");
+        int numberOfRows = membersRelationshipSheet.getLastRowNum();
+        int startRowNumber = 1; // Index starts with 0
+
+        List<InputRelationship> relationships =new ArrayList<>();
+        ExcelMemberRelationshipRowMapper rowMapper = new ExcelMemberRelationshipRowMapper();
+        for (int rowNum = startRowNumber; rowNum <= numberOfRows; rowNum++) {
+            try {
+                Row row = membersRelationshipSheet.getRow(rowNum);
+                InputRelationship relationship = rowMapper.mapRow(row, rowNum);
+                relationships.add(relationship);
+            } catch (Exception e) {
+                log.error("Error reading row {} from excel", rowNum + 1);
+                throw e;
+            }
+        }
+        return relationships;
+    }
+
+
     private static String getBigNumericCellValue(Cell cell) {
         DataFormatter formatter = new DataFormatter();
         // This will return the cell value as it appears in Excel (as a String)
@@ -162,6 +184,7 @@ public class FamilyExcelUtils {
                     .birthMonth(ExcelSheet.getCellValue(row.getCell(columnCounter++)))
                     .birthYear(getShortNumericCellValue(row.getCell(columnCounter++)))
                     .maritalStatus(ExcelSheet.getCellValue(row.getCell(columnCounter++)))
+                    .weddingDate(ExcelSheet.getCellValue(row.getCell(columnCounter++)))
                     .phone(getBigNumericCellValue(row.getCell(columnCounter++)))
                     .isPhoneWhatsappRegistered(
                             getBooleanCellValue(row.getCell(columnCounter++)))
@@ -177,13 +200,15 @@ public class FamilyExcelUtils {
                             getBooleanCellValue(row.getCell(columnCounter++)))
                     .memberAddress(getAddress(row, columnCounter))
                     .dateOfDeath(getDateCellValue(row.getCell(columnCounter+8)))
+
                     .excelRowNumber(rowNum)
                     .build();
             columnCounter = columnCounter + 9; // Skip to the next column after address
-            String fatherName = ExcelSheet.getCellValue(row.getCell(columnCounter++));
-            String motherName = ExcelSheet.getCellValue(row.getCell(columnCounter++));
+//            String fatherName = ExcelSheet.getCellValue(row.getCell(columnCounter++));
+//            String motherName = ExcelSheet.getCellValue(row.getCell(columnCounter++));
             String spouseName = ExcelSheet.getCellValue(row.getCell(columnCounter++));
             String childrenCSVNames = ExcelSheet.getCellValue(row.getCell(columnCounter++));
+            memberDetails.setBelongsToOtherFamily(getBooleanCellValue(row.getCell(columnCounter++)));
             List<String> childrenNamesList = new ArrayList<>();
             if(childrenCSVNames != null && !childrenCSVNames.isEmpty()) {
                 childrenNamesList = List.of(childrenCSVNames.split(","));
@@ -191,16 +216,16 @@ public class FamilyExcelUtils {
                         .toList();
             }
 
-            memberDetails.setFatherName(fatherName);
-            memberDetails.setMotherName(motherName);
+//            memberDetails.setFatherName(fatherName);
+//            memberDetails.setMotherName(motherName);
             memberDetails.setSpouseName(spouseName);
             memberDetails.setChildrenNamesList(childrenNamesList);
 
             log.info("Member loaded from excel: {} from rowNum: {} ", memberDetails, rowNum);
-            log.info("Father: {}, Mother: {}, Spouse: {}, Children: {}",
-                    fatherName, motherName, spouseName, childrenNamesList);
+            log.info("Spouse: {}, Children: {}", spouseName, childrenNamesList);
             return memberDetails;
         }
+
         private InputAddress getAddress(Row row, int columnCounter) {
             if(getBooleanCellValue(row.getCell((columnCounter-1)))) {
                 // If addressSameAsFamily is true, return null
@@ -218,4 +243,26 @@ public class FamilyExcelUtils {
                     .build();
         }
     }
+
+    private static class ExcelMemberRelationshipRowMapper {
+        public InputRelationship mapRow(Row row, int rowNum) {
+            int columnCounter = 0;
+            String memberName = ExcelSheet.getCellValue(row.getCell(columnCounter++));
+            String relationshipType = ExcelSheet.getCellValue(row.getCell(columnCounter++));
+            String relatedMemberName = ExcelSheet.getCellValue(row.getCell(columnCounter++));
+            String relatedMemberId = getBigNumericCellValue(row.getCell(columnCounter++));
+
+            if (memberName == null || relatedMemberId == null || relatedMemberId.isEmpty()) {
+                return null;
+            }
+
+            return InputRelationship.builder()
+                    .memberName(memberName)
+                    .relationshipType(relationshipType)
+                    .relatedMemberName(relatedMemberName)
+                    .relatedMemberId(Integer.parseInt(relatedMemberId))
+                    .build();
+        }
+    }
+
 }

@@ -4,6 +4,7 @@ import com.neasaa.excel.ExcelSheet;
 import com.neasaa.excel.ExcelWorkBook;
 import com.neasaa.familytree.operation.model.AddFamilyRequest;
 import com.neasaa.familytree.operation.model.ExcelFamilyMemberDetails;
+import com.neasaa.familytree.operation.model.InputRelationship;
 import com.neasaa.util.FileUtils;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -14,22 +15,28 @@ import java.util.List;
 public class ExcelFamily {
     private static final String FAMILY_SHEET_NAME = "FamilyDetails";
     private static final String FAMILY_MEMBER_SHEET_NAME = "Family Members";
+    private static final String MEMBER_RELATIONSHIP_SHEET_NAME = "Relationship";
 
     private final String excelFilepath;
     private ExcelWorkBook workbook = null;
     private ExcelSheet familySheet = null;
     private ExcelSheet familyMembersSheet = null;
+    private ExcelSheet membersRelationshipSheet = null;
     @Getter
     private AddFamilyRequest familyDetails = null;
+    @Getter
     private List<ExcelFamilyMemberDetails> familyMembers = null;
     @Getter
     private MemberTreeNode root = null;
+    @Getter
+    private List<InputRelationship> relationships = null;
 
     public ExcelFamily(String excelFilepath) throws Exception {
         this.excelFilepath = excelFilepath;
         this.workbook = getExcelWorkbook(excelFilepath);
         this.familySheet = workbook.getExcelSheetByName(FAMILY_SHEET_NAME);
         this.familyMembersSheet = workbook.getExcelSheetByName(FAMILY_MEMBER_SHEET_NAME);
+        this.membersRelationshipSheet = workbook.getExcelSheetByName(MEMBER_RELATIONSHIP_SHEET_NAME);
     }
 
     public void loadDataFromExcel() throws Exception {
@@ -37,13 +44,16 @@ public class ExcelFamily {
         log.info("Family details loaded from excel: {}", familyDetails);
         familyMembers = FamilyExcelUtils.getFamilyMembers(familyMembersSheet);
         root = buildMemberTree(familyMembers, familyDetails);
+        relationships = FamilyExcelUtils.getRelationships(membersRelationshipSheet);
         log.info(root);
     }
+
     private void saveExcel() throws Exception {
         workbook.save();
         workbook = getExcelWorkbook(excelFilepath);
         this.familySheet = workbook.getExcelSheetByName(FAMILY_SHEET_NAME);
         this.familyMembersSheet = workbook.getExcelSheetByName(FAMILY_MEMBER_SHEET_NAME);
+        this.membersRelationshipSheet = workbook.getExcelSheetByName(MEMBER_RELATIONSHIP_SHEET_NAME);
     }
 
     public void printFamilyTree() {

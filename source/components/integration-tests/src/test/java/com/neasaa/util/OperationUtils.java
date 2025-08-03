@@ -4,14 +4,19 @@ import com.neasaa.base.app.operation.model.LoginRequest;
 import com.neasaa.base.app.utils.Config;
 import com.neasaa.familytree.operation.model.AddFamilyMemberRequest;
 import com.neasaa.familytree.operation.model.AddFamilyRequest;
+import com.neasaa.familytree.operation.model.InputRelationship;
+import com.neasaa.familytree.operation.model.ManageRelationshipRequest;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+
+import java.util.List;
 
 import static com.neasaa.util.Constants.ADD_FAMILY_MEMBER_URL;
 import static com.neasaa.util.Constants.ADD_FAMILY_URL;
 import static com.neasaa.util.Constants.LOGIN_URL;
 import static com.neasaa.util.Constants.LOGOUT_URL;
+import static com.neasaa.util.Constants.MANAGE_RELATIONSHIP_URL;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -53,6 +58,16 @@ public class OperationUtils {
         response.then().log().all(); // Logs full response
         return response;
     }
+
+    public static Response addRelationship (InputRelationship relationship, String sessionId) {
+        ManageRelationshipRequest request = ManageRelationshipRequest.builder()
+                .toAdd(List.of(relationship))
+                .build();
+        Response response = executeOperation(request, sessionId, MANAGE_RELATIONSHIP_URL);
+        response.then().log().all(); // Logs full response
+        return response;
+    }
+
 
     public static Response executeOperation (Object request, String jSessionId, String operationUrl) {
         RequestSpecification requestSpecification = given()

@@ -1,12 +1,9 @@
 package com.neasaa.familytree.uploader;
 
 import com.neasaa.base.app.utils.AssertionUtils;
-import com.neasaa.excel.ExcelSheet;
-import com.neasaa.excel.ExcelWorkBook;
 import com.neasaa.familytree.operation.model.AddFamilyRequest;
 import com.neasaa.familytree.operation.model.ExcelFamilyMemberDetails;
 import com.neasaa.familytree.operation.model.InputRelationship;
-import com.neasaa.util.FileUtils;
 import com.neasaa.util.OperationUtils;
 import io.restassured.response.Response;
 import lombok.extern.log4j.Log4j2;
@@ -19,7 +16,11 @@ import static com.neasaa.util.OperationUtils.logoutUser;
 public class UploadFamily {
 
     public static void main(String[] args) throws Exception {
-        String excelFilepath = "/Users/vijaygarothaya/work/product/family-tree/Documents/GarothayaFamily-Bhagwatnarayan.xlsx";
+//        String excelFilepath = "/Users/vijaygarothaya/work/product/family-tree/Documents/FamilyData/RajputFamily-Rajesh.xlsx";
+//        String excelFilepath = "/Users/vijaygarothaya/work/product/family-tree/Documents/FamilyData/GarothayaFamily-Bhagwatnarayan.xlsx";
+        String excelFilepath = "/Users/vijaygarothaya/work/product/family-tree/Documents/FamilyData/GhatoriyaFamily-Jankibai.xlsx";
+//        String excelFilepath = "/Users/vijaygarothaya/work/product/family-tree/Documents/FamilyData/GhatoriyaFamily-Ajay.xlsx";
+
         ExcelFamily excelFamily = new ExcelFamily(excelFilepath);
         excelFamily.loadDataFromExcel();
         excelFamily.printFamilyTree();
@@ -34,28 +35,36 @@ public class UploadFamily {
         MemberTreeNode root = excelFamily.getRoot();
         addMemberNodesToApplication(root, familyDetails, sessionId, excelFamily);
 
+        // By this time all family members should be added to the application and excel should be updated with member ids.
+        excelFamily.loadDataFromExcel();
+        if(excelFamily.getRelationships() != null && !excelFamily.getRelationships().isEmpty()) {
+            log.info("Adding relationships to the application.");
+            List<ExcelFamilyMemberDetails> familyMembers = excelFamily.getFamilyMembers();
+            for (InputRelationship relationship : excelFamily.getRelationships()) {
+                int memberId = -1;
+                if(relationship == null || relationship.getRelatedMemberId() <= 0) {
+                    log.info("Relationship not specified, skipping add operation.");
+                    continue;
+                }
+                for(ExcelFamilyMemberDetails member : familyMembers) {
+                    if (member.getFirstName().equalsIgnoreCase(relationship.getMemberName())) {
+                          memberId = member.getMemberId();
+                          break;
+                    }
+                }
+                if(memberId < 0) {
+                    log.warn("Member {} not found in the excel, failed to add relationship {}.", relationship.getMemberName(), relationship.getRelationshipType());
+                    throw new Exception("Member " + relationship.getMemberName() + " not found in the excel, failed to add relationship " + relationship.getRelationshipType());
+                }
+                relationship.setMemberId(memberId);
+                Response response = OperationUtils.addRelationship(relationship, sessionId);
+                AssertionUtils.assertResponse(response, 200, null);
+                log.info("Relationship {} added successfully.", relationship.getRelationshipType());
+            }
+        } else {
+            log.info("No relationships found in the excel file.");
+        }
 
-
-//        familyMembersSheet = workbook.getExcelSheetByName(FAMILY_MEMBER_SHEET_NAME);
-//        for (int i=0; i < familyMembers.size(); i++) {
-//            ExcelFamilyMemberDetails familyMember = familyMembers.get(i);
-//            familyMember.setFamilyId(familyDetails.getFamilyId());
-//            if( familyMember.getMemberId() == 0) {
-//                log.info("Family member {} is skipped.", familyMember.getFirstName());
-//                continue;
-//            }
-//            if (familyMember.getMemberId() > 0) {
-//                log.info("Family member {} already exists, skipping add operation.", familyMember.getFirstName());
-//                continue;
-//            }
-//            log.info("Adding family member: {}", familyMember.getFirstName());
-//            addFamilyMemberAndUpdateMemberIdInExcel(
-//                    familyMembersSheet, familyMember, sessionId, familyDetails, familyMembers.indexOf(familyMember)
-//            );
-//            workbook.save();
-//            workbook = getExcelWorkbook(excelFilepath);
-//            familyMembersSheet = workbook.getExcelSheetByName(FAMILY_MEMBER_SHEET_NAME);
-//        }
         logoutUser(sessionId);
     }
 
@@ -92,7 +101,7 @@ public class UploadFamily {
             if(currentMemberDetails.getGender().equalsIgnoreCase("Female")) {
                 relationshipType = "Daughter";
             }
-            InputRelationship relationship = InputRelationship.builder().relationshipType(relationshipType).relatedMemberId(currentMemberDetails.getMemberId()).relatedMemberFullName(currentMemberDetails.getFirstName())
+            InputRelationship relationship = InputRelationship.builder().relationshipType(relationshipType).relatedMemberId(currentMemberDetails.getMemberId()).relatedMemberName(currentMemberDetails.getFirstName())
                     .build();
             fatherNode.getMember().setRelashinship(relationship);
             addFamilyMemberAndUpdateMemberIdInExcel(fatherNode, familyDetails, sessionId, excelFamily);
@@ -101,14 +110,14 @@ public class UploadFamily {
         if (motherNode != null) {
             InputRelationship relationship = null;
             if( fatherNode != null ) {
-                relationship = InputRelationship.builder().relationshipType("Husband").relatedMemberId(fatherNode.getMember().getMemberId()).relatedMemberFullName(fatherNode.getMember().getFirstName())
+                relationship = InputRelationship.builder().relationshipType("Husband").relatedMemberId(fatherNode.getMember().getMemberId()).relatedMemberName(fatherNode.getMember().getFirstName())
                         .build();
             } else {
                 String relationshipType = "Son";
                 if(currentMemberDetails.getGender().equalsIgnoreCase("Female")) {
                     relationshipType = "Daughter";
                 }
-                relationship = InputRelationship.builder().relationshipType(relationshipType).relatedMemberId(currentMemberDetails.getMemberId()).relatedMemberFullName(currentMemberDetails.getFirstName())
+                relationship = InputRelationship.builder().relationshipType(relationshipType).relatedMemberId(currentMemberDetails.getMemberId()).relatedMemberName(currentMemberDetails.getFirstName())
                         .build();
             }
             motherNode.getMember().setRelashinship(relationship);
@@ -121,7 +130,7 @@ public class UploadFamily {
             if(currentMemberDetails.getGender().equalsIgnoreCase("Female")) {
                 relationshipType = "Wife";
             }
-            InputRelationship relationship = InputRelationship.builder().relationshipType(relationshipType).relatedMemberId(currentMemberDetails.getMemberId()).relatedMemberFullName(currentMemberDetails.getFirstName())
+            InputRelationship relationship = InputRelationship.builder().relationshipType(relationshipType).relatedMemberId(currentMemberDetails.getMemberId()).relatedMemberName(currentMemberDetails.getFirstName())
                     .build();
             spouseNode.getMember().setRelashinship(relationship);
             addFamilyMemberAndUpdateMemberIdInExcel(spouseNode, familyDetails, sessionId, excelFamily);
@@ -134,7 +143,7 @@ public class UploadFamily {
                 if(currentMemberDetails.getGender().equalsIgnoreCase("Female")) {
                     relationshipType = "Mother";
                 }
-                InputRelationship relationship = InputRelationship.builder().relationshipType(relationshipType).relatedMemberId(currentMemberDetails.getMemberId()).relatedMemberFullName(currentMemberDetails.getFirstName())
+                InputRelationship relationship = InputRelationship.builder().relationshipType(relationshipType).relatedMemberId(currentMemberDetails.getMemberId()).relatedMemberName(currentMemberDetails.getFirstName())
                         .build();
                 child.getMember().setRelashinship(relationship);
                 addFamilyMemberAndUpdateMemberIdInExcel(child, familyDetails, sessionId, excelFamily);
@@ -171,7 +180,7 @@ public class UploadFamily {
             memberNode.getMember().setFamilyId(familyDetails.getFamilyId());
         }
         if(familyMemberDetails.getRelashinship() != null ) {
-            log.info("Sending relationship as {} is {} of {}", familyMemberDetails.getFirstName(), familyMemberDetails.getRelashinship().getRelationshipType(), familyMemberDetails.getRelashinship().getRelatedMemberFullName());
+            log.info("Sending relationship as {} is {} of {}", familyMemberDetails.getFirstName(), familyMemberDetails.getRelashinship().getRelationshipType(), familyMemberDetails.getRelashinship().getRelatedMemberName());
         }
 
         Response response = OperationUtils.addFamilyMember(familyMemberDetails.toAddFamilyMemberRequest(), sessionId);
@@ -181,6 +190,4 @@ public class UploadFamily {
         familyMemberDetails.setMemberId(familyMemberId);
         excelFamily.updateMemberId(memberNode);
     }
-
-
 }

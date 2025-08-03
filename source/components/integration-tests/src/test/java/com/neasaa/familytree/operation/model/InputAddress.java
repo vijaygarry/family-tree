@@ -3,10 +3,12 @@ package com.neasaa.familytree.operation.model;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Builder
 @Getter
 @Setter
+@ToString
 public class InputAddress {
 	private String addressLine1;
 	private String addressLine2;

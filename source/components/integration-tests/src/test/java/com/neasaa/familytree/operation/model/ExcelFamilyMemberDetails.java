@@ -35,15 +35,17 @@ public class ExcelFamilyMemberDetails {
     private Short birthYear;
     private Date dateOfDeath;
     private String maritalStatus;
+    private String weddingDate;
     private String educationDetails;
     private String occupation;
     private String workingAt;
     private String hobby;
     private String profileImage;
-    private String fatherName;
-    private String motherName;
+//    private String fatherName;
+//    private String motherName;
     private String spouseName;
     private List<String> childrenNamesList;
+    private boolean belongsToOtherFamily;
     private InputRelationship relashinship;
     private int excelRowNumber;
 

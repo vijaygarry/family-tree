@@ -8,9 +8,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class InputRelationship {
-	// This will be interpreted as 
-	//new member is relationshipType of relatedMemberId
-	String relationshipType; 
+	int memberId; // This is the memberId
+	String memberName;
+	// This will be interpreted as
+	//member's relationshipType is relatedMemberId
+	// E.g. member (Vijay)'s son is relatedMemberId (Arav)
+	String relationshipType;
+
 	int relatedMemberId;
-	String relatedMemberFullName;
+	String relatedMemberName;
 }
