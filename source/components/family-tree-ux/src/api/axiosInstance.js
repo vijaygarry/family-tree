@@ -17,7 +17,8 @@ api.interceptors.response.use(
       !window.location.pathname.includes("/login")
     ) {
       hasRedirectedToLogin = true;
-      window.location.href = "/login";
+      const currentPath = window.location.pathname + window.location.search;
+      window.location.href = `/login?redirectTo=${encodeURIComponent(currentPath)}`;
     }
     return Promise.reject(error);
   }

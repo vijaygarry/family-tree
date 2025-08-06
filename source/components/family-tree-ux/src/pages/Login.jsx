@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 const Login = () => {
   const { login } = useContext(AuthContext);
@@ -11,7 +11,10 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from?.pathname || "/";
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirectTo");
+
+  const from = redirectTo || location.state?.from?.pathname || "/";
 
   const handleLogin = async (e) => {
     e.preventDefault();

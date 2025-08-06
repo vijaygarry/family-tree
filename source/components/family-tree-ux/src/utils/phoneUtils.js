@@ -11,7 +11,6 @@ export const getCountryFlag = (phoneNumber) => {
 export const getFormattedPhoneDisplay = (phoneNumber, isWhatsapp) => {
   if (!phoneNumber) return '';
   const flag = getCountryFlag(phoneNumber);
-  console.log("Formatting number " + phoneNumber + " with flag " + isWhatsapp);
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center' }}>
       {flag} {phoneNumber}
