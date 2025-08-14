@@ -66,7 +66,7 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
         if (memberEntity == null) {
             throw new ValidationException("Member not found.");
         }
-        FamilyMemberDto familyTreeRoot = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(memberEntity);
+        FamilyMemberDto familyTreeRoot = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(memberEntity, "Update Pending");
         familyTreeRoot.setSelectedNode(true);
         buildFamilyTreeStructure(familyTreeRoot, 0);
         //Add parents and siblings to the family tree.
@@ -96,7 +96,7 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
                 FamilyMember spouse = familyMemberDao.getMemberById(spouseForMember.getRelatedMemberId());
                 spouseMemberId = spouseForMember.getRelatedMemberId();
                 if (spouse != null) {
-                    treeNode.setSpouse(FamilyMemberDto.getFamilyMemberDtoFromDBEntity(spouse));
+                    treeNode.setSpouse(FamilyMemberDto.getFamilyMemberDtoFromDBEntity(spouse, "Update Pending"));
                 }
             }
         }
@@ -107,7 +107,7 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
             for (MemberRelationship childRelation : childrenForMember) {
                 FamilyMember child = familyMemberDao.getMemberById(childRelation.getRelatedMemberId());
                 if (child != null) {
-                    FamilyMemberDto childDto = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(child);
+                    FamilyMemberDto childDto = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(child, "Update Pending");
                     treeNode.addChild(childDto);
                     if(childDto.getFamilyId() == treeNode.getFamilyId()) {
                         log.info("Member " + childDto.getFirstName() + " is part of the same family as " + treeNode.getFamilyId());
@@ -132,7 +132,7 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
         for (MemberRelationship parentRelationship : parents) {
             FamilyMember parentEntity = familyMemberDao.getMemberById(parentRelationship.getMemberId());
             if (parentEntity != null) {
-                FamilyMemberDto parentDto = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(parentEntity);
+                FamilyMemberDto parentDto = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(parentEntity, "Update Pending");
                 if (parentEntity.getGender() == Gender.Male) {
                     father = parentDto;
                 } else {
@@ -182,7 +182,7 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
             for (MemberRelationship childRelation : childrenForMember) {
                 FamilyMember child = familyMemberDao.getMemberById(childRelation.getRelatedMemberId());
                 if (child != null) {
-                    FamilyMemberDto childDto = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(child);
+                    FamilyMemberDto childDto = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(child, "Update Pending");
                     children.add(childDto);
                 }
             }

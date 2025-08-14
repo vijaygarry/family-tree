@@ -1,5 +1,6 @@
 jar {
     archiveBaseName.set('family-tree-web-boot')
+    enabled = true
 }
 
 dependencies {
@@ -16,14 +17,49 @@ dependencies {
 
 apply plugin: 'eclipse-wtp'
 
+def uxDir = "$rootDir/components/family-tree-ux"
+
+task buildUx(type: Exec) {
+    workingDir uxDir
+    commandLine 'npm', 'run', 'build'
+    doFirst {
+        println "Building UX files $uxDir :build"
+    }
+}
+
+task copyUxFilesToBoot (type: Copy) {
+    dependsOn buildUx
+    from("$uxDir/build")                     // React build output
+    into("$buildDir/resources/main/static")        // Spring Boot static resources
+
+    doFirst {
+        println "🔍 Copying UX files from: $uxDir/build"
+        println "📂 Destination: $buildDir/resources/main/static"
+    }
+
+     doLast {
+        println "✅ Copy complete. Files in static folder:"
+        println fileTree("$buildDir/resources/main/static").files
+    }
+}
+
+processResources.dependsOn copyUxFilesToBoot
+
+
 task runApp(type: JavaExec) {
     group = 'application'
     description = 'Start Springboot Application'
-    environment 'DB_PASSWORD_ENCRYPTION_SALT_KEY', 'get value'
-    classpath = sourceSets.main.runtimeClasspath
+    environment 'DB_PASSWORD_ENCRYPTION_SALT_KEY', 'secret-key'
+    classpath = sourceSets.main.runtimeClasspath +
+                files('src/main/config/')
     mainClass = 'com.neasaa.familytree.FamilyTreeApplication' // 🔁 Use your actual main class
     //args = ['--spring.profiles.active=dev']             // optional args
     jvmArgs = ['-Xmx512m']                               // optional JVM args
+
+    doFirst {
+        println "Classpath:"
+        classpath.each { println it }
+    }
 }
 
 eclipse {
@@ -37,4 +73,18 @@ eclipse {
     wtp.facet {
     	facet name:'org.eclipse.wst.common.project.facet.core.nature'
     }
+}
+
+// Task to copy app jar + dependency jars
+tasks.register('buildDist', Copy) {
+    dependsOn jar // ensure app jar is built
+
+    from(jar) {
+        into 'lib'
+    }
+    from(configurations.runtimeClasspath) {
+        into 'lib'
+    }
+
+    into "${rootDir}/distribution"  // target location in project
 }

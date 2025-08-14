@@ -13,6 +13,9 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import static com.neasaa.familytree.utils.DataFormatter.formatBirthDate;
+
 @Getter
 @Setter
 @Builder
@@ -27,7 +30,9 @@ public class FamilyMemberDto {
     private String maidenLastName;
     private String nickName;
     private String nickNameInHindi;
+    private String familyRelationship; // Son of abc or Wife of abc or Father of abc
     private Gender gender;
+    private String birthDate; // Format: dd-MMM-yyyy
     private short birthDay;
     private Month birthMonth;
     private short birthYear;
@@ -50,7 +55,8 @@ public class FamilyMemberDto {
     private FamilyMemberDto spouse;
     private List<FamilyMemberDto> children;
 
-    public static FamilyMemberDto getFamilyMemberDtoFromDBEntity(FamilyMember familyMember) {
+    public static FamilyMemberDto getFamilyMemberDtoFromDBEntity(FamilyMember familyMember, String familyRelationship) {
+
         return FamilyMemberDto.builder()
                 .memberId(familyMember.getMemberId())
                 .familyId(familyMember.getFamilyId())
@@ -61,7 +67,9 @@ public class FamilyMemberDto {
                 .maidenLastName(familyMember.getMaidenLastName())
                 .nickName(familyMember.getNickName())
                 .nickNameInHindi(familyMember.getNickNameInHindi())
+                .familyRelationship(familyRelationship)
                 .gender(familyMember.getGender())
+                .birthDate(formatBirthDate(familyMember.getBirthDay(), familyMember.getBirthMonth(), familyMember.getBirthYear()))
                 .birthDay(familyMember.getBirthDay())
                 .birthMonth(familyMember.getBirthMonth())
                 .birthYear(familyMember.getBirthYear())

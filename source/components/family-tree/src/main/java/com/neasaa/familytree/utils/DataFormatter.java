@@ -2,6 +2,10 @@ package com.neasaa.familytree.utils;
 
 import com.neasaa.familytree.entity.Address;
 import com.neasaa.familytree.enums.IndianState;
+import com.neasaa.familytree.enums.Month;
+
+import java.time.LocalDate;
+import java.time.Period;
 
 public class DataFormatter {
 	
@@ -46,11 +50,8 @@ public class DataFormatter {
 		if(address == null) {
 			return true;
 		}
-		if(Constants.INDIA_COUNTRY.equalsIgnoreCase(address.getCountry())) {
-			return true;
-		}
-		return false;
-	}
+        return Constants.INDIA_COUNTRY.equalsIgnoreCase(address.getCountry());
+    }
 	/**
 	 * The region where the family resides.
     	- For families in **India**:  
@@ -83,5 +84,35 @@ public class DataFormatter {
 			return String.format("%s - %s", familyName, region);
 		}
 		return String.format("%s %s - %s", headOfFamilyMemberName, familyName, region);
+	}
+
+	public static String formatBirthDate (short day, Month month, short year) {
+		if (month == null) {
+			return "Year " + year;
+		}
+		if (day <= 0 ) {
+			return String.format("%s-%s", month.getMonthName(), year);
+		}
+		return String.format("%s-%s-%s", day, month.getShortMonthName(), year);
+	}
+
+	public static int getMemberAge (short day, Month month, short year) {
+		LocalDate birthDate = null;
+
+		if (month == null) {
+			//Assume January 1st of the year
+			birthDate = LocalDate.of(year, 1, 1);
+		} else if (day <= 0 ) {
+			// Month is provided but day is not, assume 1st of the month
+			birthDate = LocalDate.of(year, month.getMonthNumber(), 1);
+		} else {
+			// Full date is provided
+			birthDate = LocalDate.of(year, month.getMonthNumber(), day);
+		}
+
+		// Current date
+		LocalDate today = LocalDate.now();
+		// Calculate age
+		return Period.between(birthDate, today).getYears();
 	}
 }

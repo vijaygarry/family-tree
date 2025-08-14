@@ -27,6 +27,13 @@ import java.util.List;
 @Component("GetFamilyDetailsOperation")
 @Scope("prototype")
 public class GetFamilyDetailsOperation extends AbstractOperation<GetFamilyDetailsRequest, GetFamilyDetailsResponse> {
+    public static final String HEAD_OF_FAMILY = "Head of Family";
+    public static final String WIFE_OF_MEMBER = "Wife of %s";
+    public static final String HUSBAND_OF_MEMBER = "Husband of %s";
+    public static final String SON_OF_MEMBER = "Son of %s";
+    public static final String DAUGHTER_OF_MEMBER = "Daughter of %s";
+    public static final String FATHER_OF_MEMBER = "Father of %s";
+    public static final String MOTHER_OF_MEMBER = "Mother of %s";
 
     @Autowired
     private AddressDao addressDao;
@@ -79,7 +86,7 @@ public class GetFamilyDetailsOperation extends AbstractOperation<GetFamilyDetail
             throw new ValidationException("Family members not found for this family " + familyId);
         }
         familyDetailsResponse.setHeadOfFamilyName(headOfFamily.getFirstName() + " " + headOfFamily.getLastName());
-        FamilyMemberDto familyTreeRoot = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(headOfFamily);
+        FamilyMemberDto familyTreeRoot = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(headOfFamily, HEAD_OF_FAMILY);
         familyTreeRoot.setSelectedNode(true);
         buildFamilyTreeStructure(familyTreeRoot);
         familyTreeRoot = addParentsAndSiblingsToFamilyTree(familyTreeRoot);
@@ -97,7 +104,13 @@ public class GetFamilyDetailsOperation extends AbstractOperation<GetFamilyDetail
                 spouseMemberId = spouseForMember.getRelatedMemberId();
                 FamilyMember spouse = familyMemberDao.getMemberById(spouseForMember.getRelatedMemberId());
                 if (spouse != null) {
-                    treeNode.setSpouse(FamilyMemberDto.getFamilyMemberDtoFromDBEntity(spouse));
+                    String familyRelationship = null;
+                    if(treeNode.getGender() == Gender.Male) {
+                        familyRelationship = WIFE_OF_MEMBER.formatted(treeNode.getFirstName());
+                    } else {
+                        familyRelationship = HUSBAND_OF_MEMBER.formatted(treeNode.getFirstName());
+                    }
+                    treeNode.setSpouse(FamilyMemberDto.getFamilyMemberDtoFromDBEntity(spouse, familyRelationship));
                 }
             }
         }
@@ -111,7 +124,13 @@ public class GetFamilyDetailsOperation extends AbstractOperation<GetFamilyDetail
                         log.warn("Child {} does not belong to the same family as parent {}", child.getFirstName(), treeNode.getFirstName());
                         continue; // Skip children that do not belong to the same family
                     }
-                    FamilyMemberDto childDto = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(child);
+                    String familyRelationship = null;
+                    if(child.getGender() == Gender.Male) {
+                        familyRelationship = SON_OF_MEMBER.formatted(treeNode.getFirstName());
+                    } else {
+                        familyRelationship = DAUGHTER_OF_MEMBER.formatted(treeNode.getFirstName());
+                    }
+                    FamilyMemberDto childDto = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(child, familyRelationship);
                     treeNode.addChild(childDto);
                     if(childDto.getFamilyId() == treeNode.getFamilyId()) {
                         buildFamilyTreeStructure(childDto);
@@ -133,7 +152,13 @@ public class GetFamilyDetailsOperation extends AbstractOperation<GetFamilyDetail
         for (MemberRelationship parentRelationship : parents) {
             FamilyMember parentEntity = familyMemberDao.getMemberById(parentRelationship.getMemberId());
             if (parentEntity != null) {
-                FamilyMemberDto parentDto = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(parentEntity);
+                String familyRelationship = null;
+                if (parentEntity.getGender() == Gender.Male) {
+                    familyRelationship = FATHER_OF_MEMBER.formatted(familyMemberDto.getFirstName());
+                } else {
+                    familyRelationship = MOTHER_OF_MEMBER.formatted(familyMemberDto.getFirstName());
+                }
+                FamilyMemberDto parentDto = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(parentEntity, familyRelationship);
                 if (parentEntity.getGender() == Gender.Male) {
                     father = parentDto;
                 } else {

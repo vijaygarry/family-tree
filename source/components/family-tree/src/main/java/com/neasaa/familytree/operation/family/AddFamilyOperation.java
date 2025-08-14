@@ -3,6 +3,7 @@ package com.neasaa.familytree.operation.family;
 import static com.neasaa.base.app.utils.ValidationUtils.checkObjectPresent;
 import static com.neasaa.base.app.utils.ValidationUtils.checkValuePresent;
 
+import com.neasaa.familytree.constants.ImageConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -100,7 +101,7 @@ public class AddFamilyOperation extends AbstractOperation<AddFamilyRequest, AddF
 				.email(opRequest.getEmail())
 				.familyDisplayName(DataFormatter.getFamilyDisplayName(NO_HEAD_OF_FAMILY, opRequest.getFamilyName(), familyRegion))
 				.active(true)
-				.familyImage(Constants.DEFALT_FAMILY_IMAGE)
+				.familyImage(ImageConstants.DEFAULT_FAMILY_IMAGE)
 				.imageLastUpdated(auditInfo.getCreatedDate())
 				.createdBy(auditInfo.getCreatedBy())
 				.createdDate(auditInfo.getCreatedDate())

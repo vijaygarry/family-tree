@@ -7,6 +7,7 @@ import static com.neasaa.base.app.utils.ValidationUtils.checkValueRange;
 import java.time.Year;
 import java.util.List;
 
+import com.neasaa.familytree.constants.ImageConstants;
 import com.neasaa.familytree.enums.Month;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -147,9 +148,7 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 			}
 			log.info("Input Relationship {}'s {} is {} ({})", opRequest.getFirstName() , opRequest.getRelashinship().getRelationshipType(), opRequest.getRelashinship().getRelatedMemberName(), opRequest.getRelashinship().getRelatedMemberId());
 		}
-		
-		
-		
+
 		Address memberAddress = getAddressFromRequest(opRequest);
 		int addressId = Constants.MEMBER_ADDRESS_SAME_AS_FAMILY_ADDRESS;
 		if(memberAddress != null) {
@@ -261,18 +260,32 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 	
 	private static String getDefaultImagePath (AddFamilyMemberRequest opRequest) {
 		Gender gender = Gender.getGenderByString(opRequest.getGender());
+		int memberAge = DataFormatter.getMemberAge(opRequest.getBirthDay(), Month.fromName(opRequest.getBirthMonth()), opRequest.getBirthYear());
 		if(gender == Gender.Female) {
-			return Constants.DEFALT_FEMALE_MEMBER_IMAGE;
+			if (memberAge < 20) {
+				return ImageConstants.DEFAULT_KID_GIRL_IMAGE;
+			} else if (memberAge < 60) {
+				MaritalStatus memberMaritalStatus = MaritalStatus.getMaritalStatus(opRequest.getMaritalStatus());
+				if(memberMaritalStatus == MaritalStatus.Single || memberMaritalStatus == MaritalStatus.Engaged) {
+					return ImageConstants.DEFAULT_UNMARRIED_GIRL_IMAGE;
+				}
+				return ImageConstants.DEFAULT_MARRIED_WOMAN_IMAGE;
+			} else {
+				return ImageConstants.DEFAULT_OLD_WOMAN_IMAGE;
+			}
+		} else {
+			if (memberAge < 20) {
+				return ImageConstants.DEFAULT_KID_BOY_IMAGE;
+			} else if (memberAge < 60) {
+				return ImageConstants.DEFAULT_MAN_IMAGE;
+			} else {
+				return ImageConstants.DEFAULT_OLD_MAN_IMAGE;
+			}
 		}
-		return Constants.DEFALT_MALE_MEMBER_IMAGE;
 	}
 	
 	private static String getDefaultThumbnailImagePath (AddFamilyMemberRequest opRequest) {
-		Gender gender = Gender.getGenderByString(opRequest.getGender());
-		if(gender == Gender.Female) {
-			return Constants.DEFALT_FEMALE_MEMBER_IMAGE;
-		}
-		return Constants.DEFALT_MALE_MEMBER_IMAGE;
+		return getDefaultImagePath(opRequest);
 	}
 
 }
