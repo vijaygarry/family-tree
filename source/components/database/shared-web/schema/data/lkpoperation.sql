@@ -85,6 +85,20 @@ INSERT INTO shared_schema.lkpoperation(
 	VALUES ('MANAGE_RELATIONSHIP', 'Manage Relationship', 'ManageRelationship', true, true, 'ROLE_BASE', 
     true, 1, now(), 1, now());
 
+
+INSERT INTO shared_schema.lkpoperation(
+	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype, 
+    active, createdby, createddate, lastupdatedby, lastupdateddate)
+	VALUES ('FORGOT_PASSWORD_REQUEST_OTP', 'Request OTP for forgot password', 'RequestForgotPasswordOTPOperation', false, true, 'NO_AUTHORIZATION', 
+    true, 1, now(), 1, now());
+
+INSERT INTO shared_schema.lkpoperation(
+	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype, 
+    active, createdby, createddate, lastupdatedby, lastupdateddate)
+	VALUES ('RESET_FORGOT_PASSWORD', 'Reset forgot password', 'ResetForgotPasswordOperation', false, true, 'NO_AUTHORIZATION', 
+    true, 1, now(), 1, now());
+
+
 -- Get Family stats
 -- Total number of families, total number of members.
 -- Registered users

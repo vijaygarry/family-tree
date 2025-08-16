@@ -1,5 +1,10 @@
 package com.neasaa.familytree.controller;
 
+import com.neasaa.base.app.operation.session.RequestForgotPasswordOTPOperation;
+import com.neasaa.base.app.operation.session.ResetForgotPasswordOperation;
+import com.neasaa.base.app.operation.session.model.RequestForgotPasswordOTPRequest;
+import com.neasaa.base.app.operation.session.model.RequestForgotPasswordOTPResponse;
+import com.neasaa.base.app.operation.session.model.ResetForgotPasswordRequest;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
@@ -128,6 +133,17 @@ public class SessionController implements WebMvcConfigurer {
 	public ResponseEntity<EmptyOperationResponse> changePwd ( @RequestBody ChangePasswordRequest changePasswordRequest) throws Exception {
 		return WebRequestHandler.processRequest(ChangePasswordOperation.class, changePasswordRequest);
 	}
-	
+
+	@RequestMapping(value = "/requestForgotPasswordOTP")
+	@ResponseBody
+	public ResponseEntity<RequestForgotPasswordOTPResponse> requestForgotPasswordOTP (@RequestBody RequestForgotPasswordOTPRequest request) throws Exception {
+		return WebRequestHandler.processRequest(RequestForgotPasswordOTPOperation.class, request);
+	}
+
+	@RequestMapping(value = "/resetForgotPassword")
+	@ResponseBody
+	public ResponseEntity<EmptyOperationResponse> resetForgotPassword (@RequestBody ResetForgotPasswordRequest request) throws Exception {
+		return WebRequestHandler.processRequest(ResetForgotPasswordOperation.class, request);
+	}
 	
 }
