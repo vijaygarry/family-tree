@@ -61,20 +61,9 @@ const SignUp = () => {
     }
   };
 
-  return (
-    <div className="signup-container" style={{ maxWidth: 400, margin: '40px auto', padding: 24, border: '1px solid #eee', borderRadius: 8, background: '#fff' }}>
-      <h2>Sign Up</h2>
-      {signUpSuccess ? (
-        <div style={{ color: 'green', marginBottom: 8, textAlign: 'center' }}>
-          Sign Up completed successfully, please login using below link.<br />
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
-            <button onClick={() => window.location.href = '/login'} style={{ padding: '8px 16px', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, fontWeight: 'bold', cursor: 'pointer' }}>
-              Login
-            </button>
-          </div>
-        </div>
-      ) : showRequestOtpForm ? (
-        <form onSubmit={requestOtp}>
+  // Form for requesting otp
+  const requestSignUpOTPForm = (
+     <form onSubmit={requestOtp}>
           <div style={{ marginBottom: 16 }}>
             <label htmlFor="email">Email Id</label>
             <input
@@ -91,8 +80,10 @@ const SignUp = () => {
             Request Sign Up OTP
           </button>
         </form>
-      ) : (
-        <form onSubmit={handleSignUp}>
+  );
+
+  const signUpForm = (
+<form onSubmit={handleSignUp}>
           <div style={{ marginBottom: 16 }}>
             <label>Email Id</label>
             <input
@@ -147,6 +138,27 @@ const SignUp = () => {
             Sign Up
           </button>
         </form>
+  );
+
+  const signUpSuccessMessage = (
+    <div style={{ color: 'green', marginBottom: 8, textAlign: 'center' }}>
+          Sign Up completed successfully, please login using below link.<br />
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
+            <button onClick={() => window.location.href = '/login'} style={{ padding: '8px 16px', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, fontWeight: 'bold', cursor: 'pointer' }}>
+              Login
+            </button>
+          </div>
+        </div>
+  );
+  return (
+    <div className="signup-container" style={{ maxWidth: 400, margin: '40px auto', padding: 24, border: '1px solid #eee', borderRadius: 8, background: '#fff' }}>
+      <h2>Sign Up</h2>
+      {signUpSuccess ? (
+        signUpSuccessMessage
+      ) : showRequestOtpForm ? (
+        requestSignUpOTPForm
+      ) : (
+        signUpForm
       )}
     </div>
   );
