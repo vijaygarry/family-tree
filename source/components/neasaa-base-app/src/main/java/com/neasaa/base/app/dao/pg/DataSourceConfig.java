@@ -27,7 +27,7 @@ public class DataSourceConfig {
         Properties props = new Properties();
         log.info("Loading db properties from file 'db.properties'");
         props.load(getClass().getClassLoader().getResourceAsStream("db.properties"));
-        log.info("DB properties: " + props);
+        log.info("DB properties: {}", props);
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(props.getProperty("app.datasource.url"));
         config.setUsername(props.getProperty("app.datasource.username"));
@@ -43,8 +43,8 @@ public class DataSourceConfig {
         config.setConnectionTimeout(Long.parseLong(props.getProperty("app.datasource.pool.connection-timeout", "20000")));
         config.setMaxLifetime(Long.parseLong(props.getProperty("app.datasource.pool.max-lifetime", "600000")));
         config.setAutoCommit(Boolean.parseBoolean(props.getProperty("app.datasource.pool.auto-commit", "false")));
-        config.setConnectionTestQuery(props.getProperty("app.datasource.pool.connection-test-query", "SELECT 1"));       
-        log.info("Loading datasource using config: " + config);
+        config.setConnectionTestQuery(props.getProperty("app.datasource.pool.connection-test-query", "SELECT 1"));
+        log.info("Loading datasource using config: {}", config);
         return new HikariDataSource(config);
     }
 	
