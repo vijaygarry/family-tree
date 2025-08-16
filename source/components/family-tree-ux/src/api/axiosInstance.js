@@ -1,7 +1,10 @@
 import axios from "axios";
 
+const API_BASE_URL = window.location.origin;
+// For development with npm:
+// const API_BASE_URL = "http://localhost:8080"
 const api = axios.create({
-  baseURL: "http://localhost:8080/api",
+  baseURL: `${API_BASE_URL}/api`,
   withCredentials: true, // 💡 This is critical to send JSESSIONID
 });
 

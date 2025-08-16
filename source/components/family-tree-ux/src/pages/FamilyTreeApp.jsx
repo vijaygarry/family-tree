@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Tree, TreeNode } from "react-organizational-chart";
-import { FaWhatsapp } from 'react-icons/fa';
 import { getFormattedPhoneDisplay } from '../utils/phoneUtils';
 import './TreeNode.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -62,53 +61,53 @@ const MemberNode = ({ member }) => (
 function flattenFamilyTree(root) {
   const members = [];
 
-  function traverse(member, relationship) {
+  function traverse(member) {
     const memberName = `${member.firstName} ${member.lastName}`;
     members.push({
       memberId: member.memberId,
       firstName: member.firstName,
+      firstNameInHindi: member.firstNameInHindi,
       lastName: member.lastName,
       phone: member.phone || '',
       email: member.email || '',
       occupation: member.occupation || '',
-      relationship: relationship === 'Head' ? 'Head of Family' : relationship,
+      relationship: member.familyRelationship,
       phoneWhatsappRegistered: member.phoneWhatsappRegistered,
+      maritalStatus: member.maritalStatus,
+      birthDate: member.birthDate,
+      educationDetails: member.educationDetails,
+      occupation: member.occupation,
+      workingAt: member.workingAt,
     });
 
     if (member.spouse) {
       const spouseName = `${member.spouse.firstName} ${member.spouse.lastName}`;
-      let spouseRel = '';
-      if (member.gender === "Male") {
-        spouseRel = `Wife of ${memberName}`;
-      } else if (member.gender === "Female") {
-        spouseRel = `Husband of ${memberName}`;
-      } else {
-        spouseRel = `Spouse of ${memberName}`;
-      }
       members.push({
         memberId: member.spouse.memberId,
         firstName: member.spouse.firstName,
+        firstNameInHindi: member.spouse.firstNameInHindi,
         lastName: member.spouse.lastName,
         phone: member.spouse.phone || '',
         email: member.spouse.email || '',
         occupation: member.spouse.occupation || '',
-        relationship: spouseRel,
+        relationship: member.spouse.familyRelationship,
         phoneWhatsappRegistered: member.spouse.phoneWhatsappRegistered,
+        maritalStatus: member.spouse.maritalStatus,
+        birthDate: member.spouse.birthDate,
+        educationDetails: member.spouse.educationDetails,
+        occupation: member.spouse.occupation,
+        workingAt: member.spouse.workingAt,
       });
     }
 
     if (member.children) {
       member.children.forEach(child => {
-        let childRel = 'Child of ' + memberName;
-        if (child.gender === 'Male') childRel = `Son of ${memberName}`;
-        else if (child.gender === 'Female') childRel = `Daughter of ${memberName}`;
-
-        traverse(child, childRel);
+        traverse(child);
       });
     }
   }
 
-  traverse(root, 'Head');
+  traverse(root);
   return members;
 }
 
@@ -150,11 +149,11 @@ const FamilyTreeApp = () => {
             </h2>         
             <div className="mb-2">
               <span className="fw-semibold me-2">Head Of Family:</span>
-              <span className="text-secondary">{family.gotra}</span>
+              <span className="text-secondary">{family.headOfFamilyName}</span>
             </div>
             <div className="mb-2">
               <span className="fw-semibold me-2">Gotra:</span>
-              <span className="text-secondary">{family.headOfFamilyName}</span>
+              <span className="text-secondary">{family.gotra}</span>
             </div>
             <div className="mb-2">
               <span className="fw-semibold me-2">Email:</span>
@@ -197,9 +196,11 @@ const FamilyTreeApp = () => {
               <tr>
                 <th>Name</th>
                 <th>Relationship</th>
-                <th>Phone</th>
-                <th>Email</th>
+                <th>Birth Date</th>
+                <th>Marital Status</th>
+                <th>Education</th>
                 <th>Occupation</th>
+                <th>Phone</th>
               </tr>
             </thead>
             <tbody>
@@ -207,13 +208,16 @@ const FamilyTreeApp = () => {
                 <tr key={member.memberId}>
                   <td>
                     <Link to={`/member/${member.memberId}`} className="text-decoration-none">
-                      {member.firstName} {member.lastName}
+                      {member.firstName} {member.lastName} <br />
+                      {member.firstNameInHindi && `${member.firstNameInHindi} ${family.familyNameInHindi}`}
                     </Link>
                   </td>
                   <td>{member.relationship}</td>
+                  <td>{member.birthDate}</td>
+                  <td>{member.maritalStatus}</td>
+                  <td>{member.educationDetails}</td>
+                  <td>{member.occupation} {member.workingAt && `at ${member.workingAt}`}</td>
                   <td>{getFormattedPhoneDisplay(member.phone, member.phoneWhatsappRegistered)}</td>
-                  <td>{member.email}</td>
-                  <td>{member.occupation}</td>
                 </tr>
               ))}
             </tbody>

@@ -3,7 +3,6 @@ import { Container, Row, Col, Tabs, Tab, Spinner } from 'react-bootstrap';
 import api from "../api/axiosInstance";
 import EventCard from '../components/EventCard';
 import PaginationComponent from '../components/Pagination';
-import dayjs from 'dayjs';
 import ERROR_MESSAGES from "../constants/messages";
 
 function EventListPage() {
@@ -34,9 +33,8 @@ function EventListPage() {
     fetchEvents();
   }, [currentPage]);
 
-  const now = dayjs();
-  const upcomingEvents = events; //.filter((e) => dayjs(e.eventDate).isAfter(now));
-  const pastEvents = events; //.filter((e) => dayjs(e.eventDate).isBefore(now));
+  const upcomingEvents = events;
+  const pastEvents = events;
 
   return (
     <Container className="py-4">
