@@ -12,7 +12,7 @@ import MemberProfile from "./pages/MemberProfile";
 import EventListPage from './pages/EventListPage';
 import EventDetailPage from './pages/EventDetailPage';
 import AccountsPage from './pages/AccountsPage';
-import RequestForgotPassword from './pages/RequestForgotPassword';
+import ForgotPassword from './pages/ForgotPassword';
 import SignUp from './pages/SignUp';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
@@ -34,7 +34,7 @@ const App = () => (
           path="/forgotpassword" 
           element={
             <LoginLayout>
-              <RequestForgotPassword />
+              <ForgotPassword />
             </LoginLayout>
           }
           />

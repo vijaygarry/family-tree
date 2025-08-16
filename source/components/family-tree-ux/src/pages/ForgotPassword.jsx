@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import api from "../api/axiosInstance";
 
-const RequestForgotPassword = () => {
+const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [showResetForm, setShowResetForm] = useState(false);
@@ -141,4 +141,4 @@ const RequestForgotPassword = () => {
   );
 };
 
-export default RequestForgotPassword;
+export default ForgotPassword;
