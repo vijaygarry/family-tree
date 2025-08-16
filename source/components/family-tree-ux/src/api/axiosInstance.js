@@ -1,8 +1,15 @@
 import axios from "axios";
 
-const API_BASE_URL = window.location.origin;
+// List of pages to ignore 401 redirect
+const IGNORE_401_PAGES = new Set([
+  "/login",
+  "/requestForgotPassword",
+  "/requestSignUp"
+]);
+
+//const API_BASE_URL = window.location.origin;
 // For development with npm:
-// const API_BASE_URL = "http://localhost:8080"
+const API_BASE_URL = "http://localhost:8080"
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api`,
   withCredentials: true, // 💡 This is critical to send JSESSIONID
@@ -14,14 +21,15 @@ let hasRedirectedToLogin = false;
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    const currentPath = window.location.pathname;
     if (
       error.response?.status === 401 &&
       !hasRedirectedToLogin &&
-      !window.location.pathname.includes("/login")
+      ![...IGNORE_401_PAGES].some(page => currentPath.includes(page))
     ) {
       hasRedirectedToLogin = true;
-      const currentPath = window.location.pathname + window.location.search;
-      window.location.href = `/login?redirectTo=${encodeURIComponent(currentPath)}`;
+      const redirectPath = currentPath + window.location.search;
+      window.location.href = `/login?redirectTo=${encodeURIComponent(redirectPath)}`;
     }
     return Promise.reject(error);
   }

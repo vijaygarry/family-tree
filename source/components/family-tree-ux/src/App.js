@@ -12,7 +12,8 @@ import ChangePassword from './pages/ChangePassword';
 import MemberProfile from "./pages/MemberProfile";
 import EventListPage from './pages/EventListPage';
 import EventDetailPage from './pages/EventDetailPage';
-import AccountsPage from './pages/AccountsPage'
+import AccountsPage from './pages/AccountsPage';
+import RequestForgotPassword from './pages/RequestForgotPassword';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 //import UserDetails from "./pages/UserDetails";
@@ -26,6 +27,14 @@ const App = () => (
           element={
             <LoginLayout>
               <Login />
+            </LoginLayout>
+          }
+          />
+          <Route 
+          path="/requestForgotPassword" 
+          element={
+            <LoginLayout>
+              <RequestForgotPassword />
             </LoginLayout>
           }
           />
