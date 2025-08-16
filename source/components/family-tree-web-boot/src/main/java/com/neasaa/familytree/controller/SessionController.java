@@ -40,19 +40,9 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Log4j2
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping(value = "/api/session", method = RequestMethod.POST)
-public class SessionController implements WebMvcConfigurer {
-
-	@Override
-	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/**")
-				.allowedOrigins("http://localhost:3000") // React app
-				.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-				.allowCredentials(true) // Must be true!
-				.allowedHeaders("*");
-	}
+public class SessionController {
 
 	@RequestMapping(value = "/login")
 	@ResponseBody
@@ -64,8 +54,7 @@ public class SessionController implements WebMvcConfigurer {
 		if(httpSession != null) {
 			AppSessionWebWrapper existingAppSession = HttpSessionUtils.getAppSessionFromHttpSession(httpSession);
 			if(existingAppSession != null ) {
-				ValidationUtils.addToDoLog("Add logic to logout from database when user try to login with active session", "SessionController");
-				//logoutUserFromDb(SessionExitCode.RELOGIN, httpSession);
+				logoutUserFromDb(SessionExitCode.RELOGIN, httpSession);
 			} else {
 				httpSession.invalidate();
 			}

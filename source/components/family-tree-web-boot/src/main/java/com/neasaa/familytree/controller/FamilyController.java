@@ -40,7 +40,6 @@ import com.neasaa.familytree.operation.family.AddFamilyOperation;
 //import lombok.extern.log4j.Log4j2;
 
 //@Log4j2
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping(value = "/api/family", method = RequestMethod.POST)
 public class FamilyController {

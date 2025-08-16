@@ -20,6 +20,7 @@ apply plugin: 'eclipse-wtp'
 def uxDir = "$rootDir/components/family-tree-ux"
 
 task buildUx(type: Exec) {
+    dependsOn jar // ensure app jar is built
     workingDir uxDir
     commandLine 'npm', 'run', 'build'
     doFirst {
@@ -43,16 +44,13 @@ task copyUxFilesToBoot (type: Copy) {
     }
 }
 
-processResources.dependsOn copyUxFilesToBoot
-
-
 task runApp(type: JavaExec) {
     group = 'application'
     description = 'Start Springboot Application'
     environment 'DB_PASSWORD_ENCRYPTION_SALT_KEY', 'secret-key'
     classpath = sourceSets.main.runtimeClasspath +
                 files('src/main/config/')
-    mainClass = 'com.neasaa.familytree.FamilyTreeApplication' // 🔁 Use your actual main class
+    mainClass = 'com.neasaa.familytree.FamilyTreeApplication'
     //args = ['--spring.profiles.active=dev']             // optional args
     jvmArgs = ['-Xmx512m']                               // optional JVM args
 
@@ -77,8 +75,7 @@ eclipse {
 
 // Task to copy app jar + dependency jars
 tasks.register('buildDist', Copy) {
-    dependsOn jar // ensure app jar is built
-
+    dependsOn copyUxFilesToBoot
     from(jar) {
         into 'lib'
     }

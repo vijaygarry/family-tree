@@ -1,6 +1,9 @@
 # Compiled class file
 *.class
 
+# IntelliJ file
+*.iml
+.idea
 # Log file
 *.log
 
@@ -11,7 +14,6 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear
@@ -22,3 +24,20 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+source/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+build/
+
+source/distribution/*
+uploaded-images/*

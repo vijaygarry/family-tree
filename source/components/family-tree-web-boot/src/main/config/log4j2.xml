@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    
+    <Appenders>
+        <!-- Rolling file appender -->
+        <RollingFile name="RollingFileAppender"
+                     fileName="../../../logs/app.log"
+                     filePattern="../../../logs/app-%d{yyyy-MM-dd}-%i.log.gz">
+
+            <!-- Log message format -->
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Pattern>
+            </PatternLayout>
+
+            <!-- Rolling policy: time + size based -->
+            <Policies>
+                <!-- Roll every day -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <!-- Roll when file exceeds 10 MB -->
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+
+            <!-- Keep max 30 rolled files -->
+            <DefaultRolloverStrategy max="30"/>
+        </RollingFile>
+
+        <!-- Console appender -->
+        <Console name="ConsoleAppender" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <!-- Application logging -->
+        <Root level="info">
+            <AppenderRef ref="ConsoleAppender"/>
+            <AppenderRef ref="RollingFileAppender"/>
+        </Root>
+
+        <!-- Example of package-specific logging level -->
+        <!-- <Logger name="com.example" level="debug" additivity="false">
+            <AppenderRef ref="RollingFileAppender"/>
+        </Logger> -->
+    </Loggers>
+
+</Configuration>

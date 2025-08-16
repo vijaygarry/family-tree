@@ -22,15 +22,6 @@ import jakarta.servlet.http.HttpSession;
 
 public class WebRequestHandler {
 	
-//	private static final Map<Integer, HttpStatus> APP_ERROR_TO_HTTP_ERROR_MAP = new HashMap<>();
-//	
-//	static {
-//		APP_ERROR_TO_HTTP_ERROR_MAP.put(ErrorCodes.SUCCESS_CODE, HttpStatus.OK );
-//		APP_ERROR_TO_HTTP_ERROR_MAP.put(ErrorCodes.USER_UNAUTHORIZED, HttpStatus.UNAUTHORIZED );
-//		APP_ERROR_TO_HTTP_ERROR_MAP.put(ErrorCodes.VALIDATION_ERROR_CODE, HttpStatus.BAD_REQUEST );
-//		APP_ERROR_TO_HTTP_ERROR_MAP.put(ErrorCodes.OPERATION_NOT_ALLOWED, HttpStatus.FORBIDDEN );
-//	}
-	
 	public static <Request extends OperationRequest, Response extends OperationResponse, OP extends Operation<Request, Response>> ResponseEntity<Response> processRequest (Class<OP> operationClass, Request request) {
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
 		HttpSession session = attr.getRequest().getSession();
@@ -51,20 +42,9 @@ public class WebRequestHandler {
 		} finally {
 			operationContext.markComplete();
 		}
-		
-//		int resCode = response.getResponseCode();
-//		HttpStatus httpStatus = APP_ERROR_TO_HTTP_ERROR_MAP.get(resCode);
-//		if(httpStatus == null) {
-//			httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-//		}
-//		
-//		return response;
 	}
 	
 	public static ResponseEntity<? extends OperationResponse> buildResponse (OperationException ex, int responseCode) {
 		return new ResponseEntity<OperationResponse>(new EmptyOperationResponse(ex.getMessage()), HttpStatus.valueOf(responseCode));
 	}
-//	public static ClientInformation getClientInformation (HttpServletRequest httpRequest){
-//		return new ClientInformation(WebUtils.getClientIp(httpRequest), httpRequest.getHeader("User-Agent"));
-//	}
 }
