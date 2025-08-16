@@ -1,6 +1,5 @@
 import React from "react";
-import { AuthProvider } from "./context/AuthContext";
-import { Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import PrivateRoute from "./components/PrivateRoute";
 import MainLayout from "./layout/MainLayout";
 import LoginLayout from "./layout/LoginLayout";
@@ -14,6 +13,7 @@ import EventListPage from './pages/EventListPage';
 import EventDetailPage from './pages/EventDetailPage';
 import AccountsPage from './pages/AccountsPage';
 import RequestForgotPassword from './pages/RequestForgotPassword';
+import SignUp from './pages/SignUp';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 //import UserDetails from "./pages/UserDetails";
@@ -31,10 +31,18 @@ const App = () => (
           }
           />
           <Route 
-          path="/requestForgotPassword" 
+          path="/forgotpassword" 
           element={
             <LoginLayout>
               <RequestForgotPassword />
+            </LoginLayout>
+          }
+          />
+          <Route 
+          path="/signup" 
+          element={
+            <LoginLayout>
+              <SignUp />
             </LoginLayout>
           }
           />

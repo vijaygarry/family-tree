@@ -3,8 +3,8 @@ import axios from "axios";
 // List of pages to ignore 401 redirect
 const IGNORE_401_PAGES = new Set([
   "/login",
-  "/requestForgotPassword",
-  "/requestSignUp"
+  "/forgotpassword",
+  "/signup"
 ]);
 
 //const API_BASE_URL = window.location.origin;

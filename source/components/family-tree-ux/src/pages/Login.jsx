@@ -7,7 +7,7 @@ const Login = () => {
   const [loginName, setLoginName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -18,7 +18,7 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    // setLoading(true);
     setError(null);
     if (!loginName.trim()) {
       setError("Login name is required.");
@@ -70,9 +70,9 @@ const Login = () => {
         <div className="form-text text-danger">* This field is required</div>
         <button className="btn btn-primary w-100">Login</button>
         <div className="text-center my-2">
-          <a href="/requestForgotPassword">Forgot Password?</a>
+          <a href="/forgotpassword">Forgot Password?</a>
         </div>
-        <button className="btn btn-secondary w-100 mt-3">Sign-up</button>
+        <button onClick={() => window.location.href = '/signup'} className="btn btn-secondary w-100 mt-3">Sign-up</button>
       </form>
     </div>
   );
