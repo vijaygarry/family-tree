@@ -99,6 +99,19 @@ INSERT INTO shared_schema.lkpoperation(
     true, 1, now(), 1, now());
 
 
+INSERT INTO shared_schema.lkpoperation(
+	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype, 
+    active, createdby, createddate, lastupdatedby, lastupdateddate)
+	VALUES ('SIGN_UP_REQUEST_OTP', 'Request OTP for Sign Up', 'RequestSignUpOTPOperation', false, true, 'NO_AUTHORIZATION', 
+    true, 1, now(), 1, now());
+
+INSERT INTO shared_schema.lkpoperation(
+	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype, 
+    active, createdby, createddate, lastupdatedby, lastupdateddate)
+	VALUES ('SIGN_UP', 'Sign Up User', 'SignUpOperation', false, true, 'NO_AUTHORIZATION', 
+    true, 1, now(), 1, now());
+
+
 -- Get Family stats
 -- Total number of families, total number of members.
 -- Registered users

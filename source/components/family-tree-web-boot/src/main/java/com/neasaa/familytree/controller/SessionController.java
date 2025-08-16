@@ -1,10 +1,15 @@
 package com.neasaa.familytree.controller;
 
 import com.neasaa.base.app.operation.session.RequestForgotPasswordOTPOperation;
+import com.neasaa.base.app.operation.session.RequestSignUpOTPOperation;
 import com.neasaa.base.app.operation.session.ResetForgotPasswordOperation;
+import com.neasaa.base.app.operation.session.SignUpOperation;
 import com.neasaa.base.app.operation.session.model.RequestForgotPasswordOTPRequest;
 import com.neasaa.base.app.operation.session.model.RequestForgotPasswordOTPResponse;
+import com.neasaa.base.app.operation.session.model.RequestSignUpOTPRequest;
+import com.neasaa.base.app.operation.session.model.RequestSignUpOTPResponse;
 import com.neasaa.base.app.operation.session.model.ResetForgotPasswordRequest;
+import com.neasaa.base.app.operation.session.model.SignUpRequest;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
@@ -133,6 +138,19 @@ public class SessionController {
 	@ResponseBody
 	public ResponseEntity<EmptyOperationResponse> resetForgotPassword (@RequestBody ResetForgotPasswordRequest request) throws Exception {
 		return WebRequestHandler.processRequest(ResetForgotPasswordOperation.class, request);
+	}
+
+
+	@RequestMapping(value = "/requestSignupOtp")
+	@ResponseBody
+	public ResponseEntity<RequestSignUpOTPResponse> resetForgotPassword (@RequestBody RequestSignUpOTPRequest request) throws Exception {
+		return WebRequestHandler.processRequest(RequestSignUpOTPOperation.class, request);
+	}
+
+	@RequestMapping(value = "/signUp")
+	@ResponseBody
+	public ResponseEntity<EmptyOperationResponse> resetForgotPassword (@RequestBody SignUpRequest request) throws Exception {
+		return WebRequestHandler.processRequest(SignUpOperation.class, request);
 	}
 	
 }
