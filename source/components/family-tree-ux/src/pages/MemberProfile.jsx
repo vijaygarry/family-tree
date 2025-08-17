@@ -99,8 +99,9 @@ const MemberProfile = () => {
   const { id } = useParams(); // from route: /member/:id
   const [memberData, setMemberData] = useState(null);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
-
+  const [editMode, setEditMode] = useState(false);
+  const [form, setForm] = useState({});
+  
   useEffect(() => {
     const fetchMember = async () => {
       try {
@@ -121,10 +122,111 @@ const MemberProfile = () => {
     fetchMember();
   }, [id]);
 
+  const handleEditClick = () => setEditMode(true);
+  
   if (error) return <div className="text-danger p-4">{error}</div>;
   if (!memberData) return <div className="p-4">Loading member profile...</div>;
   const { memberProfile } = memberData;
   const membersList = flattenFamilyTree(memberData.familyTreeRoot);
+
+
+  const memberInformationEditForm = (
+    <form >
+      <div className="mb-2">
+        <span className="fw-semibold me-2">Name:</span>
+      </div>
+    </form>
+  );
+
+  const memberReadOnlyView = (
+<div className="row mb-3 align-items-stretch">
+            <div className="col-md-8 d-flex flex-column">
+              <div className="mb-2">
+                <span className="fw-semibold me-2">Name :</span>
+                <span className="text-secondary">{memberProfile.firstName} {memberProfile.firstNameInHindi && ` (${memberProfile.firstNameInHindi}) `} {memberProfile.lastName}</span>
+              </div>
+              {memberProfile.maidenLastName && (
+                <div className="mb-2">
+                  <span className="fw-semibold me-2">Maiden Last Name :</span>
+                  <span className="text-secondary">{memberProfile.maidenLastName}</span>
+                </div>
+              )}
+              {memberProfile.nickName && (
+                <div className="mb-2">
+                  <span className="fw-semibold me-2">Nick Name :</span>
+                  <span className="text-secondary">{memberProfile.nickName} {memberProfile.nickNameInHindi && ` (${memberProfile.nickNameInHindi}) `}</span>
+                </div>
+              )}
+              <div className="mb-2">
+                <span className="fw-semibold me-2">Gender :</span>
+                <span className="text-secondary">{memberProfile.gender}</span>
+              </div>
+              <div className="mb-2">
+                <span className="fw-semibold me-2">Marital Status :</span>
+                <span className="text-secondary">{memberProfile.maritalStatus} {memberProfile.weddingDate && ` married on ${memberProfile.weddingDate}`}</span>
+              </div>
+              <div className="mb-2">
+                <span className="fw-semibold me-2">Birth Date :</span>
+                <span className="text-secondary"> 🎂 {memberProfile.birthDay} {memberProfile.birthMonth} {memberProfile.birthYear}</span>
+              </div>
+              {memberProfile.phone && (
+                <div className="mb-2">
+                  <span className="fw-semibold me-2">Phone :</span>
+                  <span className="text-secondary">{getFormattedPhoneDisplay(
+                    memberProfile.phone,
+                    memberProfile.phoneWhatsappRegistered,
+                  )}</span>
+                </div>
+              )}
+              {memberProfile.email && (
+                <div className="mb-2">
+                  <span className="fw-semibold me-2">Email Id :</span>
+                  <span className="text-secondary">✉️ {memberProfile.email}</span>
+                </div>
+              )}
+              {memberProfile.educationDetails && (
+                <div className="mb-2">
+                  <span className="fw-semibold me-2">Education details :</span>
+                  <span className="text-secondary"> {memberProfile.educationDetails}</span>
+                </div>
+              )}
+              {memberProfile.occupation && (
+                <div className="mb-2">
+                  <span className="fw-semibold me-2">Occupation :</span>
+                  <span className="text-secondary"> {memberProfile.occupation}
+                    {memberProfile.workingAt && ` at ${memberProfile.workingAt}`}
+                  </span>
+                </div>
+              )}
+              <div className="mt-auto d-flex align-items-end" style={{ minHeight: '60px' }}>
+                <div>
+                  <button
+                    className="btn btn-primary me-2"
+                    onClick={() => window.location.href = `/family/${memberProfile.familyId}`}
+                    disabled={!memberProfile.familyId}
+                  >
+                    View {memberProfile.firstName}'s Family
+                  </button>
+                  <button
+                  className="btn btn-outline-primary btn-sm ms-2"
+                  onClick={handleEditClick}
+                  title="Edit Member Details"
+                >
+                  <i className="bi bi-pencil-square"></i> Edit
+                </button>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-4 d-flex flex-column justify-content-end align-items-end">
+              <img
+                src={`/${memberProfile.profileImage}`}
+                alt={memberProfile.firstName}
+                className="me-3"
+                style={{ width: "360px", height: "360px", objectFit: "cover", borderRadius: "8px" }}
+              />
+            </div>
+          </div>
+  );
 
   return (
     <div className="container py-4">
@@ -133,48 +235,7 @@ const MemberProfile = () => {
           <h4 className="mb-0">Member Profile</h4>
         </div>
         <div className="card-body">
-          <div className="d-flex align-items-center justify-content-between mb-3">
-            {/* <img
-              src={`/${member.profileImageThumbnail}`}
-              alt={member.firstName}
-              className="rounded-circle me-3"
-              style={{ width: "80px", height: "80px" }}
-            /> */}
-            <div>
-              <h5 className="mb-0">
-                {memberProfile.firstName} {memberProfile.lastName}
-              </h5>
-            </div>
-            {memberProfile.familyId && (
-              <div>
-                <Link
-                  to={`/family/${memberProfile.familyId}`}
-                  className="btn btn-sm btn-primary"
-                >
-                  <img
-                    src="/family.png"
-                    alt="Family"
-                    style={{ width: "40px", height: "40px" }}
-                  />{" "}
-                  View {memberProfile.firstName}'s Family
-                </Link>
-              </div>
-            )}
-          </div>
-          <p className="mb-1 text-muted">
-            {memberProfile.occupation} at {memberProfile.workingAt}
-          </p>
-          <p className="mb-1">
-            {getFormattedPhoneDisplay(
-              memberProfile.phone,
-              memberProfile.phoneWhatsappRegistered,
-            )}
-          </p>
-          <p className="mb-1">✉️ {memberProfile.email}</p>
-          <p className="mb-0">
-            🎂 {memberProfile.birthDay}/{memberProfile.birthMonth}/
-            {memberProfile.birthYear}
-          </p>
+          {editMode ? memberInformationEditForm : memberReadOnlyView}
         </div>
       </div>
 
