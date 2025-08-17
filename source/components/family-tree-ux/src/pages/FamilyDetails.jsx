@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Tree, TreeNode } from "react-organizational-chart";
 import { getFormattedPhoneDisplay } from "../utils/phoneUtils";
 import "./TreeNode.css";
+import "./FamilyDetails.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import api from "../api/axiosInstance";
 import ERROR_MESSAGES from "../constants/messages";
@@ -113,7 +114,7 @@ function flattenFamilyTree(root) {
   return members;
 }
 
-const FamilyTreeApp = () => {
+const FamilyDetails = () => {
   const [family, setFamily] = useState(null);
   const [error, setError] = useState(null);
   const { familyId } = useParams(); // ← Get it from URL
@@ -301,4 +302,4 @@ const FamilyTreeApp = () => {
   );
 };
 
-export default FamilyTreeApp;
+export default FamilyDetails;

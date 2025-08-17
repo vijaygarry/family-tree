@@ -5,7 +5,7 @@ import MainLayout from "./layout/MainLayout";
 import LoginLayout from "./layout/LoginLayout";
 import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
-import FamilyTreeApp from "./pages/FamilyTreeApp";
+import FamilyDetails from "./pages/FamilyDetails";
 import FamilySearch from "./pages/FamilySearch";
 import ChangePassword from "./pages/ChangePassword";
 import MemberProfile from "./pages/MemberProfile";
@@ -61,7 +61,7 @@ const App = () => (
       element={
         <PrivateRoute>
           <MainLayout>
-            <FamilyTreeApp />
+            <FamilyDetails />
           </MainLayout>
         </PrivateRoute>
       }
@@ -71,7 +71,7 @@ const App = () => (
       element={
         <PrivateRoute>
           <MainLayout>
-            <FamilyTreeApp />
+            <FamilyDetails />
           </MainLayout>
         </PrivateRoute>
       }
