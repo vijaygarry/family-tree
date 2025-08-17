@@ -1,5 +1,5 @@
 import React from "react";
-import './Header.css';
+import "./Header.css";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ const Header = () => {
 
   const handleLogout = async () => {
     await logout();
-    navigate("/login"); 
+    navigate("/login");
   };
 
   const userName = "Vijay G."; // Replace with actual user name from context or props
@@ -30,7 +30,12 @@ const Header = () => {
           <strong>Rajput Chippa Samaj</strong>
         </Link>
 
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
           <span className="navbar-toggler-icon" />
         </button>
 
@@ -48,18 +53,31 @@ const Header = () => {
               </span>
               <ul className="dropdown-menu">
                 <li>
-                  <Link className="dropdown-item" to="/family">My Family</Link>
+                  <Link className="dropdown-item" to="/family">
+                    My Family
+                  </Link>
                 </li>
                 <li>
-                  <Link className="dropdown-item" to="/searchfamily">Browse Family</Link>
+                  <Link className="dropdown-item" to="/searchfamily">
+                    Browse Family
+                  </Link>
+                </li>
+                <li>
+                  <Link className="dropdown-item" to="/searchfamily">
+                    Add Family
+                  </Link>
                 </li>
               </ul>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/events">Events</Link>
+              <Link className="nav-link" to="/events">
+                Events
+              </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/accounts">Accounts</Link>
+              <Link className="nav-link" to="/accounts">
+                Accounts
+              </Link>
             </li>
             {/* User dropdown */}
             <li className="nav-item dropdown">
@@ -80,14 +98,23 @@ const Header = () => {
                   height="32"
                 />
               </a>
-              <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <ul
+                className="dropdown-menu dropdown-menu-end"
+                aria-labelledby="userDropdown"
+              >
                 <li>
-                  <Link className="dropdown-item" to="/myProfile">My Profile</Link>
+                  <Link className="dropdown-item" to="/myProfile">
+                    My Profile
+                  </Link>
                 </li>
                 <li>
-                  <Link className="dropdown-item" to="/changepassword">Change Password</Link>
+                  <Link className="dropdown-item" to="/changepassword">
+                    Change Password
+                  </Link>
                 </li>
-                <li><hr className="dropdown-divider" /></li>
+                <li>
+                  <hr className="dropdown-divider" />
+                </li>
                 <li>
                   <button className="dropdown-item" onClick={handleLogout}>
                     Logout

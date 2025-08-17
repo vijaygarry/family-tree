@@ -15,7 +15,8 @@ const ChangePassword = ({ changePassword }) => {
     return {
       currentPassword: currentPassword.trim() === "",
       newPassword: newPassword.trim() === "",
-      confirmPassword: confirmPassword.trim() === "" || newPassword !== confirmPassword
+      confirmPassword:
+        confirmPassword.trim() === "" || newPassword !== confirmPassword,
     };
   };
 
@@ -24,15 +25,19 @@ const ChangePassword = ({ changePassword }) => {
 
   const handleSubmit = async (e) => {
     e?.preventDefault(); // Prevent page reload if used inside a form
-    setTouched({ currentPassword: true, newPassword: true, confirmPassword: true });
+    setTouched({
+      currentPassword: true,
+      newPassword: true,
+      confirmPassword: true,
+    });
 
     if (!isValid) return;
 
     try {
-        await api.post("/session/changepassword", {
-            currentPassword,
-            newPassword,
-        });
+      await api.post("/session/changepassword", {
+        currentPassword,
+        newPassword,
+      });
       setSuccess("Password changed successfully.");
       setError("");
       setCurrentPassword("");
@@ -44,7 +49,7 @@ const ChangePassword = ({ changePassword }) => {
       console.error("Change password failed:", err);
       setError(
         err.response?.data?.error ||
-        "Failed to change password. Please try again."
+          "Failed to change password. Please try again.",
       );
     }
   };
@@ -67,10 +72,14 @@ const ChangePassword = ({ changePassword }) => {
             className={`form-control ${touched.currentPassword && errors.currentPassword ? "is-invalid" : ""}`}
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
-            onBlur={() => setTouched((prev) => ({ ...prev, currentPassword: true }))}
+            onBlur={() =>
+              setTouched((prev) => ({ ...prev, currentPassword: true }))
+            }
           />
           {touched.currentPassword && errors.currentPassword && (
-            <div className="invalid-feedback">Current password is required.</div>
+            <div className="invalid-feedback">
+              Current password is required.
+            </div>
           )}
         </div>
 
@@ -84,7 +93,9 @@ const ChangePassword = ({ changePassword }) => {
             className={`form-control ${touched.newPassword && errors.newPassword ? "is-invalid" : ""}`}
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            onBlur={() => setTouched((prev) => ({ ...prev, newPassword: true }))}
+            onBlur={() =>
+              setTouched((prev) => ({ ...prev, newPassword: true }))
+            }
           />
           {touched.newPassword && errors.newPassword && (
             <div className="invalid-feedback">New password is required.</div>
@@ -101,7 +112,9 @@ const ChangePassword = ({ changePassword }) => {
             className={`form-control ${touched.confirmPassword && errors.confirmPassword ? "is-invalid" : ""}`}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            onBlur={() => setTouched((prev) => ({ ...prev, confirmPassword: true }))}
+            onBlur={() =>
+              setTouched((prev) => ({ ...prev, confirmPassword: true }))
+            }
           />
           {touched.confirmPassword && errors.confirmPassword && (
             <div className="invalid-feedback">
@@ -112,7 +125,9 @@ const ChangePassword = ({ changePassword }) => {
           )}
         </div>
 
-        <button type="submit" className="btn btn-primary w-100">Change Password</button>
+        <button type="submit" className="btn btn-primary w-100">
+          Change Password
+        </button>
       </form>
     </div>
   );

@@ -2,26 +2,28 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Tree, TreeNode } from "react-organizational-chart";
 import api from "../api/axiosInstance";
-import { getFormattedPhoneDisplay } from '../utils/phoneUtils';
-import './TreeNode.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { getFormattedPhoneDisplay } from "../utils/phoneUtils";
+import "./TreeNode.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
 import ERROR_MESSAGES from "../constants/messages";
 
 const MemberCard = ({ member }) => (
   <Link to={`/member/${member.memberId}`} className="text-decoration-none">
-  <div 
-    className={`member-card text-center p-2 ${member.selectedNode ? "root-node" : ""}`}
-    style={{ minWidth: "160px" }}>
-    <div className="card-body p-2">
-      <h6 className="card-title mb-1">{member.firstName} {member.lastName}</h6>
-      {/* <p className="card-text small text-muted">{member.occupation}</p>
+    <div
+      className={`member-card text-center p-2 ${member.selectedNode ? "root-node" : ""}`}
+      style={{ minWidth: "160px" }}
+    >
+      <div className="card-body p-2">
+        <h6 className="card-title mb-1">
+          {member.firstName} {member.lastName}
+        </h6>
+        {/* <p className="card-text small text-muted">{member.occupation}</p>
       <p className="card-text small">📞 {member.phone}</p> */}
+      </div>
     </div>
-  </div>
   </Link>
 );
-
 
 const CoupleNode = ({ member }) => (
   <div className="d-flex justify-content-center gap-2">
@@ -30,12 +32,12 @@ const CoupleNode = ({ member }) => (
   </div>
 );
 
-
 const MemberNode = ({ member }) => (
   <TreeNode label={<CoupleNode member={member} />}>
-    {member.children && member.children.map((child) => (
-      <MemberNode key={child.memberId} member={child} />
-    ))}
+    {member.children &&
+      member.children.map((child) => (
+        <MemberNode key={child.memberId} member={child} />
+      ))}
   </TreeNode>
 );
 
@@ -48,16 +50,16 @@ function flattenFamilyTree(root) {
       memberId: member.memberId,
       firstName: member.firstName,
       lastName: member.lastName,
-      phone: member.phone || '',
-      email: member.email || '',
-      occupation: member.occupation || '',
-      relationship: relationship === 'Head' ? 'Head of Family' : relationship,
+      phone: member.phone || "",
+      email: member.email || "",
+      occupation: member.occupation || "",
+      relationship: relationship === "Head" ? "Head of Family" : relationship,
       phoneWhatsappRegistered: member.phoneWhatsappRegistered,
     });
 
     if (member.spouse) {
       const spouseName = `${member.spouse.firstName} ${member.spouse.lastName}`;
-      let spouseRel = '';
+      let spouseRel = "";
       if (member.gender === "Male") {
         spouseRel = `Wife of ${memberName}`;
       } else if (member.gender === "Female") {
@@ -69,26 +71,27 @@ function flattenFamilyTree(root) {
         memberId: member.spouse.memberId,
         firstName: member.spouse.firstName,
         lastName: member.spouse.lastName,
-        phone: member.spouse.phone || '',
-        email: member.spouse.email || '',
-        occupation: member.spouse.occupation || '',
+        phone: member.spouse.phone || "",
+        email: member.spouse.email || "",
+        occupation: member.spouse.occupation || "",
         relationship: spouseRel,
         phoneWhatsappRegistered: member.spouse.phoneWhatsappRegistered,
       });
     }
 
     if (member.children) {
-      member.children.forEach(child => {
-        let childRel = 'Child of ' + memberName;
-        if (child.gender === 'Male') childRel = `Son of ${memberName}`;
-        else if (child.gender === 'Female') childRel = `Daughter of ${memberName}`;
+      member.children.forEach((child) => {
+        let childRel = "Child of " + memberName;
+        if (child.gender === "Male") childRel = `Son of ${memberName}`;
+        else if (child.gender === "Female")
+          childRel = `Daughter of ${memberName}`;
 
         traverse(child, childRel);
       });
     }
   }
 
-  traverse(root, 'Head');
+  traverse(root, "Head");
   return members;
 }
 
@@ -120,7 +123,7 @@ const MemberProfile = () => {
 
   if (error) return <div className="text-danger p-4">{error}</div>;
   if (!memberData) return <div className="p-4">Loading member profile...</div>;
-  const { memberProfile } = memberData ;
+  const { memberProfile } = memberData;
   const membersList = flattenFamilyTree(memberData.familyTreeRoot);
 
   return (
@@ -137,24 +140,41 @@ const MemberProfile = () => {
               className="rounded-circle me-3"
               style={{ width: "80px", height: "80px" }}
             /> */}
-              <div>
-                <h5 className="mb-0">{memberProfile.firstName} {memberProfile.lastName}</h5>
-              </div>
-              {memberProfile.familyId && (
-                <div>
-                  <Link
-                    to={`/family/${memberProfile.familyId}`}
-                    className="btn btn-sm btn-primary"
-                  >
-                    <img src="/family.png" alt="Family" style={{ width: '40px', height: '40px' }} /> View {memberProfile.firstName}'s Family
-                  </Link>
-                </div>
-              )}
+            <div>
+              <h5 className="mb-0">
+                {memberProfile.firstName} {memberProfile.lastName}
+              </h5>
             </div>
-              <p className="mb-1 text-muted">{memberProfile.occupation} at {memberProfile.workingAt}</p>
-              <p className="mb-1">{getFormattedPhoneDisplay(memberProfile.phone, memberProfile.phoneWhatsappRegistered)}</p>
-              <p className="mb-1">✉️ {memberProfile.email}</p>
-              <p className="mb-0">🎂 {memberProfile.birthDay}/{memberProfile.birthMonth}/{memberProfile.birthYear}</p>
+            {memberProfile.familyId && (
+              <div>
+                <Link
+                  to={`/family/${memberProfile.familyId}`}
+                  className="btn btn-sm btn-primary"
+                >
+                  <img
+                    src="/family.png"
+                    alt="Family"
+                    style={{ width: "40px", height: "40px" }}
+                  />{" "}
+                  View {memberProfile.firstName}'s Family
+                </Link>
+              </div>
+            )}
+          </div>
+          <p className="mb-1 text-muted">
+            {memberProfile.occupation} at {memberProfile.workingAt}
+          </p>
+          <p className="mb-1">
+            {getFormattedPhoneDisplay(
+              memberProfile.phone,
+              memberProfile.phoneWhatsappRegistered,
+            )}
+          </p>
+          <p className="mb-1">✉️ {memberProfile.email}</p>
+          <p className="mb-0">
+            🎂 {memberProfile.birthDay}/{memberProfile.birthMonth}/
+            {memberProfile.birthYear}
+          </p>
         </div>
       </div>
 
@@ -172,15 +192,23 @@ const MemberProfile = () => {
               </tr>
             </thead>
             <tbody>
-              {membersList.map(member => (
+              {membersList.map((member) => (
                 <tr key={member.memberId}>
                   <td>
-                    <Link to={`/member/${member.memberId}`} className="text-decoration-none">
+                    <Link
+                      to={`/member/${member.memberId}`}
+                      className="text-decoration-none"
+                    >
                       {member.firstName} {member.lastName}
                     </Link>
                   </td>
                   <td>{member.relationship}</td>
-                  <td>{getFormattedPhoneDisplay(member.phone, member.phoneWhatsappRegistered)}</td>
+                  <td>
+                    {getFormattedPhoneDisplay(
+                      member.phone,
+                      member.phoneWhatsappRegistered,
+                    )}
+                  </td>
                   <td>{member.email}</td>
                   <td>{member.occupation}</td>
                 </tr>
@@ -199,7 +227,7 @@ const MemberProfile = () => {
           lineBorderRadius={"10px"}
           label={<CoupleNode member={memberData.familyTreeRoot} />}
         >
-          {memberData.familyTreeRoot.children?.map(child => (
+          {memberData.familyTreeRoot.children?.map((child) => (
             <MemberNode key={child.memberId} member={child} />
           ))}
         </Tree>

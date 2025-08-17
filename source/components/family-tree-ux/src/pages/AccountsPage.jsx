@@ -12,52 +12,58 @@ const AccountsPage = () => {
 
   const years = [2023, 2024, 2025];
   const months = [
-    { name: "Jan", value: 1 }, { name: "Feb", value: 2 }, { name: "Mar", value: 3 },
-    { name: "Apr", value: 4 }, { name: "May", value: 5 }, { name: "Jun", value: 6 },
-    { name: "Jul", value: 7 }, { name: "Aug", value: 8 }, { name: "Sep", value: 9 },
-    { name: "Oct", value: 10 }, { name: "Nov", value: 11 }, { name: "Dec", value: 12 },
+    { name: "Jan", value: 1 },
+    { name: "Feb", value: 2 },
+    { name: "Mar", value: 3 },
+    { name: "Apr", value: 4 },
+    { name: "May", value: 5 },
+    { name: "Jun", value: 6 },
+    { name: "Jul", value: 7 },
+    { name: "Aug", value: 8 },
+    { name: "Sep", value: 9 },
+    { name: "Oct", value: 10 },
+    { name: "Nov", value: 11 },
+    { name: "Dec", value: 12 },
   ];
 
   useEffect(() => {
     const fetcAccountList = async () => {
-        try {
-          const requestBody = {};
-          const res = await api.post("/family/getAccountList", requestBody);
-          setAccounts(res.data.accountList);
-          setLoading(false);
-        } catch (err) {
-          console.error("Failed to fetch accounts", err);
-          if (err.response?.data?.operationMessage) {
-            // API returned an error in payload
-            //setError(err.response?.data?.operationMessage);
-          } else {
-            //setError(ERROR_MESSAGES.DEFAULT);
-          }
+      try {
+        const requestBody = {};
+        const res = await api.post("/family/getAccountList", requestBody);
+        setAccounts(res.data.accountList);
+        setLoading(false);
+      } catch (err) {
+        console.error("Failed to fetch accounts", err);
+        if (err.response?.data?.operationMessage) {
+          // API returned an error in payload
+          //setError(err.response?.data?.operationMessage);
+        } else {
+          //setError(ERROR_MESSAGES.DEFAULT);
         }
+      }
     };
     fetcAccountList();
   }, []);
 
   const fetchStatement = async () => {
     try {
-        // const requestBody = {};
-        const res = await api.post("/family/getAccountStatement", {
-            
-                accountId: parseInt(selectedAccountId, 10),
-                year: selectedYear,
-                month: selectedMonth,
-            
-        });
-        setAccountDetails(res.data.accountDetails);
-        setTransactions(res.data.transactions);
+      // const requestBody = {};
+      const res = await api.post("/family/getAccountStatement", {
+        accountId: parseInt(selectedAccountId, 10),
+        year: selectedYear,
+        month: selectedMonth,
+      });
+      setAccountDetails(res.data.accountDetails);
+      setTransactions(res.data.transactions);
     } catch (err) {
-        console.error("Failed to fetch account statement", err);
-        if (err.response?.data?.operationMessage) {
+      console.error("Failed to fetch account statement", err);
+      if (err.response?.data?.operationMessage) {
         // API returned an error in payload
         //setError(err.response?.data?.operationMessage);
-        } else {
+      } else {
         //setError(ERROR_MESSAGES.DEFAULT);
-        }
+      }
     }
   };
 
@@ -77,51 +83,73 @@ const AccountsPage = () => {
             </option>
           ))}
         </select>
-         <select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(e.target.value)}
-            className="form-select form-select-lg w-auto"
+        <select
+          value={selectedYear}
+          onChange={(e) => setSelectedYear(e.target.value)}
+          className="form-select form-select-lg w-auto"
         >
-            <option value="">Select Year</option>
-            {[2023, 2024, 2025].map((year) => (
+          <option value="">Select Year</option>
+          {[2023, 2024, 2025].map((year) => (
             <option key={year} value={year}>
-                {year}
+              {year}
             </option>
-            ))}
+          ))}
         </select>
 
         <select
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-            className="form-select form-select-lg w-auto"
+          value={selectedMonth}
+          onChange={(e) => setSelectedMonth(e.target.value)}
+          className="form-select form-select-lg w-auto"
         >
-            <option value="">Select Month</option>
-            {[
-            "January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"
-            ].map((month, index) => (
+          <option value="">Select Month</option>
+          {[
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+          ].map((month, index) => (
             <option key={month} value={index + 1}>
-                {month}
+              {month}
             </option>
-            ))}
+          ))}
         </select>
         <button
-            onClick={fetchStatement}
-            className="btn btn-primary form-select-lg"
+          onClick={fetchStatement}
+          className="btn btn-primary form-select-lg"
         >
-            Go
+          Go
         </button>
       </div>
 
       {accountDetails && (
         <div className="border p-4 rounded shadow mb-4">
           <h3 className="font-semibold text-lg mb-2">Account Details</h3>
-          <p><strong>Account:</strong> {accountDetails.accountName}</p>
-          <p><strong>Balance:</strong> ₹{accountDetails.currentBalance}</p>
-          <p><strong>Manager:</strong> {accountDetails.accountManager}</p>
-          <p><strong>Bank:</strong> {accountDetails.bankName}</p>
-          <p><strong>Bank Account ID:</strong> {accountDetails.bankAccountId}</p>
-          <p><strong>Type:</strong> {accountDetails.bankAccountType}</p>
+          <p>
+            <strong>Account:</strong> {accountDetails.accountName}
+          </p>
+          <p>
+            <strong>Balance:</strong> ₹{accountDetails.currentBalance}
+          </p>
+          <p>
+            <strong>Manager:</strong> {accountDetails.accountManager}
+          </p>
+          <p>
+            <strong>Bank:</strong> {accountDetails.bankName}
+          </p>
+          <p>
+            <strong>Bank Account ID:</strong> {accountDetails.bankAccountId}
+          </p>
+          <p>
+            <strong>Type:</strong> {accountDetails.bankAccountType}
+          </p>
         </div>
       )}
 

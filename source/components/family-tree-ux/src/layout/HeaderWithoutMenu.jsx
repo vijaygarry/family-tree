@@ -15,7 +15,12 @@ const HeaderWithoutMenu = () => {
           />
           <strong>Rajput Chippa Samaj</strong>
         </Link>
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
           <span className="navbar-toggler-icon" />
         </button>
       </nav>

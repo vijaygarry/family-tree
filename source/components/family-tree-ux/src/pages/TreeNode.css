@@ -2,7 +2,9 @@
   background-color: #cfe2ff; /* light blue */
   border: 1px solid #9ec5fe;
   border-radius: 8px;
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
   cursor: pointer;
 }
 

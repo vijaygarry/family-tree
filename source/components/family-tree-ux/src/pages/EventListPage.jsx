@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Tabs, Tab, Spinner } from 'react-bootstrap';
+import React, { useEffect, useState } from "react";
+import { Container, Row, Col, Tabs, Tab, Spinner } from "react-bootstrap";
 import api from "../api/axiosInstance";
-import EventCard from '../components/EventCard';
-import PaginationComponent from '../components/Pagination';
+import EventCard from "../components/EventCard";
+import PaginationComponent from "../components/Pagination";
 import ERROR_MESSAGES from "../constants/messages";
 
 function EventListPage() {
@@ -67,7 +67,11 @@ function EventListPage() {
           )}
         </Tab>
       </Tabs>
-      <PaginationComponent currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+      <PaginationComponent
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </Container>
   );
 }

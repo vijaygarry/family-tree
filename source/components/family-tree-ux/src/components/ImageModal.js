@@ -1,5 +1,5 @@
-import React from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import React from "react";
+import { Modal, Button } from "react-bootstrap";
 
 function ImageModal({ show, images, currentIndex, onClose, onNext, onPrev }) {
   if (!images?.length) return null;
@@ -10,10 +10,18 @@ function ImageModal({ show, images, currentIndex, onClose, onNext, onPrev }) {
         <img src={images[currentIndex]} alt="Event" className="img-fluid" />
       </Modal.Body>
       <Modal.Footer className="justify-content-between">
-        <Button variant="secondary" onClick={onPrev} disabled={currentIndex === 0}>
+        <Button
+          variant="secondary"
+          onClick={onPrev}
+          disabled={currentIndex === 0}
+        >
           Previous
         </Button>
-        <Button variant="secondary" onClick={onNext} disabled={currentIndex === images.length - 1}>
+        <Button
+          variant="secondary"
+          onClick={onNext}
+          disabled={currentIndex === images.length - 1}
+        >
           Next
         </Button>
       </Modal.Footer>

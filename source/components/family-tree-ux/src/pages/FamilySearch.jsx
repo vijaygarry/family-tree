@@ -21,12 +21,12 @@ const FamilySearch = () => {
       setError(null);
     } catch (err) {
       console.error("Search failed to load family details", err);
-        if (err.response?.data?.operationMessage) {
-          // API returned an error in payload
-          setError(err.response?.data?.operationMessage);
-        } else {
-          setError(ERROR_MESSAGES.DEFAULT);
-        }
+      if (err.response?.data?.operationMessage) {
+        // API returned an error in payload
+        setError(err.response?.data?.operationMessage);
+      } else {
+        setError(ERROR_MESSAGES.DEFAULT);
+      }
     }
   };
 
@@ -54,7 +54,9 @@ const FamilySearch = () => {
             />
           </div> */}
           <div className="col-md-4">
-            <button className="btn btn-primary w-100" type="submit">Search</button>
+            <button className="btn btn-primary w-100" type="submit">
+              Search
+            </button>
           </div>
         </div>
       </form>

@@ -28,11 +28,11 @@ const Login = () => {
       setError("Password is required.");
       return;
     }
-    
+
     try {
       const success = await login({ loginName, password });
       if (success) {
-        navigate(from, { replace: true });  // Redirect back to original path
+        navigate(from, { replace: true }); // Redirect back to original path
       } else {
         setError("Invalid credentials");
       }
@@ -43,7 +43,9 @@ const Login = () => {
       } else if (err.response.status === 401) {
         setError("Login failed. Please check your credentials.");
       } else {
-        setError(err.response.data?.error || "Unexpected error occurred. Try again.");
+        setError(
+          err.response.data?.error || "Unexpected error occurred. Try again.",
+        );
       }
     } finally {
       setPassword(""); // Clear password after attempt
@@ -57,22 +59,36 @@ const Login = () => {
       <form onSubmit={handleLogin}>
         <div className="mb-3">
           <label htmlFor="loginName" className="form-label">
-            Login Name <span style={{ color: 'red' }}>*</span>
+            Login Name <span style={{ color: "red" }}>*</span>
           </label>
-          <input type="text" className="form-control" onChange={(e) => setLoginName(e.target.value)} />
+          <input
+            type="text"
+            className="form-control"
+            onChange={(e) => setLoginName(e.target.value)}
+          />
         </div>
         <div className="mb-3">
           <label htmlFor="password" className="form-label">
-            Password <span style={{ color: 'red' }}>*</span>
+            Password <span style={{ color: "red" }}>*</span>
           </label>
-          <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <input
+            type="password"
+            className="form-control"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </div>
         <div className="form-text text-danger">* This field is required</div>
         <button className="btn btn-primary w-100">Login</button>
         <div className="text-center my-2">
           <a href="/forgotpassword">Forgot Password?</a>
         </div>
-        <button onClick={() => window.location.href = '/signup'} className="btn btn-secondary w-100 mt-3">Sign-up</button>
+        <button
+          onClick={() => (window.location.href = "/signup")}
+          className="btn btn-secondary w-100 mt-3"
+        >
+          Sign-up
+        </button>
       </form>
     </div>
   );

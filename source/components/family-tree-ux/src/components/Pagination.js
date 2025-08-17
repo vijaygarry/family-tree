@@ -14,8 +14,8 @@
 // export default PaginationComponent;
 
 // components/Pagination.js
-import React from 'react';
-import { Pagination } from 'react-bootstrap';
+import React from "react";
+import { Pagination } from "react-bootstrap";
 
 function PaginationComponent({ currentPage, totalPages, onPageChange }) {
   const renderPageNumbers = () => {
@@ -44,7 +44,7 @@ function PaginationComponent({ currentPage, totalPages, onPageChange }) {
           onClick={() => onPageChange(number)}
         >
           {number}
-        </Pagination.Item>
+        </Pagination.Item>,
       );
     }
 
@@ -58,9 +58,15 @@ function PaginationComponent({ currentPage, totalPages, onPageChange }) {
   return (
     <div className="text-center mb-3">
       <Pagination className="justify-content-center">
-        <Pagination.Prev onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1} />
+        <Pagination.Prev
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        />
         {renderPageNumbers()}
-        <Pagination.Next onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages} />
+        <Pagination.Next
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        />
       </Pagination>
     </div>
   );

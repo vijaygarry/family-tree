@@ -1,61 +1,75 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import api from "../api/axiosInstance";
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
   const [showRequestOTPForm, setShowRequestOTPForm] = useState(true);
-  const [otp, setOtp] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [resetError, setResetError] = useState('');
-  const [resetPasswordSuccess, setResetPasswordSuccess] = useState('');
-  const [requestId, setRequestId] = useState('');
+  const [otp, setOtp] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [resetError, setResetError] = useState("");
+  const [resetPasswordSuccess, setResetPasswordSuccess] = useState("");
+  const [requestId, setRequestId] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     if (!email) {
-      setError('Email Id is required');
+      setError("Email Id is required");
       return;
     }
     try {
-      const response = await api.post("/session/requestForgotPasswordOTP", { emailId : email });
+      const response = await api.post("/session/requestForgotPasswordOTP", {
+        emailId: email,
+      });
       if (response && response.data && response.data.requestId) {
         setRequestId(response.data.requestId);
       }
       setShowRequestOTPForm(false);
     } catch (err) {
-      setError('Failed to request reset link.');
+      setError("Failed to request reset link.");
     }
   };
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
-    setResetError('');
-    setResetPasswordSuccess('');
+    setResetError("");
+    setResetPasswordSuccess("");
     if (!otp || !newPassword || !confirmPassword) {
-      setResetError('All fields are required.');
+      setResetError("All fields are required.");
       return;
     }
     if (newPassword !== confirmPassword) {
-      setResetError('Passwords do not match.');
+      setResetError("Passwords do not match.");
       return;
     }
     try {
-      await api.post("/session/resetForgotPassword", { emailId: email, otp, newPassword, confirmPassword, requestId });
+      await api.post("/session/resetForgotPassword", {
+        emailId: email,
+        otp,
+        newPassword,
+        confirmPassword,
+        requestId,
+      });
 
       // Success: clear fields and show login link
-      setOtp('');
-      setNewPassword('');
-      setConfirmPassword('');
+      setOtp("");
+      setNewPassword("");
+      setConfirmPassword("");
       setShowRequestOTPForm(false);
-      setResetPasswordSuccess('Password reset successfully, please login using new password.');
+      setResetPasswordSuccess(
+        "Password reset successfully, please login using new password.",
+      );
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.operationMessage) {
+      if (
+        err.response &&
+        err.response.data &&
+        err.response.data.operationMessage
+      ) {
         setResetError(err.response.data.operationMessage);
       } else {
-        setResetError('Failed to reset password.');
+        setResetError("Failed to reset password.");
       }
     }
   };
@@ -70,12 +84,29 @@ const ForgotPassword = () => {
           id="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          style={{ width: '100%', padding: 8, marginTop: 4, borderRadius: 4, border: '1px solid #ccc' }}
+          style={{
+            width: "100%",
+            padding: 8,
+            marginTop: 4,
+            borderRadius: 4,
+            border: "1px solid #ccc",
+          }}
           required
         />
       </div>
-      {error && <div style={{ color: 'red', marginBottom: 8 }}>{error}</div>}
-      <button type="submit" style={{ width: '100%', padding: 10, background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, fontWeight: 'bold' }}>
+      {error && <div style={{ color: "red", marginBottom: 8 }}>{error}</div>}
+      <button
+        type="submit"
+        style={{
+          width: "100%",
+          padding: 10,
+          background: "#1976d2",
+          color: "#fff",
+          border: "none",
+          borderRadius: 4,
+          fontWeight: "bold",
+        }}
+      >
         Forgot Password
       </button>
     </form>
@@ -90,7 +121,14 @@ const ForgotPassword = () => {
           type="email"
           value={email}
           readOnly
-          style={{ width: '100%', padding: 8, marginTop: 4, borderRadius: 4, border: '1px solid #ccc', background: '#f5f5f5' }}
+          style={{
+            width: "100%",
+            padding: 8,
+            marginTop: 4,
+            borderRadius: 4,
+            border: "1px solid #ccc",
+            background: "#f5f5f5",
+          }}
         />
       </div>
       <div style={{ marginBottom: 16 }}>
@@ -99,7 +137,13 @@ const ForgotPassword = () => {
           type="text"
           value={otp}
           onChange={(e) => setOtp(e.target.value)}
-          style={{ width: '100%', padding: 8, marginTop: 4, borderRadius: 4, border: '1px solid #ccc' }}
+          style={{
+            width: "100%",
+            padding: 8,
+            marginTop: 4,
+            borderRadius: 4,
+            border: "1px solid #ccc",
+          }}
           required
         />
       </div>
@@ -109,7 +153,13 @@ const ForgotPassword = () => {
           type="password"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
-          style={{ width: '100%', padding: 8, marginTop: 4, borderRadius: 4, border: '1px solid #ccc' }}
+          style={{
+            width: "100%",
+            padding: 8,
+            marginTop: 4,
+            borderRadius: 4,
+            border: "1px solid #ccc",
+          }}
           required
         />
       </div>
@@ -119,12 +169,31 @@ const ForgotPassword = () => {
           type="password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
-          style={{ width: '100%', padding: 8, marginTop: 4, borderRadius: 4, border: '1px solid #ccc' }}
+          style={{
+            width: "100%",
+            padding: 8,
+            marginTop: 4,
+            borderRadius: 4,
+            border: "1px solid #ccc",
+          }}
           required
         />
       </div>
-      {resetError && <div style={{ color: 'red', marginBottom: 8 }}>{resetError}</div>}
-      <button type="submit" style={{ width: '100%', padding: 10, background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, fontWeight: 'bold' }}>
+      {resetError && (
+        <div style={{ color: "red", marginBottom: 8 }}>{resetError}</div>
+      )}
+      <button
+        type="submit"
+        style={{
+          width: "100%",
+          padding: 10,
+          background: "#1976d2",
+          color: "#fff",
+          border: "none",
+          borderRadius: 4,
+          fontWeight: "bold",
+        }}
+      >
         Change Password
       </button>
     </form>
@@ -132,10 +201,22 @@ const ForgotPassword = () => {
 
   // Success message
   const forgotPasswordSuccess = (
-    <div style={{ color: 'green', marginBottom: 8, textAlign: 'center' }}>
-      Password reset successfully, please login using new password.<br />
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
-        <button onClick={() => window.location.href = '/login'} style={{ padding: '8px 16px', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, fontWeight: 'bold', cursor: 'pointer' }}>
+    <div style={{ color: "green", marginBottom: 8, textAlign: "center" }}>
+      Password reset successfully, please login using new password.
+      <br />
+      <div style={{ display: "flex", justifyContent: "center", marginTop: 12 }}>
+        <button
+          onClick={() => (window.location.href = "/login")}
+          style={{
+            padding: "8px 16px",
+            background: "#1976d2",
+            color: "#fff",
+            border: "none",
+            borderRadius: 4,
+            fontWeight: "bold",
+            cursor: "pointer",
+          }}
+        >
           Login
         </button>
       </div>
@@ -143,9 +224,23 @@ const ForgotPassword = () => {
   );
 
   return (
-    <div className="forgot-password-container" style={{ maxWidth: 400, margin: '40px auto', padding: 24, border: '1px solid #eee', borderRadius: 8, background: '#fff' }}>
+    <div
+      className="forgot-password-container"
+      style={{
+        maxWidth: 400,
+        margin: "40px auto",
+        padding: 24,
+        border: "1px solid #eee",
+        borderRadius: 8,
+        background: "#fff",
+      }}
+    >
       <h2>Forgot Password</h2>
-      {resetPasswordSuccess ? forgotPasswordSuccess : (showRequestOTPForm ? requestForgotPwdOTPForm : forgotPasswordForm)}
+      {resetPasswordSuccess
+        ? forgotPasswordSuccess
+        : showRequestOTPForm
+          ? requestForgotPwdOTPForm
+          : forgotPasswordForm}
     </div>
   );
 };
