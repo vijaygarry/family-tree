@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS shared_schema.familymember
     birthyear smallint NOT NULL,
     dateofdeath timestamp with time zone,
     maritalstatus character varying(20) NOT NULL,
+    weddingdate timestamp with time zone,
     educationdetails character varying(255) COLLATE pg_catalog."default",
     occupation character varying(255) COLLATE pg_catalog."default",
     workingat character varying(255) COLLATE pg_catalog."default",
@@ -128,7 +129,8 @@ COMMENT ON COLUMN shared_schema.familymember.dateofdeath
 
 COMMENT ON COLUMN shared_schema.familymember.maritalstatus
     IS 'Member marital status with possible values Single, Married, Divorced, Widowed, Separated, Engaged';
-
+COMMENT ON COLUMN shared_schema.familymember.weddingdate
+    IS 'Wedding date if married. Optional field';
 COMMENT ON COLUMN shared_schema.familymember.educationdetails
     IS 'Education details. A list of academic qualifications E.g HSC; Engineering in CS; MBA';
 

@@ -1,6 +1,6 @@
 -- Application database creation
 \set databaseName 'family_tree'
-\set schemaName 'web_infra'
+\set schemaName 'shared_schema'
 
 CREATE DATABASE family_tree
     WITH
@@ -10,4 +10,4 @@ CREATE DATABASE family_tree
 COMMENT ON DATABASE family_tree
     IS 'Family Tree database';
 
-ALTER DATABASE family_tree SET search_path TO web_infra;
+ALTER DATABASE family_tree SET search_path TO shared_schema;
