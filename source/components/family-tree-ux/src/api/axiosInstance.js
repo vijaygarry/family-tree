@@ -7,9 +7,11 @@ const IGNORE_401_PAGES = new Set([
   "/signup"
 ]);
 
-//const API_BASE_URL = window.location.origin;
-// For development with npm:
-const API_BASE_URL = "http://localhost:8080"
+// For prod remove the proxy in package.json. For local development enable proxy in package.json
+// "proxy": "http://rajputchhipa.com", -- For remote API server
+// "proxy": "http://localhost:8080", -- For local development with npm
+const API_BASE_URL = window.location.origin;
+
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api`,
   withCredentials: true, // 💡 This is critical to send JSESSIONID
