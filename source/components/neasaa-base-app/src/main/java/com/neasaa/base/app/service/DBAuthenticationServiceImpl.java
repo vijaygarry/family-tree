@@ -1,6 +1,7 @@
 package com.neasaa.base.app.service;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,28 +71,23 @@ public class DBAuthenticationServiceImpl implements AuthenticationService {
 	}
 
 	@Override
-	public void changePassword(String logonName, String currentPassword, String newPassword) throws OperationException {
-		try {
-			AppUser appUser = this.appUserDao.getUserByLogonName(logonName);
-			if (appUser == null) {
-				log.info("User {} not found.", logonName);
-				// This should not happen, that's why internal exception
-				throw new InternalServerException("User not found.");
-			}
-			
-			boolean pwdValid = PasswordUtil.matchPassword(currentPassword, appUser.getHashPassword());
-			if (!pwdValid) {
-				log.info("User password does not match.");
-				throw new ValidationException("Current password does not match.");
-			}
-			String hashPassword = PasswordUtil.hashPassword(newPassword);
-			int recordsUpdated = this.appUserDao.updateUserPassword(logonName, hashPassword);
-			if(recordsUpdated != 1) {
-				throw new InternalServerException("Failed to update password");
-			}
-			
-		} catch (SQLException se) {
-			throw new InternalServerException("Internal exception please contact administrator", se);
+	public void changePassword(String logonName, String currentPassword, String newPassword, int updatedBy, Date lastUpdatedDate) throws OperationException {
+		AppUser appUser = this.appUserDao.getUserByLogonName(logonName);
+		if (appUser == null) {
+			log.info("User {} not found.", logonName);
+			// This should not happen, that's why internal exception
+			throw new InternalServerException("User not found.");
+		}
+
+		boolean pwdValid = PasswordUtil.matchPassword(currentPassword, appUser.getHashPassword());
+		if (!pwdValid) {
+			log.info("User password does not match.");
+			throw new ValidationException("Current password does not match.");
+		}
+		String hashPassword = PasswordUtil.hashPassword(newPassword);
+		int recordsUpdated = this.appUserDao.updateUserPassword(logonName, hashPassword, updatedBy, lastUpdatedDate);
+		if (recordsUpdated != 1) {
+			throw new InternalServerException("Failed to update password");
 		}
 	}
 

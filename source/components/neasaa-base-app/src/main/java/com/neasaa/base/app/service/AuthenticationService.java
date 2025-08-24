@@ -1,5 +1,6 @@
 package com.neasaa.base.app.service;
 
+import java.util.Date;
 import java.util.Map;
 
 import com.neasaa.base.app.entity.AppUser;
@@ -27,5 +28,5 @@ public interface AuthenticationService {
 	 * @param newPassword
 	 * @throws OperationException - Throws exception if failed to update the password.
 	 */
-	void changePassword (String logonName, String currentPassword, String newPassword) throws OperationException;
+	void changePassword (String logonName, String currentPassword, String newPassword, int updatedBy, Date lastUpdatedDate) throws OperationException;
 }

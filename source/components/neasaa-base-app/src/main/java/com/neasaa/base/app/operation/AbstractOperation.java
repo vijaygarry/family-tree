@@ -75,12 +75,12 @@ public abstract class AbstractOperation<Request extends OperationRequest, Respon
 			return response;
 		}
 		catch ( OperationException e ) {
-			log.debug( "Failed to execute operation with error " + e.getMessage());
+            log.debug("Failed to execute operation with error {}", e.getMessage(), e);
 			operationException = e;
 			throw e;
 		}
 		catch ( Throwable th ) {
-			log.info( "Internal unhandle exception in executing the operation. Error:" + th.getMessage(), th);
+            log.info("Internal unhandle exception in executing the operation. Error:{}", th.getMessage(), th);
 			operationException = new InternalServerException(th.getMessage(), th);
 			throw operationException;
 		} finally {

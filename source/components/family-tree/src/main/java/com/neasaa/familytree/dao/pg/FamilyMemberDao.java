@@ -7,8 +7,10 @@ package com.neasaa.familytree.dao.pg;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
+import com.neasaa.base.app.operation.exception.InternalServerException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -35,10 +37,20 @@ public class FamilyMemberDao extends AbstractDao {
 			+ "from " + BASE_SCHEMA_NAME + "FAMILYMEMBER "
 			+ "where LOGONNAME = ? ";
 
+	private static final String SELECT_MEMBER_BY_EMAIL_ID = "select  MEMBERID , FAMILYID , LOGONNAME , HEADOFFAMILY , FIRSTNAME , FIRSTNAMEINHINDI , LASTNAME , MAIDENLASTNAME , NICKNAME , NICKNAMEINHINDI , ADDRESSSAMEASFAMILY , MEMBERADDRESSID , PHONE , ISPHONEWHATSAPPREGISTERED , EMAIL , LINKEDINURL , GENDER , BIRTHDAY , BIRTHMONTH , BIRTHYEAR , DATEOFDEATH , MARITALSTATUS , EDUCATIONDETAILS , OCCUPATION , WORKINGAT , HOBBY , PROFILEIMAGE , PROFILEIMAGETHUMBNAIL , IMAGELASTUPDATED , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
+			+ "from " + BASE_SCHEMA_NAME + "FAMILYMEMBER "
+			+ "where EMAIL = ? ";
+
 	private static final String SELECT_HEAD_OF_FAMILY_BY_FAMILY_ID = "select  MEMBERID , FAMILYID , LOGONNAME , HEADOFFAMILY , FIRSTNAME , FIRSTNAMEINHINDI , LASTNAME , MAIDENLASTNAME , NICKNAME , NICKNAMEINHINDI , ADDRESSSAMEASFAMILY , MEMBERADDRESSID , PHONE , ISPHONEWHATSAPPREGISTERED , EMAIL , LINKEDINURL , GENDER , BIRTHDAY , BIRTHMONTH , BIRTHYEAR , DATEOFDEATH , MARITALSTATUS , EDUCATIONDETAILS , OCCUPATION , WORKINGAT , HOBBY , PROFILEIMAGE , PROFILEIMAGETHUMBNAIL , IMAGELASTUPDATED , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
 			+ "from " + BASE_SCHEMA_NAME + "FAMILYMEMBER "
 			+ "where FAMILYID = ? and HEADOFFAMILY = true";
 
+	private static final String UPDATE_LOGON_NAME_FOR_MEMBER = "UPDATE "  + BASE_SCHEMA_NAME + "FAMILYMEMBER " +
+			"SET LOGONNAME = ? , LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  " +
+			"where MEMBERID = ?";
+
+	private static final String IS_MEMBER_REGISTERED_BY_EMAIL_ID = "SELECT "
+			+ " EXISTS (SELECT 1 FROM " + BASE_SCHEMA_NAME + "FAMILYMEMBER WHERE EMAIL = ?)";
 
 	public List<FamilyMember> allMembersForFamily(int familyId) {
 		return getJdbcTemplate().query(SELECT_ALL_MEMBERS_FOR_FAMILY, new FamilyMemberRowMapper(), familyId);
@@ -75,9 +87,39 @@ public class FamilyMemberDao extends AbstractDao {
 			throw new RuntimeException("No member found with logon name");
 		}
 		if(memberList.size() > 1) {
-			throw new RuntimeException("Logon name i snot unique, multiple members found with same logon name");
+			throw new RuntimeException("Logon name is not unique, multiple members found with same logon name");
 		}
 		return memberList.get(0);
+	}
+
+	public FamilyMember getMemberByEmail(String emailId) {
+		List<FamilyMember> memberList = getJdbcTemplate().query(SELECT_MEMBER_BY_EMAIL_ID, new FamilyMemberRowMapper(), emailId);
+
+		if(memberList.isEmpty()) {
+			return null;
+		}
+		if(memberList.size() > 1) {
+			throw new RuntimeException("Email Id is not unique, multiple members found with same email Id");
+		}
+		return memberList.get(0);
+	}
+
+	public void updateMemberLogonName(String logonName, int updatedBy, Date lastUpdatedDate, int memberId) {
+		try {
+			getJdbcTemplate().update(new PreparedStatementCreator() {
+				@Override
+				public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {
+					PreparedStatement prepareStatement = aCon.prepareStatement(UPDATE_LOGON_NAME_FOR_MEMBER);
+					setStringInStatement(prepareStatement, 1, logonName);
+					setIntInStatement(prepareStatement, 2, updatedBy);
+					setTimestampInStatement(prepareStatement, 3, lastUpdatedDate);
+					setIntInStatement(prepareStatement, 4, memberId);
+					return prepareStatement;
+				}
+			});
+		} catch (Exception e) {
+			throw new InternalServerException("Internal error while processing your request, please try again.", e);
+		}
 	}
 
 	public FamilyMember addFamilyMember(FamilyMember aFamilyMember) {
@@ -97,13 +139,20 @@ public class FamilyMemberDao extends AbstractDao {
 		log.info("New family member added with id " + memberId);
 		return getMemberById(memberId);
 	}
-	
+
+	public boolean isMemberExistsForEmail (String emailId) {
+		try {
+			return Boolean.TRUE.equals(jdbcTemplate.queryForObject(IS_MEMBER_REGISTERED_BY_EMAIL_ID, Boolean.class, emailId));
+		} catch (Exception e) {
+			throw new InternalServerException("Internal error while processing your request, please try again.", e);
+		}
+	}
 	
 	private PreparedStatement buildInsertStatement(Connection aConection, FamilyMember aFamilyMember) throws SQLException {
 		String sqlStatement = "INSERT INTO " + BASE_SCHEMA_NAME + "FAMILYMEMBER (FAMILYID, LOGONNAME, HEADOFFAMILY, FIRSTNAME, FIRSTNAMEINHINDI, LASTNAME, MAIDENLASTNAME, NICKNAME, NICKNAMEINHINDI, ADDRESSSAMEASFAMILY, MEMBERADDRESSID, PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, LINKEDINURL, GENDER, BIRTHDAY, BIRTHMONTH, BIRTHYEAR, DATEOFDEATH, MARITALSTATUS, EDUCATIONDETAILS, OCCUPATION, WORKINGAT, HOBBY, PROFILEIMAGE, PROFILEIMAGETHUMBNAIL, IMAGELASTUPDATED, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-		PreparedStatement prepareStatement = aConection.prepareStatement(sqlStatement, new String[] { "memberid" });
+		PreparedStatement prepareStatement = aConection.prepareStatement(sqlStatement, new String[]{"memberid"});
 		setIntInStatement(prepareStatement, 1, aFamilyMember.getFamilyId());
 		setStringInStatement(prepareStatement, 2, aFamilyMember.getLogonName());
 		setBooleanInStatement(prepareStatement, 3, aFamilyMember.isHeadOfFamily());
@@ -117,7 +166,11 @@ public class FamilyMemberDao extends AbstractDao {
 		setIntInStatement(prepareStatement, 11, aFamilyMember.getMemberAddressId());
 		setStringInStatement(prepareStatement, 12, aFamilyMember.getPhone());
 		setBooleanInStatement(prepareStatement, 13, aFamilyMember.isPhoneWhatsappRegistered());
-		setStringInStatement(prepareStatement, 14, aFamilyMember.getEmail());
+		if (aFamilyMember.getEmail() != null) {
+			setStringInStatement(prepareStatement, 14, aFamilyMember.getEmail().toLowerCase().trim());
+		} else {
+			setStringInStatement(prepareStatement, 14, null);
+		}
 		setStringInStatement(prepareStatement, 15, aFamilyMember.getLinkedinUrl());
 		setStringInStatement(prepareStatement, 16, aFamilyMember.getGender().name());
 		if(aFamilyMember.getBirthDay() == null) {

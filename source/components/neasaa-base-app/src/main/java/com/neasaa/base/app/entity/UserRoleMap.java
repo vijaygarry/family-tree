@@ -4,12 +4,18 @@
 
 package com.neasaa.base.app.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Getter;
 import java.util.Date;
 
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserRoleMap extends BaseEntity {
 
 	public static final long serialVersionUID = 1745893230090L;

@@ -9,7 +9,6 @@ const SignUp = () => {
   const [logonName, setLogonName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [resetError, setResetError] = useState("");
   const [signUpSuccess, setSignUpSuccess] = useState("");
   const [requestId, setRequestId] = useState("");
 
@@ -28,20 +27,28 @@ const SignUp = () => {
       setLogonName(response?.data?.logonName || "");
       setShowRequestOtpForm(false);
     } catch (err) {
-      setError("Failed to request signup OTP.");
+      if (
+        err.response &&
+        err.response.data &&
+        err.response.data.operationMessage
+      ) {
+        setError(err.response.data.operationMessage);
+      } else {
+        setError("Failed to request signup OTP.");
+      }
     }
   };
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    setResetError("");
+    setError("");
     setSignUpSuccess("");
     if (!otp || !password || !confirmPassword) {
-      setResetError("All fields are required.");
+      setError("All fields are required.");
       return;
     }
     if (password !== confirmPassword) {
-      setResetError("Passwords do not match.");
+      setError("Passwords do not match.");
       return;
     }
     try {
@@ -67,9 +74,9 @@ const SignUp = () => {
         err.response.data &&
         err.response.data.operationMessage
       ) {
-        setResetError(err.response.data.operationMessage);
+        setError(err.response.data.operationMessage);
       } else {
-        setResetError("Failed to reset password.");
+        setError("Failed to reset password.");
       }
     }
   };
@@ -194,8 +201,8 @@ const SignUp = () => {
           required
         />
       </div>
-      {resetError && (
-        <div style={{ color: "red", marginBottom: 8 }}>{resetError}</div>
+      {error && (
+        <div style={{ color: "red", marginBottom: 8 }}>{error}</div>
       )}
       <button
         type="submit"

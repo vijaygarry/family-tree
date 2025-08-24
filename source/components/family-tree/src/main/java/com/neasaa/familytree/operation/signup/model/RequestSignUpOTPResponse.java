@@ -1,4 +1,4 @@
-package com.neasaa.base.app.operation.session.model;
+package com.neasaa.familytree.operation.signup.model;
 
 import com.neasaa.base.app.operation.model.OperationResponse;
 import lombok.Getter;

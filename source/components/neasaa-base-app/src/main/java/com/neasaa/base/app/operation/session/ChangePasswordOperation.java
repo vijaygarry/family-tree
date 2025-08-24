@@ -2,6 +2,7 @@ package com.neasaa.base.app.operation.session;
 
 import static com.neasaa.base.app.utils.ValidationUtils.checkValuePresent;
 
+import com.neasaa.base.app.operation.AuditInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -54,7 +55,8 @@ public class ChangePasswordOperation extends AbstractOperation<ChangePasswordReq
 			throw new UnauthorizedException("Login to change the password");
 		}
 		log.info("Changing password for user " + appSessionUser.getLogonName());
-		authenticationService.changePassword(appSessionUser.getLogonName(), opRequest.getCurrentPassword(), opRequest.getNewPassword());
+		AuditInfo auditInfo = getAuditInfo();
+		authenticationService.changePassword(appSessionUser.getLogonName(), opRequest.getCurrentPassword(), opRequest.getNewPassword(), auditInfo.getLastUpdatedBy(), auditInfo.getLastUpdatedDate());
 		
 		return new EmptyOperationResponse("Password change successfully !!!");
 	}

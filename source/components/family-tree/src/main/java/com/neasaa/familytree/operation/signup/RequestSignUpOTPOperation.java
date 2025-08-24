@@ -1,4 +1,4 @@
-package com.neasaa.base.app.operation.session;
+package com.neasaa.familytree.operation.signup;
 
 import com.neasaa.base.app.dao.pg.AppUserDao;
 import com.neasaa.base.app.dao.pg.OtpVerificationDao;
@@ -8,11 +8,12 @@ import com.neasaa.base.app.enums.OTPType;
 import com.neasaa.base.app.operation.AbstractOperation;
 import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
-import com.neasaa.base.app.operation.session.model.RequestForgotPasswordOTPRequest;
-import com.neasaa.base.app.operation.session.model.RequestForgotPasswordOTPResponse;
 import com.neasaa.base.app.utils.EmailValidator;
 import com.neasaa.base.app.utils.OTPUtil;
 import com.neasaa.base.app.utils.PasswordUtil;
+import com.neasaa.familytree.dao.pg.FamilyMemberDao;
+import com.neasaa.familytree.operation.signup.model.RequestSignUpOTPRequest;
+import com.neasaa.familytree.operation.signup.model.RequestSignUpOTPResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -20,28 +21,31 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
-import static com.neasaa.base.app.operation.OperationNames.FORGOT_PASSWORD_REQUEST_OTP;
+import static com.neasaa.base.app.operation.OperationNames.SIGN_UP_REQUEST_OTP;
 import static com.neasaa.base.app.utils.OTPUtil.OTP_EXPIRY_DURATION;
 import static com.neasaa.base.app.utils.ValidationUtils.checkValuePresent;
 
 @Log4j2
-@Component("RequestForgotPasswordOTPOperation")
+@Component("RequestSignUpOTPOperation")
 @Scope("prototype")
-public class RequestForgotPasswordOTPOperation extends AbstractOperation<RequestForgotPasswordOTPRequest, RequestForgotPasswordOTPResponse> {
+public class RequestSignUpOTPOperation extends AbstractOperation<RequestSignUpOTPRequest, RequestSignUpOTPResponse> {
 
     @Autowired
     private AppUserDao appUserDao;
+
+    @Autowired
+    private FamilyMemberDao familyMemberDao;
 
     @Autowired
     private OtpVerificationDao otpVerificationDao;
 
     @Override
     public String getOperationName() {
-        return FORGOT_PASSWORD_REQUEST_OTP;
+        return SIGN_UP_REQUEST_OTP;
     }
 
     @Override
-    public void doValidate(RequestForgotPasswordOTPRequest opRequest) throws OperationException {
+    public void doValidate(RequestSignUpOTPRequest opRequest) throws OperationException {
         if (opRequest == null) {
             throw new ValidationException("Invalid request provided.");
         }
@@ -50,15 +54,20 @@ public class RequestForgotPasswordOTPOperation extends AbstractOperation<Request
     }
 
     @Override
-    public RequestForgotPasswordOTPResponse doExecute(RequestForgotPasswordOTPRequest opRequest) throws OperationException {
+    public RequestSignUpOTPResponse doExecute(RequestSignUpOTPRequest opRequest) throws OperationException {
         String emailId = opRequest.getEmailId().toLowerCase().trim();
-        // Check if the email is not already registered
-        if(!appUserDao.isEmailRegistered(emailId)) {
-            throw new ValidationException("Email ID is not registered. Please check email ID");
+        // Check if the email is already registered
+        if(appUserDao.isEmailRegistered(emailId)) {
+            throw new ValidationException("Email ID is already registered. Please use a different email.");
+        }
+
+        // Make sure member exists in family member table with this email
+        if(!familyMemberDao.isMemberExistsForEmail(emailId)) {
+            throw new ValidationException("Email ID " + emailId + " is not allowed to signup, please contact administrator.");
         }
 
         // Fetch the existing OTP information if any
-        OtpVerification otpInformation = otpVerificationDao.getOtpInformation(emailId, OTPType.FORGOT_PASSWORD);
+        OtpVerification otpInformation = otpVerificationDao.getOtpInformation(emailId, OTPType.SIGN_UP);
         log.info("OTP Verification info fetched from DB: {}", otpInformation);
         if(otpInformation != null) {
             if(OTPUtil.isOtpExpired(otpInformation)) {
@@ -68,12 +77,14 @@ public class RequestForgotPasswordOTPOperation extends AbstractOperation<Request
                 log.info("Record moved to history table for email: {} and OTP Type: {}", emailId, OTPType.SIGN_UP);
             } else {
                 // Current OTP is still valid, we can resend the same OTP
-                RequestForgotPasswordOTPResponse response = new RequestForgotPasswordOTPResponse();
-                response.setEmailId(opRequest.getEmailId());
-                response.setRequestId(otpInformation.getRequestId()); // Simulated request ID for OTP
+                RequestSignUpOTPResponse response = new RequestSignUpOTPResponse();
+                response.setEmailId(emailId);
+                response.setRequestId(otpInformation.getRequestId());
+                response.setLogonName(OTPUtil.getLogonNameSuggestion(emailId));
                 return response;
             }
         }
+
 
         String newOtp = OTPUtil.generateOTP();
         String requestId = OTPUtil.generateRequestId();
@@ -81,7 +92,7 @@ public class RequestForgotPasswordOTPOperation extends AbstractOperation<Request
 
         OtpVerification otpVerificationInfo = OtpVerification.builder()
                 .emailId(emailId)
-                .otpType(OTPType.FORGOT_PASSWORD)
+                .otpType(OTPType.SIGN_UP)
                 .requestId(requestId)
                 .hashOtpCode(PasswordUtil.hashPassword(newOtp)) // In real application, hash the OTP before storing
                 .status(OTPStatus.Pending)
@@ -93,9 +104,10 @@ public class RequestForgotPasswordOTPOperation extends AbstractOperation<Request
 
         otpVerificationDao.insertOtpVerification(otpVerificationInfo);
         sendOtpEmail(emailId, newOtp, OTPType.SIGN_UP);
-        RequestForgotPasswordOTPResponse response = new RequestForgotPasswordOTPResponse();
+        RequestSignUpOTPResponse response = new RequestSignUpOTPResponse();
         response.setEmailId(emailId);
         response.setRequestId(requestId); // Simulated request ID for OTP
+        response.setLogonName(OTPUtil.getLogonNameSuggestion(emailId));
         return response;
     }
 

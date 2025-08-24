@@ -43,8 +43,12 @@ const ChangePassword = ({ changePassword }) => {
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-
-      setTimeout(() => navigate("/home"), 1500);
+      setTouched({
+        currentPassword: false,
+        newPassword: false,
+        confirmPassword: false,
+      });
+      setTimeout(() => navigate("/"), 1500);
     } catch (err) {
       console.error("Change password failed:", err);
       setError(

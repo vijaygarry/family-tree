@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.sql.Connection;
 import com.neasaa.base.app.entity.UserRoleMap;
+import com.neasaa.base.app.operation.exception.InternalServerException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.stereotype.Repository;
 
@@ -24,7 +25,7 @@ public class UserRoleMapDao extends AbstractDao {
 	}
 	
 	private PreparedStatement buildInsertStatement(Connection aConection, UserRoleMap aUserRoleMap) throws SQLException {
-		String sqlStatement = "INSERT INTO MSTUSERROLEMAP (USERID, ROLEID, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE) VALUES (?, ?, ?, ?, ?, ?)";
+		String sqlStatement = "INSERT INTO "  + BASE_SCHEMA_NAME +  "MSTUSERROLEMAP (USERID, ROLEID, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE) VALUES (?, ?, ?, ?, ?, ?)";
 
 		PreparedStatement prepareStatement = aConection.prepareStatement(sqlStatement);
 		setIntInStatement(prepareStatement, 1, aUserRoleMap.getUserId());
@@ -36,14 +37,17 @@ public class UserRoleMapDao extends AbstractDao {
 		return prepareStatement;
 	}
 
-	public int insertUserRoleMap(UserRoleMap aUserRoleMap) throws SQLException {
-		return getJdbcTemplate().update(new PreparedStatementCreator() {
-			@Override
-			public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {
-				return buildInsertStatement(aCon, aUserRoleMap);
-			}
-		});
-
+	public int insertUserRoleMap(UserRoleMap aUserRoleMap) {
+		try {
+			return getJdbcTemplate().update(new PreparedStatementCreator() {
+				@Override
+				public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {
+					return buildInsertStatement(aCon, aUserRoleMap);
+				}
+			});
+		} catch (Exception e) {
+			throw new InternalServerException("Internal error while processing your request, please try again.", e);
+		}
 	}
 
 	public int deleteUserRoleMap(UserRoleMap aUserRoleMap) throws SQLException {

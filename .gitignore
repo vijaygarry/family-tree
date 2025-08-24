@@ -41,3 +41,4 @@ build/
 
 source/distribution/*
 uploaded-images/*
+logs/*

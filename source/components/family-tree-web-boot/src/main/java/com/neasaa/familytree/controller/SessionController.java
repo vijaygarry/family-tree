@@ -1,19 +1,18 @@
 package com.neasaa.familytree.controller;
 
 import com.neasaa.base.app.operation.session.RequestForgotPasswordOTPOperation;
-import com.neasaa.base.app.operation.session.RequestSignUpOTPOperation;
 import com.neasaa.base.app.operation.session.ResetForgotPasswordOperation;
-import com.neasaa.base.app.operation.session.SignUpOperation;
 import com.neasaa.base.app.operation.session.model.RequestForgotPasswordOTPRequest;
 import com.neasaa.base.app.operation.session.model.RequestForgotPasswordOTPResponse;
-import com.neasaa.base.app.operation.session.model.RequestSignUpOTPRequest;
-import com.neasaa.base.app.operation.session.model.RequestSignUpOTPResponse;
+import com.neasaa.familytree.operation.signup.RequestSignUpOTPOperation;
+import com.neasaa.familytree.operation.signup.SignUpOperation;
+import com.neasaa.familytree.operation.signup.model.RequestSignUpOTPRequest;
+import com.neasaa.familytree.operation.signup.model.RequestSignUpOTPResponse;
 import com.neasaa.base.app.operation.session.model.ResetForgotPasswordRequest;
-import com.neasaa.base.app.operation.session.model.SignUpRequest;
+import com.neasaa.familytree.operation.signup.model.SignUpRequest;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,7 +31,6 @@ import com.neasaa.base.app.operation.session.model.GetSessionDetailResponse;
 import com.neasaa.base.app.operation.session.model.LoginRequest;
 import com.neasaa.base.app.operation.session.model.LoginResponse;
 import com.neasaa.base.app.operation.session.model.LogoutRequest;
-import com.neasaa.base.app.utils.ValidationUtils;
 import com.neasaa.familytree.WebRequestHandler;
 import com.neasaa.familytree.utils.AppSessionWebWrapper;
 import com.neasaa.familytree.utils.HttpSessionUtils;
@@ -41,8 +39,6 @@ import com.neasaa.familytree.utils.WebUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Log4j2
 @RestController
