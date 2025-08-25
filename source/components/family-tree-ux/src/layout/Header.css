@@ -11,9 +11,13 @@
 
 /* Make navbar link text darker */
 .navbar-dark .navbar-nav .nav-link {
-  color: #e0e0e0; /* Light gray, but darker than default */
+    color: #A42502;
+    font-weight: 600;
+    padding: 10px 30px;
+    border-radius: 5px;
 }
 
 .navbar-dark .navbar-nav .nav-link:hover {
   color: #ffffff; /* Pure white on hover */
+  background: #A42502;
 }

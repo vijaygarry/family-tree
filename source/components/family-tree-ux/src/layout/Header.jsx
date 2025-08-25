@@ -13,19 +13,14 @@ const Header = () => {
     await logout();
     navigate("/login");
   };
+  
+  const fallbackAvatar = "/default-avatar.png"; // keep this also in public folder
 
   return (
-    <header className="bg-primary text-white mb-3 shadow-sm">
+    <header className="bg-white text-black mb-3 shadow-sm">
       <nav className="navbar navbar-expand-lg navbar-dark container">
         <Link className="navbar-brand d-flex align-items-center" to="/">
-          <img
-            src="/logo.png"
-            alt="Logo"
-            width="60"
-            height="30"
-            className="me-2"
-          />
-          <strong>Rajput Chippa Samaj</strong>
+          <img src="/logo.svg" alt="Logo"/>         
         </Link>
 
         <button
@@ -39,6 +34,12 @@ const Header = () => {
 
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
+ 
+          <li className="nav-item">
+            <Link className="nav-link" to="/">
+              Home
+            </Link>
+          </li>
             {/* Dropdown Menu */}
             <li className="nav-item dropdown">
               <span
@@ -87,14 +88,15 @@ const Header = () => {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                <span>{user.firstName} {user.lastName}</span>
+                <span className="me-2">{user.firstName} {user.lastName}</span>
                 <img
-                  src={user.profileImageThumbnail}
-                  alt="User Avatar"
-                  className="rounded-circle me-2"
-                  width="32"
-                  height="32"
-                />
+  src={user.profileImageThumbnail}
+  alt="User Avatar"
+  className="rounded-circle me-2"
+  width="25"
+  height="25"
+  onError={(e) => (e.currentTarget.src = fallbackAvatar)}
+/>
               </a>
               <ul
                 className="dropdown-menu dropdown-menu-end"

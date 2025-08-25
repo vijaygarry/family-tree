@@ -107,7 +107,7 @@ const SignUp = () => {
         style={{
           width: "100%",
           padding: 10,
-          background: "#1976d2",
+          background: "#A42502",
           color: "#fff",
           border: "none",
           borderRadius: 4,
@@ -209,7 +209,7 @@ const SignUp = () => {
         style={{
           width: "100%",
           padding: 10,
-          background: "#1976d2",
+          background: "#A42502",
           color: "#fff",
           border: "none",
           borderRadius: 4,

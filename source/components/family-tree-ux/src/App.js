@@ -56,6 +56,16 @@ const App = () => (
         </PrivateRoute>
       }
     />
+    {/* <Route 
+      path="/homepage" 
+      element={
+        <PrivateRoute>
+          <MainLayout>
+            <HomePage />
+          </MainLayout>
+        </PrivateRoute>
+      }
+    /> */}
     <Route
       path="/family"
       element={

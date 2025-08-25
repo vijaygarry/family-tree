@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
@@ -7,7 +7,6 @@ const Login = () => {
   const [loginName, setLoginName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  // const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -53,39 +52,42 @@ const Login = () => {
   };
 
   return (
-    <div className="container mt-5" style={{ maxWidth: "400px" }}>
-      <h3 className="mb-3">Login</h3>
+    <div className="container my-5 p-4 bg-white rounded" style={{ maxWidth: "500px" }}>
+    <div className="text-center mb-4">
+      <img src="/log-in-img.svg" alt="Logo" className="mb-3" />
+      <h3 className="mb-3 fw-bold">Sign in to your Account</h3>
+      </div>
       {error && <div className="alert alert-danger">{error}</div>}
       <form onSubmit={handleLogin}>
         <div className="mb-3">
-          <label htmlFor="loginName" className="form-label">
+          <label htmlFor="loginName" className="form-label fw-semibold">
             Login Name <span style={{ color: "red" }}>*</span>
           </label>
           <input
             type="text"
-            className="form-control"
+            className="form-control" style={{ minHeight: "45px" }}
             onChange={(e) => setLoginName(e.target.value)}
           />
         </div>
         <div className="mb-3">
-          <label htmlFor="password" className="form-label">
+          <label htmlFor="password" className="form-label fw-semibold">
             Password <span style={{ color: "red" }}>*</span>
           </label>
           <input
             type="password"
-            className="form-control"
+            className="form-control" style={{ minHeight: "45px" }}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
         <div className="form-text text-danger">* This field is required</div>
-        <button className="btn btn-primary w-100">Login</button>
-        <div className="text-center my-2">
-          <a href="/forgotpassword">Forgot Password?</a>
+        <button className="btn btn-primary w-100 fw-bold" style={{ background: "#A42502", borderColor:"#A42502" }}>Login</button>
+        <div className="text-end my-2 fw-semibold">
+          <a href="/forgotpassword" style={{ color:"#A42502",textDecoration:"none" }}>Forgot Password?</a>
         </div>
         <button
           onClick={() => (window.location.href = "/signup")}
-          className="btn btn-secondary w-100 mt-3"
+          className="btn btn-secondary w-100 mt-3 fw-bold" style={{ background: "transparent", borderColor:"#A42502" ,color:"#A42502" }}
         >
           Sign-up
         </button>
