@@ -1,7 +1,9 @@
 package com.neasaa.base.app.service;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.neasaa.base.app.entity.AppSession;
 import com.neasaa.base.app.entity.AppUser;
@@ -34,7 +36,8 @@ public class AppSessionUser {
 	private UserStatusEnum status;
 	private final ChannelEnum channel;
 	private List<String> roleIds;
-	
+	private Map<String, Object> otherAttributes;
+
 	public static AppSessionUser buildAuthenticatedUser (AppUser appUser, List<String> roleIdsForUser, AppSession appSession) {
 		if(appUser == null) {
 			return null;
@@ -57,7 +60,14 @@ public class AppSessionUser {
 				.roleIds(roleIdsForUser)
 				.build();
 	}
-	
+
+	public void addOtherAttributes (String attributeName, Object attributeValue) {
+		if(otherAttributes == null) {
+			otherAttributes = new HashMap<>();
+		}
+		otherAttributes.put(attributeName, attributeValue);
+	}
+
 	public void invalidate() {
 		this.authenticated = false;
 		this.sessionActive = false;

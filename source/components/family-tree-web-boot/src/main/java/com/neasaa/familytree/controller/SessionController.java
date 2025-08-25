@@ -4,6 +4,8 @@ import com.neasaa.base.app.operation.session.RequestForgotPasswordOTPOperation;
 import com.neasaa.base.app.operation.session.ResetForgotPasswordOperation;
 import com.neasaa.base.app.operation.session.model.RequestForgotPasswordOTPRequest;
 import com.neasaa.base.app.operation.session.model.RequestForgotPasswordOTPResponse;
+import com.neasaa.familytree.operation.session.WhoAmIOperation;
+import com.neasaa.familytree.operation.session.WhoAmIResponse;
 import com.neasaa.familytree.operation.signup.RequestSignUpOTPOperation;
 import com.neasaa.familytree.operation.signup.SignUpOperation;
 import com.neasaa.familytree.operation.signup.model.RequestSignUpOTPRequest;
@@ -108,6 +110,13 @@ public class SessionController {
 	public ResponseEntity<GetSessionDetailResponse> getSessionDetail ( ) throws Exception {
 		return WebRequestHandler.processRequest(GetSessionDetailOperation.class, new EmptyOperationRequest() );
 	}
+
+	@RequestMapping(value = "/whoAmI", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<WhoAmIResponse> getWhoAmI ( ) throws Exception {
+		return WebRequestHandler.processRequest(WhoAmIOperation.class, new EmptyOperationRequest() );
+	}
+
 //	
 //	@RequestMapping(value = "/isvalid")
 //	@ResponseBody
@@ -148,5 +157,5 @@ public class SessionController {
 	public ResponseEntity<EmptyOperationResponse> resetForgotPassword (@RequestBody SignUpRequest request) throws Exception {
 		return WebRequestHandler.processRequest(SignUpOperation.class, request);
 	}
-	
+
 }

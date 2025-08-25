@@ -12,8 +12,9 @@ import com.neasaa.base.app.service.AppSessionUser;
 
 @Component ("GetSessionDetailOperation")
 @Scope("prototype")
-public class GetSessionDetailOperation extends AbstractOperation<EmptyOperationRequest, GetSessionDetailResponse>{@Override
-	
+public class GetSessionDetailOperation extends AbstractOperation<EmptyOperationRequest, GetSessionDetailResponse>{
+
+	@Override
 	public String getOperationName() {
 		return OperationNames.GET_SESSION_DETAILS;
 	}
