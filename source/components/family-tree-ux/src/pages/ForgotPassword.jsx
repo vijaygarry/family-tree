@@ -107,7 +107,7 @@ const ForgotPassword = () => {
           fontWeight: "bold",
         }}
       >
-        Forgot Password
+        Send One Time Password (OTP)
       </button>
     </form>
   );
@@ -194,7 +194,7 @@ const ForgotPassword = () => {
           fontWeight: "bold",
         }}
       >
-        Change Password
+        Reset Password
       </button>
     </form>
   );

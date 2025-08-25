@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
 
   // On app load, verify session
   useEffect(() => {
-    api.get("/session/getsessiondetail", { withCredentials: true }) // change to your backend "who am I" endpoint
+    api.get("/session/whoAmI") // change to your backend "who am I" endpoint
       .then((res) => {
         setUser(res.data);
       })
@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await api.post("/session/login", credentials, { withCredentials: true });
       // After successful login, fetch user info
-      const res = await api.get("/session/getsessiondetail");
+      const res = await api.get("/session/whoAmI");
       setUser(res.data);
       return true;
     } catch (err) {

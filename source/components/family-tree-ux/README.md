@@ -97,5 +97,11 @@ npm install bootstrap
 npm install react-bootstrap
 npm install react-router-dom
 npm install react-icons
- npm install dayjs
+npm install --save-dev prettier
+# npm install dayjs
 npm start
+
+
+Command to format reactJS code:
+npx prettier --write src/pages/SignUp.jsx
+npx prettier --write src/pages/*

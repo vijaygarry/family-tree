@@ -7,14 +7,12 @@ import { useNavigate } from "react-router-dom";
 const Header = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleLogout = async () => {
     await logout();
     navigate("/login");
   };
-
-  const userName = "Vijay G."; // Replace with actual user name from context or props
-  const userAvatar = "/user-avatar-man.png"; // Replace with actual user avatar URL
 
   return (
     <header className="bg-primary text-white mb-3 shadow-sm">
@@ -89,9 +87,9 @@ const Header = () => {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                <span>{userName}</span>
+                <span>{user.firstName} {user.lastName}</span>
                 <img
-                  src={userAvatar}
+                  src={user.profileImageThumbnail}
                   alt="User Avatar"
                   className="rounded-circle me-2"
                   width="32"
