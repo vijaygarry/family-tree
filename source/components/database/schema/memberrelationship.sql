@@ -39,14 +39,14 @@ COMMENT ON TABLE shared_schema.memberrelationship
     IS 'Table to maintain relationship.
 Read the record as 
 memberid''s relationshiptype is relatedmemberid
-E.g: memberid = Vijay, relationshiptype = Father and relatedmemberid = Bhagwatnarayan
+E.g: memberid = Bhagwatnarayan, relationshiptype = Son and relatedmemberid = Vijay
 then read this record as 
-Vijay''s Father is Bhagwatnarayan.';
+Bhagwatnarayan''s Son is Vijay.';
 
 
 COMMENT ON COLUMN shared_schema.memberrelationship.memberid
     IS 'The person whose relationship is being defined. memberid''s relationshiptype is relatedmemberid';
 COMMENT ON COLUMN shared_schema.memberrelationship.relationshiptype
-    IS 'Relationship type for this member. Possible options Father, Mother, Son, Daughter, Husband, Wife';
+    IS 'Relationship type for this member. Possible options Son, Daughter, Husband, Wife';
 COMMENT ON COLUMN shared_schema.memberrelationship.relatedmemberid
     IS 'The other person in the relationship. relatedmemberid is relationshiptype of memberid';

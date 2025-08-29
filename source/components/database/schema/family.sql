@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS shared_schema.family
     phone character varying(20) COLLATE pg_catalog."default",
     isphonewhatsappregistered boolean NOT NULL DEFAULT false,
     email character varying(100) COLLATE pg_catalog."default",
-    familydisplayname character varying(255) COLLATE pg_catalog."default",
+    familysearchtext character varying(500) COLLATE pg_catalog."default",
     active boolean NOT NULL DEFAULT true,
     familyimage character varying(120) COLLATE pg_catalog."default",
 	imagelastupdated timestamp with time zone NOT NULL,
@@ -62,7 +62,7 @@ COMMENT ON COLUMN shared_schema.family.region
     - For families in **India**:  
       `Region = City + State` (e.g., *Amravati, MH*)
     - For families **abroad**:  
-      `Region = Country` (e.g., *USA*)';
+      `Region = State + Country` (e.g., *VA, USA*)';
 
 COMMENT ON COLUMN shared_schema.family.phone
     IS 'Phone number in following:
@@ -75,10 +75,10 @@ COMMENT ON COLUMN shared_schema.family.isphonewhatsappregistered
 COMMENT ON COLUMN shared_schema.family.email
     IS 'Contact email for the family.';
 
-COMMENT ON COLUMN shared_schema.family.familydisplayname
+COMMENT ON COLUMN shared_schema.family.familysearchtext
     IS 'Automatically derived by the app as:  
-  `[Head of Family Name] + [Region]`  
-  **Example**: *Bhagwatnarayan Garothaya – Amravati, MH*';
+  `[Head of Family Name Hindi/english] + last name (Hindi/English) + [Region] + [Gotra]`  
+  **Example**: *Bhagwatnarayan भगवतनारायण Garothaya गरोठ्या – Amravati, MH*';
 
 COMMENT ON COLUMN shared_schema.family.active
     IS 'This flag indicate, if this family active in application.';

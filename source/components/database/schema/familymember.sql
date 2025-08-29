@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS shared_schema.familymember
 (
     memberid serial NOT NULL,
     familyid integer NOT NULL,
-    logonname character varying(150) UNIQUE,
+    logonname character varying(150),
     headoffamily boolean NOT NULL DEFAULT false,
     firstname character varying(100) COLLATE pg_catalog."default" NOT NULL,
     firstnameinhindi character varying(100) COLLATE pg_catalog."default",
@@ -14,23 +14,22 @@ CREATE TABLE IF NOT EXISTS shared_schema.familymember
     maidenlastname character varying(100) COLLATE pg_catalog."default",
     nickname character varying(100) COLLATE pg_catalog."default",
     nicknameinhindi character varying(100) COLLATE pg_catalog."default",
-    addresssameasfamily boolean NOT NULL DEFAULT true,
-    memberaddressid integer,
-    phone character varying(20) COLLATE pg_catalog."default",
-    isphonewhatsappregistered boolean NOT NULL DEFAULT false,
-    email character varying(100) COLLATE pg_catalog."default",
-    linkedinurl character varying(150) COLLATE pg_catalog."default",
     gender character varying(10) COLLATE pg_catalog."default",
     birthday smallint,
     birthmonth smallint NOT NULL,
     birthyear smallint NOT NULL,
-    dateofdeath timestamp with time zone,
     maritalstatus character varying(20) NOT NULL,
     weddingdate timestamp with time zone,
+    dateofdeath timestamp with time zone,
+    phone character varying(20) COLLATE pg_catalog."default",
+    isphonewhatsappregistered boolean NOT NULL DEFAULT false,
+    email character varying(100) COLLATE pg_catalog."default",
+    addresssameasfamily boolean NOT NULL DEFAULT true,
+    memberaddressid integer,
     educationdetails character varying(255) COLLATE pg_catalog."default",
     occupation character varying(255) COLLATE pg_catalog."default",
-    workingat character varying(255) COLLATE pg_catalog."default",
     hobby character varying(255) COLLATE pg_catalog."default",
+    membersearchtext character varying(500) COLLATE pg_catalog."default",
     profileimage character varying(255) NOT NULL,
     profileimagethumbnail character varying(255) NOT NULL,
     imagelastupdated timestamp with time zone,
@@ -39,6 +38,8 @@ CREATE TABLE IF NOT EXISTS shared_schema.familymember
     lastupdatedby integer NOT NULL,
     lastupdateddate timestamp with time zone NOT NULL,
     CONSTRAINT familymember_pkey PRIMARY KEY (memberid),
+    CONSTRAINT familymember_email_key UNIQUE (email),
+    CONSTRAINT familymember_logonname_key UNIQUE (logonname),
     CONSTRAINT familymember_familyid_fkey FOREIGN KEY (familyid)
         REFERENCES shared_schema.family (familyid) MATCH SIMPLE
         ON UPDATE RESTRICT
@@ -91,27 +92,6 @@ COMMENT ON COLUMN shared_schema.familymember.nickname
 
 COMMENT ON COLUMN shared_schema.familymember.nicknameinhindi
     IS 'An informal or commonly used alternate name in hindi';
-    
-COMMENT ON COLUMN shared_schema.familymember.addresssameasfamily
-    IS 'If value of this column is true that means member address is same as family address.';
-
-COMMENT ON COLUMN shared_schema.familymember.memberaddressid
-    IS 'The specific address of the member.  Address id = 0 indicate member address is same as family address';
-
-COMMENT ON COLUMN shared_schema.familymember.phone
-    IS 'Phone number in following:
-      +91-912 345 6789
-      +1-123 456 7890';
-
-COMMENT ON COLUMN shared_schema.familymember.isphonewhatsappregistered
-    IS 'True indicate, phone number is registered whatsapp number';
-
-COMMENT ON COLUMN shared_schema.familymember.email
-    IS 'Contact email for the family member.';
-
-COMMENT ON COLUMN shared_schema.familymember.linkedinurl
-    IS 'Link to the member''s LinkedIn profile (if applicable).';
-
 COMMENT ON COLUMN shared_schema.familymember.gender
     IS 'Family member gender with possible value Male or Female';
 
@@ -124,26 +104,45 @@ COMMENT ON COLUMN shared_schema.familymember.birthmonth
 COMMENT ON COLUMN shared_schema.familymember.birthyear
     IS 'Year of the birth date, 4 digit number starting from 1900 to current year';
 
-COMMENT ON COLUMN shared_schema.familymember.dateofdeath
-    IS 'Date of death if member deceased. On UI show the `Is Deceased? - Yes/No`. If yes, ask for date. If day is not known, then enter 1st of Month';
-
 COMMENT ON COLUMN shared_schema.familymember.maritalstatus
     IS 'Member marital status with possible values Single, Married, Divorced, Widowed, Separated, Engaged';
 COMMENT ON COLUMN shared_schema.familymember.weddingdate
     IS 'Wedding date if married. Optional field';
+
+COMMENT ON COLUMN shared_schema.familymember.dateofdeath
+    IS 'Date of death if member deceased. On UI show the `Is Deceased? - Yes/No`. If yes, ask for date. If day is not known, then enter 1st of Month';
+
+COMMENT ON COLUMN shared_schema.familymember.phone
+    IS 'Phone number in following:
+      +91-912 345 6789
+      +1-123 456 7890';
+COMMENT ON COLUMN shared_schema.familymember.isphonewhatsappregistered
+    IS 'True indicate, phone number is registered whatsapp number';
+
+COMMENT ON COLUMN shared_schema.familymember.email
+    IS 'Contact email for the family member.';
+
+COMMENT ON COLUMN shared_schema.familymember.addresssameasfamily
+    IS 'If value of this column is true that means member address is same as family address.';
+
+COMMENT ON COLUMN shared_schema.familymember.memberaddressid
+    IS 'The specific address of the member.  Address id = 0 indicate member address is same as family address';
+    
 COMMENT ON COLUMN shared_schema.familymember.educationdetails
     IS 'Education details. A list of academic qualifications E.g HSC; Engineering in CS; MBA';
 
 COMMENT ON COLUMN shared_schema.familymember.occupation
     IS 'The member''s profession or role.  
-  Examples: Software Engineer, Orthopedic Surgeon, Business Owner (flour mill), Fast Food Restaurant Owner';
-
-COMMENT ON COLUMN shared_schema.familymember.workingat
-    IS 'Name of the organization, company, or place of business.';
+  Examples: Software Engineer, Orthopedic Surgeon, Business Owner (flour mill), Fast Food Restaurant Owner. Also mention the place you work at.';
 
 COMMENT ON COLUMN shared_schema.familymember.hobby
     IS 'Member''s hobbies or recreational interests.  
   *Example: Volleyball, cooking, painting*';
+
+COMMENT ON COLUMN shared_schema.familymember.membersearchtext
+    IS 'Automatically derived by the app as:  
+  `[Name Hindi/english] + last name (Hindi/English) + [Region]`  
+  **Example**: *Bhagwatnarayan भगवतनारायण Garothaya गरोठ्या – Amravati, MH*';
 
 COMMENT ON COLUMN shared_schema.familymember.profileimage
     IS 'Path for member image in following format:
