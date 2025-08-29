@@ -7,39 +7,7 @@ import "./TreeNode.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
 import ERROR_MESSAGES from "../constants/messages";
-
-const MemberCard = ({ member }) => (
-  <Link to={`/member/${member.memberId}`} className="text-decoration-none">
-    <div
-      className={`member-card text-center p-2 ${member.selectedNode ? "root-node" : ""}`}
-      style={{ minWidth: "160px" }}
-    >
-      <div className="card-body p-2">
-        <h6 className="card-title mb-1">
-          {member.firstName} {member.lastName}
-        </h6>
-        {/* <p className="card-text small text-muted">{member.occupation}</p>
-      <p className="card-text small">📞 {member.phone}</p> */}
-      </div>
-    </div>
-  </Link>
-);
-
-const CoupleNode = ({ member }) => (
-  <div className="d-flex justify-content-center gap-2">
-    <MemberCard member={member} />
-    {member.spouse && <MemberCard member={member.spouse} />}
-  </div>
-);
-
-const MemberNode = ({ member }) => (
-  <TreeNode label={<CoupleNode member={member} />}>
-    {member.children &&
-      member.children.map((child) => (
-        <MemberNode key={child.memberId} member={child} />
-      ))}
-  </TreeNode>
-);
+import FamilyTree from "../components/FamilyTree";
 
 function flattenFamilyTree(root) {
   const members = [];
@@ -123,7 +91,7 @@ const MemberProfile = () => {
   }, [id]);
 
   const handleEditClick = () => setEditMode(true);
-  
+
   if (error) return <div className="text-danger p-4">{error}</div>;
   if (!memberData) return <div className="p-4">Loading member profile...</div>;
   const { memberProfile } = memberData;
@@ -239,6 +207,20 @@ const MemberProfile = () => {
         </div>
       </div>
 
+      {/* Tree View */}
+      <h5 className="mb-3">Family Tree</h5>
+      <div
+        className="tree-container border"
+        style={{
+          width: "100%",
+          minHeight: "600px",
+          overflow: "auto",
+          padding: "10px",
+        }}
+      >
+        <FamilyTree familyTreeRoot={memberData.familyTreeRoot} />
+      </div>
+
       <div className="mb-4">
         <h4>Family Members</h4>
         <div className="table-responsive">
@@ -279,20 +261,6 @@ const MemberProfile = () => {
         </div>
       </div>
 
-      {/* Tree View */}
-      <h5 className="mb-3">Family Tree</h5>
-      <div className="overflow-auto">
-        <Tree
-          lineWidth={"2px"}
-          lineColor={"#ccc"}
-          lineBorderRadius={"10px"}
-          label={<CoupleNode member={memberData.familyTreeRoot} />}
-        >
-          {memberData.familyTreeRoot.children?.map((child) => (
-            <MemberNode key={child.memberId} member={child} />
-          ))}
-        </Tree>
-      </div>
     </div>
   );
 };

@@ -68,7 +68,7 @@ const AccountsPage = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="container p-4 bg-white rounded mt-4">
       <h2 className="text-xl font-bold mb-4">Account Statement</h2>
       <div className="d-flex gap-2 align-items-center mb-3">
         <select

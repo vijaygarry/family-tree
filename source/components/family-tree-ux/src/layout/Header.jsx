@@ -1,26 +1,47 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./Header.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 
 const Header = () => {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const [scrolled, setScrolled] = useState(false);
 
   const handleLogout = async () => {
     await logout();
     navigate("/login");
   };
-  
+
   const fallbackAvatar = "/default-avatar.png"; // keep this also in public folder
 
+  // ✅ Add scroll listener
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <header className="bg-white text-black mb-3 shadow-sm">
+    <header
+      className={`bg-white text-black shadow-sm sticky-sm-top header ${
+        scrolled ? "header-scrolled" : ""
+      }`}
+    >
       <nav className="navbar navbar-expand-lg navbar-dark container">
         <Link className="navbar-brand d-flex align-items-center" to="/">
-          <img src="/logo.svg" alt="Logo"/>         
+          <img
+            src="/logo.svg"
+            alt="Logo"
+            className={`logo ${scrolled ? "logo-small" : ""}`}
+          />
         </Link>
 
         <button
@@ -34,12 +55,12 @@ const Header = () => {
 
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
- 
-          <li className="nav-item">
-            <Link className="nav-link" to="/">
-              Home
-            </Link>
-          </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/">
+                Home
+              </Link>
+            </li>
+
             {/* Dropdown Menu */}
             <li className="nav-item dropdown">
               <span
@@ -68,6 +89,7 @@ const Header = () => {
                 </li>
               </ul>
             </li>
+
             <li className="nav-item">
               <Link className="nav-link" to="/events">
                 Events
@@ -78,6 +100,7 @@ const Header = () => {
                 Accounts
               </Link>
             </li>
+
             {/* User dropdown */}
             <li className="nav-item dropdown">
               <a
@@ -88,15 +111,19 @@ const Header = () => {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                <span className="me-2">{user.firstName} {user.lastName}</span>
+                <span className="me-2">
+                  {user.firstName} {user.lastName}
+                </span>
                 <img
-  src={user.profileImageThumbnail}
-  alt="User Avatar"
-  className="rounded-circle me-2"
-  width="25"
-  height="25"
-  onError={(e) => (e.currentTarget.src = fallbackAvatar)}
-/>
+                  src={user.profileImageThumbnail}
+                  alt="User Avatar"
+                  className={`rounded-circle me-2 user-avatar ${
+                    scrolled ? "avatar-small" : ""
+                  }`}
+                  width="25"
+                  height="25"
+                  onError={(e) => (e.currentTarget.src = fallbackAvatar)}
+                />
               </a>
               <ul
                 className="dropdown-menu dropdown-menu-end"

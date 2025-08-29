@@ -12,3 +12,50 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+/* New Css */
+
+
+button.btn.btn-primary {
+    background: #A42502 !important;
+    border-color: #A42502 !important;
+    font-weight: 700;
+}
+h2,h3,h5{
+  font-size: 1.75rem;
+  font-weight: 700 !important;
+}
+thead.table-light tr th {
+    background: #FFE0B7 !important;
+    border-color: #FFE0B7 !important;
+}
+.table-striped>tbody>tr:nth-of-type(odd)>* {
+    background: #ffffff !important;
+    --bs-table-bg-type: rgb(255 255 255);
+        border-color: #FFDCB0;
+}
+.table-striped>tbody>tr:nth-of-type(even)>* {
+    background: #FFF6EB !important;
+    --bs-table-bg-type: #FFF6EB;
+        border-color: #FFDCB0;
+}
+.table-bordered>:not(caption)>*>* {
+    border-width: 1px var(--bs-border-width);
+}
+.table-bordered>:not(caption)>*>* a.text-decoration-none {
+    color: #000;
+    font-weight: 500;
+}
+.d-flex.justify-content-center.gap-2 a.text-decoration-none .member-card.d-flex.align-items-center.p-2{
+     background:   #C0EDFF;
+    color: #000;
+    font-weight: 400;
+    border-color: #C0EDFF;
+}
+.d-flex.justify-content-center.gap-2 a.text-decoration-none:last-child .member-card.d-flex.align-items-center.p-2 {
+    background: #FFC2E1;
+    color: #000;
+    font-weight: 400;
+      border-color: #FFC2E1;
+}

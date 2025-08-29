@@ -255,7 +255,7 @@ const SignUp = () => {
         background: "#fff",
       }}
     >
-      <h2>Sign Up</h2>
+      <h3 className="mb-4 fw-bold">Sign Up</h3>
       {signUpSuccess
         ? signUpSuccessMessage
         : showRequestOtpForm

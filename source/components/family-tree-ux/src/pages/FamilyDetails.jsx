@@ -1,65 +1,13 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { Tree, TreeNode } from "react-organizational-chart";
 import { getFormattedPhoneDisplay } from "../utils/phoneUtils";
 import "./TreeNode.css";
 import "./FamilyDetails.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import api from "../api/axiosInstance";
 import ERROR_MESSAGES from "../constants/messages";
-
-const getImagePath = (url) => {
-  if (!url) return "/sample-male2.jpeg";
-  return `/${url}`;
-};
-
-const MemberCard = ({ member }) => (
-  <Link to={`/member/${member.memberId}`} className="text-decoration-none">
-    <div
-      className={`member-card d-flex align-items-center p-2 ${member.selectedNode ? "root-node" : ""}`}
-      style={{ minWidth: "180px", borderRadius: "8px" }}
-    >
-      {member.profileImage && (
-        <img
-          src={getImagePath(member.profileImage)}
-          alt={`${member.firstName}`}
-          className="mb-2"
-          style={{
-            width: "60px",
-            height: "60px",
-            borderRadius: "10%",
-            objectFit: "cover",
-            marginRight: "10px",
-          }}
-        />
-      )}
-      <div className="card-body p-2">
-        <h6 className="card-title mb-1">
-          {member.firstName} {member.lastName}
-        </h6>
-        {/* <p className="card-text small text-muted">{member.occupation}</p>
-      <p className="card-text small">📞 {member.phone}</p> */}
-      </div>
-    </div>
-  </Link>
-);
-
-const CoupleNode = ({ member }) => (
-  <div className="d-flex justify-content-center gap-2">
-    <MemberCard member={member} />
-    {member.spouse && <MemberCard member={member.spouse} />}
-  </div>
-);
-
-const MemberNode = ({ member }) => (
-  <TreeNode label={<CoupleNode member={member} />}>
-    {member.children &&
-      member.children.map((child) => (
-        <MemberNode key={child.memberId} member={child} />
-      ))}
-  </TreeNode>
-);
+import FamilyTree from "../components/FamilyTree";
 
 function flattenFamilyTree(root) {
   const members = [];
@@ -258,57 +206,51 @@ const FamilyDetails = () => {
 
 
   return (
-    <div className="container py-4">
+    <div className="container p-4 bg-white rounded mt-4">
       {/* Family Info Section */}
-      <h5 className="mb-3">Family Information</h5>
-      <div className="card mb-4" style={{ backgroundColor: "#e7f3ff" }}>
-        <div
-          className="card-body d-flex flex-wrap align-items-start"
-          style={{ gap: "1rem" }}
-        >
-        {editMode
-          ? familyInformationEditForm
-          : (
-            <div
-          className="card-body d-flex flex-wrap align-items-start"
-          style={{ gap: "1rem" }}
-        >
-          <div style={{ flex: "1 1 10%" }}>
-            <div className="d-flex justify-content-between align-items-center">
-            <h4 className="card-title mb-3">
-              <span className="fw-semibold me-2">Family Name:</span>
-              <span className="text-secondary">{family.familyName} {family.familyNameInHindi && ` (${family.familyNameInHindi})`} </span>
-            </h4>
-            <button
-                  className="btn btn-outline-primary btn-sm ms-2"
+      <h5 className="mb-3 float-start">Family Information</h5>
+               <button
+                  className="btn btn-primary fw-bold float-end"
                   onClick={handleEditClick}
                   title="Edit Family Details"
                 >
                   <i className="bi bi-pencil-square"></i> Edit
                 </button>
+                <div className="clearfix"></div>
+      <div className="card mb-5 p-4 bg-body-secondary border-0">
+        <div className="row">
+          <div className="col-sm-4">
+       <div className="d-flex justify-content-between align-items-center">
+            <h4 className="card-title mb-3 pb-2 fw-bold">
+              <span className="fw-bold me-2">Family Name:</span>
+              <span className="text-black">{family.familyName} {family.familyNameInHindi && ` (${family.familyNameInHindi})`} </span>
+            </h4>
+   
           </div>
-            <div className="mb-2">
-              <span className="fw-semibold me-2">Head Of Family:</span>
-              <span className="text-secondary">{family.headOfFamilyName}</span>
+          <div className="mb-2">
+              <span className="fw-bold me-2">Head Of Family:</span>
+              <span className="text-black">{family.headOfFamilyName}</span>
             </div>
             <div className="mb-2">
-              <span className="fw-semibold me-2">Gotra:</span>
-              <span className="text-secondary">{family.gotra}</span>
+              <span className="fw-bold me-2">Gotra:</span>
+              <span className="text-black">{family.gotra}</span>
             </div>
             <div className="mb-2">
-              <span className="fw-semibold me-2">Email:</span>
-              <span className="text-secondary">{family.email}</span>
+              <span className="fw-bold me-2">Email:</span>
+              <span className="text-black">{family.email}</span>
             </div>
             <div className="mb-2">
-              <span className="fw-semibold me-2">Phone:</span>
-              <span className="text-secondary">
+              <span className="fw-bold me-2">Phone:</span>
+              <span className="text-black">
                 {getFormattedPhoneDisplay(
                   family.phone,
                   family.phoneWhatsappRegistered,
                 )}
               </span>
             </div>
-            <div className="d-flex">
+          </div>
+          <div className="col-sm-4">
+<div className="d-flex  mt-5">
               <span className="fw-semibold me-2">Address:</span>
               <address className="mb-0">
                 {family.familyAddress?.addressLine1}
@@ -339,15 +281,16 @@ const FamilyDetails = () => {
               </address>
             </div>
           </div>
-          {/* Family Image (Right) */}
+          <div className="col-sm-4">
+            {/* Family Image (Right) */}
           {family.familyImage && (
             <div style={{ flex: "0 0 auto" }}>
               <img
                 src={`/${family.familyImage}`}
                 alt="Family"
                 style={{
-                  width: "450px",
-                  height: "350px",
+                  width: "205px",
+                  height: "205px",
                   objectFit: "cover",
                   borderRadius: "8px",
                 }}
@@ -355,13 +298,31 @@ const FamilyDetails = () => {
             </div>
           )}
           </div>
+        </div>
+        <div
+          className="card-body d-flex flex-wrap align-items-start p-0"
+          style={{ gap: "1rem" }}
+        >
+        {editMode
+          ? familyInformationEditForm
+          : (
+            <div
+          className="card-body d-flex flex-wrap align-items-start p-0"
+          style={{ gap: "1rem" }}
+        >
+          <div style={{ flex: "1 1 10%" }}>
+     
+            
+            
+          </div>
+          
+          </div>
           )
         }
         </div>
       </div>
 
       {/* Tree View */}
-      <div className="mb-4">
       <h5 className="mb-3">Family Tree</h5>
       <div
         className="tree-container border"
@@ -372,22 +333,12 @@ const FamilyDetails = () => {
           padding: "10px",
         }}
       >
-        <Tree
-          lineWidth={"2px"}
-          lineColor={"#ccc"}
-          lineBorderRadius={"10px"}
-          label={<CoupleNode member={family.familyTreeRoot} />}
-        >
-          {family.familyTreeRoot.children &&
-            family.familyTreeRoot.children.map((child) => (
-              <MemberNode key={child.memberId} member={child} />
-            ))}
-        </Tree>
+        <FamilyTree familyTreeRoot={family.familyTreeRoot} />
       </div>
-      </div>
+
       {/* Members List */}
       
-      <div className="mb-4">
+      <div className="mb-5">
         <h5 className="mb-3">Family Members</h5>
         <div className="table-responsive">
           <table className="table table-bordered table-striped">
@@ -436,6 +387,7 @@ const FamilyDetails = () => {
         </div>
       </div>
 
+      
     </div>
   );
 };

@@ -21,3 +21,34 @@
   color: #ffffff; /* Pure white on hover */
   background: #A42502;
 }
+
+
+/* New CSS */
+
+/* Base header style */
+.header {
+  transition: all 0.3s ease-in-out;
+}
+
+/* When scrolled */
+/* .header-scrolled {
+} */
+
+/* Logo resize */
+.logo {
+  transition: all 0.3s ease-in-out;
+}
+.logo-small {
+  height: 60px;
+}
+
+/* Avatar resize */
+.user-avatar {
+  width: 25px;
+  height: 25px;
+  transition: all 0.3s ease-in-out;
+}
+.avatar-small {
+  width: 20px;
+  height: 20px;
+}

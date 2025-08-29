@@ -100,7 +100,7 @@ const ForgotPassword = () => {
         style={{
           width: "100%",
           padding: 10,
-          background: "#1976d2",
+          background: "#a42502",
           color: "#fff",
           border: "none",
           borderRadius: 4,
@@ -235,7 +235,7 @@ const ForgotPassword = () => {
         background: "#fff",
       }}
     >
-      <h2>Forgot Password</h2>
+      <h3 className="mb-4 fw-bold">Forgot Password</h3>
       {resetPasswordSuccess
         ? forgotPasswordSuccess
         : showRequestOTPForm
