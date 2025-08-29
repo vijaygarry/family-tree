@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
 import java.util.Date;
 
 import com.neasaa.base.app.entity.BaseEntity;
@@ -19,9 +20,10 @@ import com.neasaa.base.app.entity.BaseEntity;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Address extends BaseEntity {
+public class AddressEntity extends BaseEntity {
 
-	public static final long serialVersionUID = 1748576601270L;
+	@Serial
+    private static final long serialVersionUID = 1748576601270L;
 	private int addressId;
 	private String addressLine1;
 	private String addressLine2;

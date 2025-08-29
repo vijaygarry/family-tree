@@ -6,17 +6,15 @@ import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.familytree.dao.pg.AddressDao;
 import com.neasaa.familytree.dao.pg.FamilyMemberDao;
 import com.neasaa.familytree.dao.pg.MemberRelationshipDao;
-import com.neasaa.familytree.entity.Address;
-import com.neasaa.familytree.entity.FamilyMember;
-import com.neasaa.familytree.entity.MemberRelationship;
+import com.neasaa.familytree.entity.AddressEntity;
+import com.neasaa.familytree.entity.FamilyMemberEntity;
+import com.neasaa.familytree.entity.MemberRelationshipEntity;
 import com.neasaa.familytree.enums.Gender;
-import com.neasaa.familytree.enums.RelationshipType;
 import com.neasaa.familytree.operation.OperationNames;
 import com.neasaa.familytree.operation.family.model.AddressDto;
 import com.neasaa.familytree.operation.family.model.FamilyMemberDto;
 import com.neasaa.familytree.operation.family.model.GetMemberProfileRequest;
 import com.neasaa.familytree.operation.family.model.GetMemberProfileResponse;
-import com.neasaa.familytree.operation.family.model.RelationshipDto;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -55,7 +53,7 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
 
     @Override
     public GetMemberProfileResponse doExecute(GetMemberProfileRequest opRequest) throws OperationException {
-        FamilyMember memberEntity = null;
+        FamilyMemberEntity memberEntity = null;
         if (opRequest != null && opRequest.getMemberId() != null) {
             int memberId = opRequest.getMemberId();
             memberEntity = familyMemberDao.getMemberById(memberId);
@@ -91,9 +89,9 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
         int spouseMemberId = -1;
         //Set the spouse only for selected member. Should not set spouse for children. i.e. if numberOfLevels is 0.
         if(numberOfLevels ==0 && treeNode.getSpouse() == null) {
-            MemberRelationship spouseForMember = memberRelationshipDao.getSpouseForMemberById(treeNode.getMemberId());
+            MemberRelationshipEntity spouseForMember = memberRelationshipDao.getSpouseForMemberById(treeNode.getMemberId());
             if(spouseForMember != null) {
-                FamilyMember spouse = familyMemberDao.getMemberById(spouseForMember.getRelatedMemberId());
+                FamilyMemberEntity spouse = familyMemberDao.getMemberById(spouseForMember.getRelatedMemberId());
                 spouseMemberId = spouseForMember.getRelatedMemberId();
                 if (spouse != null) {
                     treeNode.setSpouse(FamilyMemberDto.getFamilyMemberDtoFromDBEntity(spouse, "Update Pending"));
@@ -102,10 +100,10 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
         }
 
         ++numberOfLevels;
-        List<MemberRelationship> childrenForMember = memberRelationshipDao.getChildrenForMemberById(treeNode.getMemberId(), spouseMemberId);
+        List<MemberRelationshipEntity> childrenForMember = memberRelationshipDao.getChildrenForMemberById(treeNode.getMemberId(), spouseMemberId);
         if (childrenForMember != null) {
-            for (MemberRelationship childRelation : childrenForMember) {
-                FamilyMember child = familyMemberDao.getMemberById(childRelation.getRelatedMemberId());
+            for (MemberRelationshipEntity childRelation : childrenForMember) {
+                FamilyMemberEntity child = familyMemberDao.getMemberById(childRelation.getRelatedMemberId());
                 if (child != null) {
                     FamilyMemberDto childDto = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(child, "Update Pending");
                     treeNode.addChild(childDto);
@@ -122,15 +120,15 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
 
     public FamilyMemberDto addParentsAndSiblingsToFamilyTree(FamilyMemberDto familyMemberDto, boolean includeSiblings) {
         log.info("Adding parents for member: {}", familyMemberDto.getFirstName());
-        List<MemberRelationship> parents = memberRelationshipDao.getParentsForMemberById(familyMemberDto.getMemberId());
+        List<MemberRelationshipEntity> parents = memberRelationshipDao.getParentsForMemberById(familyMemberDto.getMemberId());
         if (parents == null || parents.isEmpty()) {
             log.info("No parents found for member: {}", familyMemberDto.getFirstName());
             return familyMemberDto;
         }
         FamilyMemberDto father = null;
         FamilyMemberDto mother = null;
-        for (MemberRelationship parentRelationship : parents) {
-            FamilyMember parentEntity = familyMemberDao.getMemberById(parentRelationship.getMemberId());
+        for (MemberRelationshipEntity parentRelationship : parents) {
+            FamilyMemberEntity parentEntity = familyMemberDao.getMemberById(parentRelationship.getMemberId());
             if (parentEntity != null) {
                 FamilyMemberDto parentDto = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(parentEntity, "Update Pending");
                 if (parentEntity.getGender() == Gender.Male) {
@@ -177,10 +175,10 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
 
     private List<FamilyMemberDto> getChildrenForMember(int memberId, int spouseMemberId) {
         List<FamilyMemberDto> children = new ArrayList<>();
-        List<MemberRelationship> childrenForMember = memberRelationshipDao.getChildrenForMemberById(memberId, spouseMemberId);
+        List<MemberRelationshipEntity> childrenForMember = memberRelationshipDao.getChildrenForMemberById(memberId, spouseMemberId);
         if (childrenForMember != null) {
-            for (MemberRelationship childRelation : childrenForMember) {
-                FamilyMember child = familyMemberDao.getMemberById(childRelation.getRelatedMemberId());
+            for (MemberRelationshipEntity childRelation : childrenForMember) {
+                FamilyMemberEntity child = familyMemberDao.getMemberById(childRelation.getRelatedMemberId());
                 if (child != null) {
                     FamilyMemberDto childDto = FamilyMemberDto.getFamilyMemberDtoFromDBEntity(child, "Update Pending");
                     children.add(childDto);
@@ -276,8 +274,8 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
 //
 //    }
 
-    private AddressDto getAddress(FamilyMember member){
-        Address address = null;
+    private AddressDto getAddress(FamilyMemberEntity member){
+        AddressEntity address = null;
         if (member.isAddressSameAsFamily()) {
             address = addressDao.getAddressByFamilyId(member.getFamilyId());
         } else {

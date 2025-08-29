@@ -6,8 +6,8 @@ import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.familytree.dao.pg.FamilyMemberDao;
 import com.neasaa.familytree.dao.pg.MemberRelationshipDao;
-import com.neasaa.familytree.entity.FamilyMember;
-import com.neasaa.familytree.entity.MemberRelationship;
+import com.neasaa.familytree.entity.FamilyMemberEntity;
+import com.neasaa.familytree.entity.MemberRelationshipEntity;
 import com.neasaa.familytree.enums.RelationshipType;
 import com.neasaa.familytree.operation.family.model.ManageRelationshipRequest;
 import com.neasaa.familytree.operation.family.model.ManageRelationshipResponse;
@@ -100,13 +100,13 @@ public class ManageRelationshipOperation extends AbstractOperation<ManageRelatio
 
     private void removeRelationship(RelationshipDto relationship) {
         // Fetch both the members and make sure both members exist in the database
-        FamilyMember member = getAndValidateMember(relationship.getMemberId(), relationship.getMemberName());
+        FamilyMemberEntity member = getAndValidateMember(relationship.getMemberId(), relationship.getMemberName());
         getAndValidateMember(relationship.getRelatedMemberId(), relationship.getRelatedMemberName());
 
         // Normalize the relationship type e.g. Father to Son or Husband to Wife
         relationship = RelationshipUtils.normalizeRelationship(relationship, member);
         RelationshipType relationshipType = RelationshipType.getRelationshipType(relationship.getRelationshipType());
-        MemberRelationship relationshipBetweenMembers = memberRelationshipDao.getRelationshipBetweenMembers(relationship.getMemberId(), relationship.getRelatedMemberId());
+        MemberRelationshipEntity relationshipBetweenMembers = memberRelationshipDao.getRelationshipBetweenMembers(relationship.getMemberId(), relationship.getRelatedMemberId());
         if (relationshipBetweenMembers == null) {
             log.info("No relationship found between member ID {} and related member ID {}. Nothing to remove.", relationship.getMemberId(), relationship.getRelatedMemberId());
             return;
@@ -129,16 +129,16 @@ public class ManageRelationshipOperation extends AbstractOperation<ManageRelatio
 
     private void addRelationship(RelationshipDto relationship) {
         // Fetch both the members and make sure both members exist in the database
-        FamilyMember member = getAndValidateMember(relationship.getMemberId(), relationship.getMemberName());
+        FamilyMemberEntity member = getAndValidateMember(relationship.getMemberId(), relationship.getMemberName());
         getAndValidateMember(relationship.getRelatedMemberId(), relationship.getRelatedMemberName());
 
         // Normalize the relationship type e.g. Father to Son or Husband to Wife
         relationship = RelationshipUtils.normalizeRelationship(relationship, member);
         RelationshipType relationshipType = RelationshipType.getRelationshipType(relationship.getRelationshipType());
-        MemberRelationship relationshipBetweenMembers = memberRelationshipDao.getRelationshipBetweenMembers(relationship.getMemberId(), relationship.getRelatedMemberId());
+        MemberRelationshipEntity relationshipBetweenMembers = memberRelationshipDao.getRelationshipBetweenMembers(relationship.getMemberId(), relationship.getRelatedMemberId());
         if (relationshipBetweenMembers == null) {
             AuditInfo auditInfo = getAuditInfo();
-            MemberRelationship memberRelationship = MemberRelationship.builder()
+            MemberRelationshipEntity memberRelationship = MemberRelationshipEntity.builder()
                     .memberId(relationship.getMemberId())
                     .relationshipType(relationshipType)
                     .relatedMemberId(relationship.getRelatedMemberId())
@@ -157,8 +157,8 @@ public class ManageRelationshipOperation extends AbstractOperation<ManageRelatio
         }
     }
 
-    private FamilyMember getAndValidateMember(int memberId, String memberName) {
-        FamilyMember familyMember = familyMemberDao.getMemberById(memberId);
+    private FamilyMemberEntity getAndValidateMember(int memberId, String memberName) {
+        FamilyMemberEntity familyMember = familyMemberDao.getMemberById(memberId);
         if (familyMember == null) {
             throw new ValidationException("Member not found for the member ID " + memberId);
         }

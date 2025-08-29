@@ -7,18 +7,20 @@ package com.neasaa.familytree.dao.pg;
 import java.sql.SQLException;
 
 import com.neasaa.base.app.dao.pg.AbstractDao;
-import com.neasaa.familytree.entity.Address;
-import com.neasaa.familytree.entity.Family;
-import java.sql.ResultSet;
 
+import java.sql.ResultSet;
+import java.util.Date;
+
+import com.neasaa.familytree.entity.AddressEntity;
+import com.neasaa.familytree.entity.FamilyEntity;
 import com.neasaa.familytree.utils.DataFormatter;
 import org.springframework.jdbc.core.RowMapper;
 
-public class FamilyRowMapper implements RowMapper<Family> {
+public class FamilyRowMapper implements RowMapper<FamilyEntity> {
 
 	@Override
-	public Family mapRow(ResultSet aRs, int aRowNum) throws SQLException {
-		Family family = new Family();
+	public FamilyEntity mapRow(ResultSet aRs, int aRowNum) throws SQLException {
+		FamilyEntity family = new FamilyEntity();
 		family.setFamilyId(aRs.getInt("FAMILYID"));
 		family.setFamilyName(aRs.getString("FAMILYNAME"));
 		family.setFamilyNameInHindi(aRs.getString("FAMILYNAMEINHINDI"));
@@ -29,7 +31,7 @@ public class FamilyRowMapper implements RowMapper<Family> {
 		family.setPhone(DataFormatter.formatPhoneNumber(phone));
 		family.setPhoneWhatsappRegistered(aRs.getBoolean("ISPHONEWHATSAPPREGISTERED"));
 		family.setEmail(aRs.getString("EMAIL"));
-		family.setFamilyDisplayName(aRs.getString("FAMILYDISPLAYNAME"));
+		family.setFamilysearchtext(aRs.getString("FAMILYSEARCHTEXT"));
 		family.setActive(aRs.getBoolean("ACTIVE"));
 		family.setFamilyImage(aRs.getString("FAMILYIMAGE"));
 		family.setImageLastUpdated(AbstractDao.getTimestampFromResultSet(aRs, "IMAGELASTUPDATED"));
@@ -37,7 +39,7 @@ public class FamilyRowMapper implements RowMapper<Family> {
 		if (addressLine1 == null) {
 			return family; // No address associated with the family
 		}
-		Address address = new Address();
+		AddressEntity address = new AddressEntity();
 		address.setAddressLine1(addressLine1);
 		address.setAddressLine2(aRs.getString("ADDRESSLINE2"));
 		address.setAddressLine3(aRs.getString("ADDRESSLINE3"));

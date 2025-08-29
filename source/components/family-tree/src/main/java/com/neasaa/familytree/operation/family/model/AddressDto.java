@@ -1,6 +1,6 @@
 package com.neasaa.familytree.operation.family.model;
 
-import com.neasaa.familytree.entity.Address;
+import com.neasaa.familytree.entity.AddressEntity;
 import lombok.*;
 
 @Getter
@@ -20,7 +20,7 @@ public class AddressDto {
 	private String postalCode;
 	private String country;
 
-	public static AddressDto getAddressDtoFromEntity(Address address) {
+	public static AddressDto getAddressDtoFromEntity(AddressEntity address) {
 		if (address == null) {
 			return null;
 		}

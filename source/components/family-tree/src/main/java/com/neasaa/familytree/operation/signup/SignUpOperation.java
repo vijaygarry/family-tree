@@ -17,7 +17,7 @@ import com.neasaa.base.app.utils.EmailValidator;
 import com.neasaa.base.app.utils.OTPUtil;
 import com.neasaa.base.app.utils.PasswordUtil;
 import com.neasaa.familytree.dao.pg.FamilyMemberDao;
-import com.neasaa.familytree.entity.FamilyMember;
+import com.neasaa.familytree.entity.FamilyMemberEntity;
 import com.neasaa.familytree.operation.signup.model.SignUpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -84,7 +84,7 @@ public class SignUpOperation extends AbstractOperation<SignUpRequest, EmptyOpera
         }
 
         // Make sure member exists in family member table with this email
-        FamilyMember memberByEmail = familyMemberDao.getMemberByEmail(emailId);
+        FamilyMemberEntity memberByEmail = familyMemberDao.getMemberByEmail(emailId);
         if(memberByEmail == null) {
             throw new ValidationException("Email ID " + emailId + " is not allowed to signup, please contact administrator.");
         }

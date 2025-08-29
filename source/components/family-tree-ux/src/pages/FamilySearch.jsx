@@ -31,7 +31,7 @@ const FamilySearch = () => {
   };
 
   return (
-    <div className="container py-4">
+    <div className="container p-4 bg-white rounded mt-4">
       <h2 className="mb-4">Search Family</h2>
       <form onSubmit={handleSearch} className="mb-3">
         <div className="row g-3">
@@ -62,16 +62,16 @@ const FamilySearch = () => {
       </form>
 
       {error && <div className="alert alert-danger">{error}</div>}
-
+      {results.families == null && <div className="alert alert-danger">No family found for selected search criteria</div>}
       {results.families?.length > 0 && (
         <table className="table table-bordered mt-4">
           <thead>
             <tr>
+              <th>Head Of Family</th>
               <th>Family Name</th>
-              <th>Region</th>
-              <th>Last Name</th>
               <th>Gotra</th>
               <th>Phone</th>
+              <th>Region</th>
             </tr>
           </thead>
           <tbody>
@@ -81,11 +81,11 @@ const FamilySearch = () => {
                 style={{ cursor: "pointer" }}
                 onClick={() => handleRowClick(family.familyId)}
               >
-                <td>{family.familyDisplayName}</td>
-                <td>{family.region}</td>
-                <td>{family.familyName}</td>
+                <td>{family.headOfFamilyFirstName} {family.headOfFamilyFirstNameInHindi && ` (${family.headOfFamilyFirstNameInHindi})`}</td>
+                <td>{family.familyName} {family.familyNameInHindi && ` (${family.familyNameInHindi})`}</td>
                 <td>{family.gotra}</td>
                 <td>{family.phone}</td>
+                <td>{family.region}</td>
               </tr>
             ))}
           </tbody>

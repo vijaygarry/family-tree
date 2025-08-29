@@ -4,6 +4,8 @@ import static com.neasaa.base.app.utils.ValidationUtils.checkObjectPresent;
 import static com.neasaa.base.app.utils.ValidationUtils.checkValuePresent;
 
 import com.neasaa.familytree.constants.ImageConstants;
+import com.neasaa.familytree.entity.AddressEntity;
+import com.neasaa.familytree.entity.FamilyEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -14,13 +16,10 @@ import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.familytree.dao.pg.AddressDao;
 import com.neasaa.familytree.dao.pg.FamilyDao;
-import com.neasaa.familytree.entity.Address;
-import com.neasaa.familytree.entity.Family;
 import com.neasaa.familytree.operation.OperationNames;
 import com.neasaa.familytree.operation.family.model.AddFamilyRequest;
 import com.neasaa.familytree.operation.family.model.AddFamilyResponse;
 import com.neasaa.familytree.operation.family.model.AddressDto;
-import com.neasaa.familytree.utils.Constants;
 import com.neasaa.familytree.utils.DataFormatter;
 import com.neasaa.familytree.utils.FamilytreeValidationUtils;
 
@@ -57,19 +56,22 @@ public class AddFamilyOperation extends AbstractOperation<AddFamilyRequest, AddF
 	@Override
 	public AddFamilyResponse doExecute(AddFamilyRequest opRequest) throws OperationException {
 		log.info("Adding family");
-		Address familyAddress = getAddressFromRequest(opRequest);
+		AddressEntity familyAddress = getAddressFromRequest(opRequest);
 		int addressId = addressDao.addAddress(familyAddress);
 		familyAddress.setAddressId(addressId);
+
+		FamilyEntity familyFromRequest = getFamilyFromRequest(opRequest, familyAddress);
+		familyFromRequest.setFamilysearchtext(DataFormatter.getFamilySearchString(familyFromRequest, null, familyAddress));
 		int familyId = familyDao.addFamily(getFamilyFromRequest(opRequest, familyAddress));
 		AddFamilyResponse response = AddFamilyResponse.builder().familyName(opRequest.getFamilyName()).familyId(familyId).build();
 		response.setOperationMessage(String.format("%s family added successfully !!!", opRequest.getFamilyName()));
 		return response;
 	}
 	
-	private Address getAddressFromRequest (AddFamilyRequest opRequest) {
+	private AddressEntity getAddressFromRequest (AddFamilyRequest opRequest) {
 		AddressDto inputAddress = opRequest.getAddress();
 		AuditInfo auditInfo = getAuditInfo();
-		return Address.builder()
+		return AddressEntity.builder()
 				.addressLine1(inputAddress.getAddressLine1())
 				.addressLine2(inputAddress.getAddressLine2())
 				.addressLine3(inputAddress.getAddressLine3())
@@ -85,12 +87,12 @@ public class AddFamilyOperation extends AbstractOperation<AddFamilyRequest, AddF
 				.build();
 	}
 	
-	private Family getFamilyFromRequest (AddFamilyRequest opRequest, Address familyAddress) {
+	private FamilyEntity getFamilyFromRequest (AddFamilyRequest opRequest, AddressEntity familyAddress) {
 		AuditInfo auditInfo = getAuditInfo();
 		String phoneNumber = DataFormatter.formatPhoneNumber(opRequest.getPhone());
 		String familyRegion = DataFormatter.getRegion(familyAddress);
-		String NO_HEAD_OF_FAMILY = null;
-		return Family.builder()
+
+		return FamilyEntity.builder()
 				.familyName(opRequest.getFamilyName())
 				.familyNameInHindi(opRequest.getFamilyNameInHindi())
 				.gotra(opRequest.getGotra())
@@ -99,7 +101,6 @@ public class AddFamilyOperation extends AbstractOperation<AddFamilyRequest, AddF
 				.phone(phoneNumber)
 				.isPhoneWhatsappRegistered(opRequest.isPhoneWhatsappRegistered())
 				.email(opRequest.getEmail())
-				.familyDisplayName(DataFormatter.getFamilyDisplayName(NO_HEAD_OF_FAMILY, opRequest.getFamilyName(), familyRegion))
 				.active(true)
 				.familyImage(ImageConstants.DEFAULT_FAMILY_IMAGE)
 				.imageLastUpdated(auditInfo.getCreatedDate())

@@ -1,6 +1,8 @@
 package com.neasaa.familytree.utils;
 
-import com.neasaa.familytree.entity.Address;
+import com.neasaa.familytree.entity.AddressEntity;
+import com.neasaa.familytree.entity.FamilyEntity;
+import com.neasaa.familytree.entity.FamilyMemberEntity;
 import com.neasaa.familytree.enums.IndianState;
 import com.neasaa.familytree.enums.Month;
 
@@ -46,7 +48,7 @@ public class DataFormatter {
 		System.out.println(formatPhoneNumber("98765 43210"));        // +91-987 654 3210
 	}
 
-	public static boolean isIndianAddress (Address address) {
+	public static boolean isIndianAddress (AddressEntity address) {
 		if(address == null) {
 			return true;
 		}
@@ -57,11 +59,11 @@ public class DataFormatter {
     	- For families in **India**:  
       		`Region = City + State` (e.g., *Amravati, MH*)
     	- For families **abroad**:  
-      		`Region = Country` (e.g., *USA*)
+      		`Region = State + Country` (e.g., *USA*)
 	 * @param address
 	 * @return
 	 */
-	public static String getRegion (Address address) {
+	public static String getRegion (AddressEntity address) {
 		if(address == null) {
 			return null;
 		}
@@ -69,22 +71,52 @@ public class DataFormatter {
 			return address.getCity() + ", " + IndianState.getShortStateName(address.getState());
 		}
 		
-		return address.getCountry();
+		return address.getState() + ", " + address.getCountry();
+	}
+
+	public static String getFamilySearchString (FamilyEntity family, FamilyMemberEntity familyHeadOfFamily, AddressEntity address) {
+		if (family == null) {
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append(family.getFamilyName()).append(" ");
+		if (family.getFamilyNameInHindi() != null && !family.getFamilyNameInHindi().isEmpty()) {
+			sb.append(family.getFamilyNameInHindi()).append(" ");
+		}
+		if(familyHeadOfFamily != null && familyHeadOfFamily.getFirstName() != null) {
+			sb.append(familyHeadOfFamily.getFirstName()).append(" ");
+		}
+		if (familyHeadOfFamily != null && familyHeadOfFamily.getFirstNameInHindi() != null) {
+			sb.append(familyHeadOfFamily.getFirstNameInHindi()).append(" ");
+		}
+		if(address != null) {
+			if(address.getCity() != null) {
+				sb.append(address.getCity()).append(" ");
+			}
+			if(address.getState() != null) {
+				sb.append(address.getState()).append(" ");
+			}
+			if(address.getCountry() != null) {
+				sb.append(address.getCountry()).append(" ");
+			}
+		}
+
+		return sb.toString();
 	}
 	
-	/**
-	 * Automatically derived by the app as:  
-  	`[Head of Family Name] + [Region]`  
-	 **Example**: *Bhagwatnarayan Garothaya – Amravati, MH*
-	 * If Head of family does not exists, then use only family name.
-	 * @return
-	 */
-	public static String getFamilyDisplayName (String headOfFamilyMemberName, String familyName, String region) {
-		if(headOfFamilyMemberName == null) {
-			return String.format("%s - %s", familyName, region);
-		}
-		return String.format("%s %s - %s", headOfFamilyMemberName, familyName, region);
-	}
+//	/**
+//	 * Automatically derived by the app as:
+//  	`[Head of Family Name] + [Region]`
+//	 **Example**: *Bhagwatnarayan Garothaya – Amravati, MH*
+//	 * If Head of family does not exists, then use only family name.
+//	 * @return
+//	 */
+//	public static String getFamilyDisplayName (String headOfFamilyMemberName, String familyName, String region) {
+//		if(headOfFamilyMemberName == null) {
+//			return String.format("%s - %s", familyName, region);
+//		}
+//		return String.format("%s %s - %s", headOfFamilyMemberName, familyName, region);
+//	}
 
 	public static String formatBirthDate (short day, Month month, short year) {
 		if (month == null) {

@@ -1,7 +1,7 @@
 package com.neasaa.familytree.operation.family.model;
 
-import com.neasaa.familytree.entity.Family;
-import lombok.Builder;
+import com.neasaa.familytree.entity.FamilyEntity;
+import com.neasaa.familytree.entity.SearchFamilyEntity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,17 +14,23 @@ public class SearchFamilyDto {
     private String gotra;
     private String region;
     private String phone;
-    private String familyDisplayName;
+    private boolean isPhoneWhatsappRegistered;
+    private String familyImage;
+    private String headOfFamilyFirstName;
+    private String headOfFamilyFirstNameInHindi;
 
-    public static SearchFamilyDto getSearchFamilyDtoFromEntity(Family family) {
+    public static SearchFamilyDto getSearchFamilyDtoFromEntity(SearchFamilyEntity searchFamily) {
         SearchFamilyDto dto = new SearchFamilyDto();
-        dto.setFamilyId(family.getFamilyId());
-        dto.setFamilyName(family.getFamilyName());
-        dto.setFamilyNameInHindi(family.getFamilyNameInHindi());
-        dto.setGotra(family.getGotra());
-        dto.setRegion(family.getRegion());
-        dto.setPhone(family.getPhone());
-        dto.setFamilyDisplayName(family.getFamilyDisplayName());
+        dto.setFamilyId(searchFamily.getFamilyId());
+        dto.setFamilyName(searchFamily.getFamilyName());
+        dto.setFamilyNameInHindi(searchFamily.getFamilyNameInHindi());
+        dto.setGotra(searchFamily.getGotra());
+        dto.setRegion(searchFamily.getRegion());
+        dto.setPhone(searchFamily.getPhone());
+        dto.setPhoneWhatsappRegistered(searchFamily.isPhoneWhatsappRegistered());
+        dto.setFamilyImage(searchFamily.getFamilyImage());
+        dto.setHeadOfFamilyFirstName(searchFamily.getHeadOfFamilyFirstName());
+        dto.setHeadOfFamilyFirstNameInHindi(searchFamily.getHeadOfFamilyFirstNameInHindi());
         return dto;
     }
 }

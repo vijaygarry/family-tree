@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
 import java.util.Date;
 
 import com.neasaa.base.app.entity.BaseEntity;
@@ -19,9 +20,11 @@ import com.neasaa.base.app.entity.BaseEntity;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Family extends BaseEntity {
+public class FamilyEntity extends BaseEntity {
 
-	public static final long serialVersionUID = 1748919840051L;
+	@Serial
+    private static final long serialVersionUID = 1748919840051L;
+
 	private int familyId;
 	private String familyName;
 	private String familyNameInHindi;
@@ -31,16 +34,15 @@ public class Family extends BaseEntity {
 	private String phone;
 	private boolean isPhoneWhatsappRegistered;
 	private String email;
-	private String familyDisplayName;
+	private String familysearchtext;
 	private boolean active;
 	private String familyImage;
 	private Date imageLastUpdated;
 	// Address details
-	private Address address;
+	private AddressEntity address;
 	private int createdBy;
 	private Date createdDate;
 	private int lastUpdatedBy;
 	private Date lastUpdatedDate;
-
 
 }

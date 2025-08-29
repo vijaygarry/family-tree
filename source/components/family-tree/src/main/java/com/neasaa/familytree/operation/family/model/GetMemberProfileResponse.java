@@ -1,14 +1,13 @@
 package com.neasaa.familytree.operation.family.model;
 
 import com.neasaa.base.app.operation.model.OperationResponse;
-import com.neasaa.familytree.entity.FamilyMember;
+import com.neasaa.familytree.entity.FamilyMemberEntity;
 import com.neasaa.familytree.enums.Gender;
 import com.neasaa.familytree.enums.MaritalStatus;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.util.Date;
-import java.util.List;
 
 @Getter
 @Builder
@@ -50,7 +49,7 @@ public class GetMemberProfileResponse extends OperationResponse {
         private String profileImageThumbnail;
         private Date lastUpdatedDate;
 
-        public static MemberProfile fromFamilyMemberDBEntity(FamilyMember familyMember, AddressDto address) {
+        public static MemberProfile fromFamilyMemberDBEntity(FamilyMemberEntity familyMember, AddressDto address) {
             return MemberProfile.builder()
                     .memberId(familyMember.getMemberId())
                     .familyId(familyMember.getFamilyId())
@@ -66,7 +65,6 @@ public class GetMemberProfileResponse extends OperationResponse {
                     .phone(familyMember.getPhone())
                     .isPhoneWhatsappRegistered(familyMember.isPhoneWhatsappRegistered())
                     .email(familyMember.getEmail())
-                    .linkedinUrl(familyMember.getLinkedinUrl())
                     .gender(familyMember.getGender())
                     .birthDay(familyMember.getBirthDay())
                     .birthMonth(familyMember.getBirthMonth().getShortMonthName())
@@ -75,7 +73,6 @@ public class GetMemberProfileResponse extends OperationResponse {
                     .maritalStatus(familyMember.getMaritalStatus())
                     .educationDetails(familyMember.getEducationDetails())
                     .occupation(familyMember.getOccupation())
-                    .workingAt(familyMember.getWorkingAt())
                     .hobby(familyMember.getHobby())
                     .profileImage(familyMember.getProfileImage())
                     .profileImageThumbnail(familyMember.getProfileImageThumbnail())

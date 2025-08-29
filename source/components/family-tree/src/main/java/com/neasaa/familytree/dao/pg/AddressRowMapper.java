@@ -7,15 +7,17 @@ package com.neasaa.familytree.dao.pg;
 import java.sql.SQLException;
 
 import com.neasaa.base.app.dao.pg.AbstractDao;
-import com.neasaa.familytree.entity.Address;
+
 import java.sql.ResultSet;
+
+import com.neasaa.familytree.entity.AddressEntity;
 import org.springframework.jdbc.core.RowMapper;
 
-public class AddressRowMapper implements RowMapper<Address> {
+public class AddressRowMapper implements RowMapper<AddressEntity> {
 
 	@Override
-	public Address mapRow(ResultSet aRs, int aRowNum) throws SQLException {
-		Address address = new Address();
+	public AddressEntity mapRow(ResultSet aRs, int aRowNum) throws SQLException {
+		AddressEntity address = new AddressEntity();
 		address.setAddressId(aRs.getInt("ADDRESSID"));
 		address.setAddressLine1(aRs.getString("ADDRESSLINE1"));
 		address.setAddressLine2(aRs.getString("ADDRESSLINE2"));

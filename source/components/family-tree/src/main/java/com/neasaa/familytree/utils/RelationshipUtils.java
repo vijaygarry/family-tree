@@ -1,12 +1,10 @@
 package com.neasaa.familytree.utils;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import com.neasaa.base.app.operation.AuditInfo;
-import com.neasaa.familytree.entity.FamilyMember;
-import com.neasaa.familytree.entity.MemberRelationship;
+import com.neasaa.familytree.entity.FamilyMemberEntity;
+import com.neasaa.familytree.entity.MemberRelationshipEntity;
 import com.neasaa.familytree.enums.RelationshipType;
 import com.neasaa.familytree.enums.Gender;
 import com.neasaa.familytree.operation.family.model.RelationshipDto;
@@ -15,8 +13,8 @@ import static com.neasaa.familytree.enums.Gender.Male;
 
 public class RelationshipUtils {
 	
-	public static FamilyMember findMemberByIdInList (List<FamilyMember> familyMembers, int memberId) {
-		for(FamilyMember memberFromFamily : familyMembers) {
+	public static FamilyMemberEntity findMemberByIdInList (List<FamilyMemberEntity> familyMembers, int memberId) {
+		for(FamilyMemberEntity memberFromFamily : familyMembers) {
 			if(memberFromFamily.getMemberId() == memberId) {
 				return memberFromFamily;
 			}
@@ -30,7 +28,7 @@ public class RelationshipUtils {
 	 * @param member - Family member represents memberId in relationship
 	 * @return
 	 */
-	public static RelationshipDto normalizeRelationship (RelationshipDto relationship, FamilyMember member) {
+	public static RelationshipDto normalizeRelationship (RelationshipDto relationship, FamilyMemberEntity member) {
 		if(relationship == null) {
 			throw new IllegalArgumentException("Invalid relationship provided.");
 		}
@@ -76,9 +74,9 @@ public class RelationshipUtils {
 	 * @param relatedMember
 	 * @return
 	 */
-	public static List<MemberRelationship> buildRelationships (FamilyMember member, RelationshipType relatedRelationshipType, FamilyMember relatedMember, AuditInfo auditInfo) {
+	public static List<MemberRelationshipEntity> buildRelationships (FamilyMemberEntity member, RelationshipType relatedRelationshipType, FamilyMemberEntity relatedMember, AuditInfo auditInfo) {
 		if(relatedRelationshipType == RelationshipType.Son || relatedRelationshipType == RelationshipType.Daughter || relatedRelationshipType == RelationshipType.Wife) {
-			MemberRelationship memberRelationship = MemberRelationship.builder()
+			MemberRelationshipEntity memberRelationship = MemberRelationshipEntity.builder()
 					.memberId(member.getMemberId())
 					.relationshipType(relatedRelationshipType)
 					.relatedMemberId(relatedMember.getMemberId())
@@ -91,7 +89,7 @@ public class RelationshipUtils {
 		}
 
 		 if(relatedRelationshipType == RelationshipType.Husband) {
-			 MemberRelationship memberRelationship = MemberRelationship.builder()
+			 MemberRelationshipEntity memberRelationship = MemberRelationshipEntity.builder()
 					 .memberId(relatedMember.getMemberId())
 					 .relationshipType(RelationshipType.Wife)
 					 .relatedMemberId(member.getMemberId())
@@ -111,7 +109,7 @@ public class RelationshipUtils {
 			if(member.getGender() == Gender.Female) {
 				reverseRelationshipType = RelationshipType.Daughter;
 			}
-			MemberRelationship memberRelationship = MemberRelationship.builder()
+			MemberRelationshipEntity memberRelationship = MemberRelationshipEntity.builder()
 					.memberId(relatedMember.getMemberId())
 					.relationshipType(reverseRelationshipType)
 					.relatedMemberId(member.getMemberId())

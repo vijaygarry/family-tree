@@ -11,13 +11,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.neasaa.familytree.entity.MemberRelationshipEntity;
 import com.neasaa.familytree.enums.RelationshipType;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.stereotype.Repository;
 
 import com.neasaa.base.app.dao.pg.AbstractDao;
-import com.neasaa.familytree.entity.MemberRelationship;
 
 @Log4j2
 @Repository
@@ -60,11 +60,11 @@ public class MemberRelationshipDao extends AbstractDao {
 	 * @param memberId
 	 * @return
 	 */
-	public List<MemberRelationship> getRelationshipByMemberIdOrRelatedMemberId (int memberId) {
+	public List<MemberRelationshipEntity> getRelationshipByMemberIdOrRelatedMemberId (int memberId) {
 		return getJdbcTemplate().query(SELECT_RELATIONSHIP_BETWEEN_MEMBERS, new MemberRelationshipRowMapper(), memberId, memberId);
 	}
 
-	public List<MemberRelationship> getRelatedMembersByIdAndRelationType (List<Integer> memberIds, List<RelationshipType>  relationshipTypes) {
+	public List<MemberRelationshipEntity> getRelatedMembersByIdAndRelationType (List<Integer> memberIds, List<RelationshipType>  relationshipTypes) {
 		return getJdbcTemplate().query(
 				new PreparedStatementCreator() {
 					@Override
@@ -83,7 +83,7 @@ public class MemberRelationshipDao extends AbstractDao {
 		);
 	}
 
-	public List<MemberRelationship> getRelationByRelatedIdAndRelationType (int relatedMemberId, List<RelationshipType>  relationshipTypes) {
+	public List<MemberRelationshipEntity> getRelationByRelatedIdAndRelationType (int relatedMemberId, List<RelationshipType>  relationshipTypes) {
 		return getJdbcTemplate().query(
 				new PreparedStatementCreator() {
 					@Override
@@ -101,8 +101,8 @@ public class MemberRelationshipDao extends AbstractDao {
 		);
 	}
 	
-	public MemberRelationship getRelationshipBetweenMembers (int memberId, int relatedMemberId) {
-		List<MemberRelationship> relationshipList = getJdbcTemplate().query(SELECT_RELATIONSHIP_BETWEEN_MEMBERS, new MemberRelationshipRowMapper(), memberId, relatedMemberId);
+	public MemberRelationshipEntity getRelationshipBetweenMembers (int memberId, int relatedMemberId) {
+		List<MemberRelationshipEntity> relationshipList = getJdbcTemplate().query(SELECT_RELATIONSHIP_BETWEEN_MEMBERS, new MemberRelationshipRowMapper(), memberId, relatedMemberId);
 
 		if(relationshipList == null || relationshipList.size() == 0) {
 			return null;
@@ -113,8 +113,8 @@ public class MemberRelationshipDao extends AbstractDao {
 		return relationshipList.get(0);
 	}
 
-	public List<MemberRelationship> getParentsForMemberById (int memberId) {
-		List<MemberRelationship> relationshipList = getJdbcTemplate().query(SELECT_PARENTS_FOR_FAMILY_MEMBER_BY_ID, new MemberRelationshipRowMapper(), memberId);
+	public List<MemberRelationshipEntity> getParentsForMemberById (int memberId) {
+		List<MemberRelationshipEntity> relationshipList = getJdbcTemplate().query(SELECT_PARENTS_FOR_FAMILY_MEMBER_BY_ID, new MemberRelationshipRowMapper(), memberId);
 
 		if(relationshipList.isEmpty()) {
 			return null;
@@ -123,12 +123,12 @@ public class MemberRelationshipDao extends AbstractDao {
 			//Both parents are found, return both.
 			return relationshipList;
 		}
-		MemberRelationship firstParent = relationshipList.get(0);
+		MemberRelationshipEntity firstParent = relationshipList.get(0);
 		// If only one parent is found, return found other parent.
-		MemberRelationship spouseForFirstParent = getSpouseForMemberById(firstParent.getMemberId());
+		MemberRelationshipEntity spouseForFirstParent = getSpouseForMemberById(firstParent.getMemberId());
 		if(spouseForFirstParent != null) {
 			// getSpouseForMemberById returns relatedMemberId as spouse member id, so create new relationship for second parent
-			MemberRelationship secondParent = MemberRelationship.builder().memberId(spouseForFirstParent.getRelatedMemberId())
+			MemberRelationshipEntity secondParent = MemberRelationshipEntity.builder().memberId(spouseForFirstParent.getRelatedMemberId())
 					.relationshipType(firstParent.getRelationshipType()) // both parents will have same relationship type
 					.relatedMemberId(firstParent.getRelatedMemberId())
 					.build();
@@ -144,23 +144,23 @@ public class MemberRelationshipDao extends AbstractDao {
 	 * @param memberId
 	 * @return
 	 */
-	public MemberRelationship getSpouseForMemberById (int memberId) {
-		List<MemberRelationship> relationshipList = getJdbcTemplate().query(SELECT_SPOUSE_FOR_FAMILY_MEMBER_BY_ID, new MemberRelationshipRowMapper(), memberId, memberId);
+	public MemberRelationshipEntity getSpouseForMemberById (int memberId) {
+		List<MemberRelationshipEntity> relationshipList = getJdbcTemplate().query(SELECT_SPOUSE_FOR_FAMILY_MEMBER_BY_ID, new MemberRelationshipRowMapper(), memberId, memberId);
 
 		if(relationshipList.isEmpty()) {
 			return null;
 		}
-		for (MemberRelationship relationship : relationshipList) {
+		for (MemberRelationshipEntity relationship : relationshipList) {
 			if (relationship.getMemberId() == memberId) {
 				return relationship;
 			} else if (relationship.getRelatedMemberId() == memberId) {
-				return MemberRelationship.inverseSpouseRelationship(relationship);
+				return MemberRelationshipEntity.inverseSpouseRelationship(relationship);
 			}
 		}
 		throw new RuntimeException("Invalid relationship configuration for member " + memberId);
 	}
 
-	public List<MemberRelationship> getChildrenForMemberById (int parent1Id, int parent2Id) {
+	public List<MemberRelationshipEntity> getChildrenForMemberById (int parent1Id, int parent2Id) {
 		List<Integer> memberIds = new ArrayList<>();
 		if (parent1Id > 0) {
 			memberIds.add(parent1Id);
@@ -169,7 +169,7 @@ public class MemberRelationshipDao extends AbstractDao {
 			memberIds.add(parent2Id);
 		}
 
-		List<MemberRelationship> relationshipList = getJdbcTemplate().query(
+		List<MemberRelationshipEntity> relationshipList = getJdbcTemplate().query(
 				new PreparedStatementCreator() {
 					@Override
 					public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
@@ -196,12 +196,12 @@ public class MemberRelationshipDao extends AbstractDao {
 	 * @param memberId
 	 * @return
 	 */
-	public List<MemberRelationship> getRelationshipsForMember (int memberId) {
+	public List<MemberRelationshipEntity> getRelationshipsForMember (int memberId) {
 		return getJdbcTemplate().query(SELECT_RELATIONSHIP_BY_ID, new MemberRelationshipRowMapper(), memberId);
 	}
 	
 	
-	public int addMemberRelationship(MemberRelationship aMemberRelationship) {
+	public int addMemberRelationship(MemberRelationshipEntity aMemberRelationship) {
 		return getJdbcTemplate().update(new PreparedStatementCreator() {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {
@@ -210,7 +210,7 @@ public class MemberRelationshipDao extends AbstractDao {
 		});
 	}
 	
-	private PreparedStatement buildInsertStatement(Connection aConection, MemberRelationship aMemberRelationship) throws SQLException {
+	private PreparedStatement buildInsertStatement(Connection aConection, MemberRelationshipEntity aMemberRelationship) throws SQLException {
 		String sqlStatement = "INSERT INTO " + BASE_SCHEMA_NAME + "MEMBERRELATIONSHIP (MEMBERID, RELATIONSHIPTYPE, RELATEDMEMBERID, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
@@ -227,7 +227,7 @@ public class MemberRelationshipDao extends AbstractDao {
 
 	
 
-	public int deleteMemberRelationship(MemberRelationship aMemberRelationship) throws SQLException {
+	public int deleteMemberRelationship(MemberRelationshipEntity aMemberRelationship) throws SQLException {
 		return getJdbcTemplate().update(new PreparedStatementCreator() {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection aConection) throws SQLException {
@@ -241,7 +241,7 @@ public class MemberRelationshipDao extends AbstractDao {
 
 	}
 
-	public PreparedStatement buildUpdateStatement(Connection aConection, MemberRelationship aMemberRelationship) throws SQLException {
+	public PreparedStatement buildUpdateStatement(Connection aConection, MemberRelationshipEntity aMemberRelationship) throws SQLException {
 		String updateStatement = "UPDATE MEMBERRELATIONSHIP SET RELATIONSHIPTYPE = ? , CREATEDBY = ? , CREATEDDATE = ? , LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  where MEMBERID = ? and RELATEDMEMBERID = ?";
 
 		PreparedStatement prepareStatement = aConection.prepareStatement(updateStatement);
@@ -255,7 +255,7 @@ public class MemberRelationshipDao extends AbstractDao {
 		return prepareStatement;
 	}
 
-	public int updateMemberRelationship(MemberRelationship aMemberRelationship) throws SQLException {
+	public int updateMemberRelationship(MemberRelationshipEntity aMemberRelationship) throws SQLException {
 		return getJdbcTemplate().update(new PreparedStatementCreator() {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {

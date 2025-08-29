@@ -5,8 +5,8 @@
 package com.neasaa.familytree.dao.pg;
 
 import com.neasaa.base.app.dao.pg.AbstractDao;
-import com.neasaa.familytree.entity.Address;
 
+import com.neasaa.familytree.entity.AddressEntity;
 import lombok.extern.log4j.Log4j2;
 
 import java.sql.SQLException;
@@ -29,7 +29,7 @@ public class AddressDao extends AbstractDao {
 			"from " + BASE_SCHEMA_NAME + "ADDRESS A, " + BASE_SCHEMA_NAME + "FAMILY F " +
 			"where F.FAMILYID = ? AND A.ADDRESSID = F.ADDRESSID ";
 
-	public int addAddress (Address address) {
+	public int addAddress (AddressEntity address) {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		getJdbcTemplate().update(new PreparedStatementCreator() {
 			@Override
@@ -46,15 +46,15 @@ public class AddressDao extends AbstractDao {
 		return addressId;
 	}
 
-	public Address getAddressById (int addressId) {
+	public AddressEntity getAddressById (int addressId) {
 		return getJdbcTemplate().queryForObject(SELECT_ADDRESS_BY_ADDRESS_ID, new AddressRowMapper(), addressId);
 	}
 
-	public Address getAddressByFamilyId (int familyId) {
+	public AddressEntity getAddressByFamilyId (int familyId) {
 		return getJdbcTemplate().queryForObject(SELECT_ADDRESS_BY_FAMILY_ID, new AddressRowMapper(), familyId);
 	}
 
-	private PreparedStatement buildInsertStatement(Connection aConection, Address aAddress) throws SQLException {
+	private PreparedStatement buildInsertStatement(Connection aConection, AddressEntity aAddress) throws SQLException {
 		String sqlStatement = "INSERT INTO " + BASE_SCHEMA_NAME + "ADDRESS (ADDRESSLINE1, ADDRESSLINE2, ADDRESSLINE3, CITY, DISTRICT, STATE, POSTALCODE, COUNTRY, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -75,7 +75,7 @@ public class AddressDao extends AbstractDao {
 	}
 
 
-	public int deleteAddress(Address aAddress) throws SQLException {
+	public int deleteAddress(AddressEntity aAddress) throws SQLException {
 		return getJdbcTemplate().update(new PreparedStatementCreator() {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection aConection) throws SQLException {
@@ -88,7 +88,7 @@ public class AddressDao extends AbstractDao {
 
 	}
 
-	public PreparedStatement buildUpdateStatement(Connection aConection, Address aAddress) throws SQLException {
+	public PreparedStatement buildUpdateStatement(Connection aConection, AddressEntity aAddress) throws SQLException {
 		String updateStatement = "UPDATE ADDRESS SET ADDRESSLINE1 = ? , ADDRESSLINE2 = ? , ADDRESSLINE3 = ? , CITY = ? , DISTRICT = ? , STATE = ? , POSTALCODE = ? , COUNTRY = ? , CREATEDBY = ? , CREATEDDATE = ? , LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  where ADDRESSID = ?";
 
 		PreparedStatement prepareStatement = aConection.prepareStatement(updateStatement);
@@ -108,7 +108,7 @@ public class AddressDao extends AbstractDao {
 		return prepareStatement;
 	}
 
-	public int updateAddress(Address aAddress) throws SQLException {
+	public int updateAddress(AddressEntity aAddress) throws SQLException {
 		return getJdbcTemplate().update(new PreparedStatementCreator() {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {

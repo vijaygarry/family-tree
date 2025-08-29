@@ -1,6 +1,6 @@
 package com.neasaa.familytree.operation.family.model;
 
-import com.neasaa.familytree.entity.FamilyMember;
+import com.neasaa.familytree.entity.FamilyMemberEntity;
 import com.neasaa.familytree.enums.Gender;
 import com.neasaa.familytree.enums.MaritalStatus;
 import com.neasaa.familytree.enums.Month;
@@ -55,7 +55,7 @@ public class FamilyMemberDto {
     private FamilyMemberDto spouse;
     private List<FamilyMemberDto> children;
 
-    public static FamilyMemberDto getFamilyMemberDtoFromDBEntity(FamilyMember familyMember, String familyRelationship) {
+    public static FamilyMemberDto getFamilyMemberDtoFromDBEntity(FamilyMemberEntity familyMember, String familyRelationship) {
 
         return FamilyMemberDto.builder()
                 .memberId(familyMember.getMemberId())
@@ -77,13 +77,11 @@ public class FamilyMemberDto {
                 .phone(familyMember.getPhone())
                 .isPhoneWhatsappRegistered(familyMember.isPhoneWhatsappRegistered())
                 .email(familyMember.getEmail())
-                .linkedinUrl(familyMember.getLinkedinUrl())
                 .addressSameAsFamily(familyMember.isAddressSameAsFamily())
 //                .memberAddress(AddressDto.getAddressDtoFromEntity(familyMember.getMemberAddress()))
                 .maritalStatus(familyMember.getMaritalStatus())
                 .educationDetails(familyMember.getEducationDetails())
                 .occupation(familyMember.getOccupation())
-                .workingAt(familyMember.getWorkingAt())
                 .hobby(familyMember.getHobby())
                 .profileImage(familyMember.getProfileImage())
                 .profileImageThumbnail(familyMember.getProfileImageThumbnail())

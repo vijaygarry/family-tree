@@ -7,9 +7,9 @@ import com.neasaa.familytree.dao.pg.AddressDao;
 import com.neasaa.familytree.dao.pg.FamilyDao;
 import com.neasaa.familytree.dao.pg.FamilyMemberDao;
 import com.neasaa.familytree.dao.pg.MemberRelationshipDao;
-import com.neasaa.familytree.entity.Family;
-import com.neasaa.familytree.entity.FamilyMember;
-import com.neasaa.familytree.entity.MemberRelationship;
+import com.neasaa.familytree.entity.FamilyEntity;
+import com.neasaa.familytree.entity.FamilyMemberEntity;
+import com.neasaa.familytree.entity.MemberRelationshipEntity;
 import com.neasaa.familytree.enums.Gender;
 import com.neasaa.familytree.operation.OperationNames;
 import com.neasaa.familytree.operation.family.model.FamilyMemberDto;
@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
@@ -65,13 +64,13 @@ public class GetFamilyDetailsOperation extends AbstractOperation<GetFamilyDetail
     public GetFamilyDetailsResponse doExecute(GetFamilyDetailsRequest opRequest) throws OperationException {
         int familyId = -1;
         if(opRequest == null || opRequest.getFamilyId() == null) {
-            FamilyMember memberByLogonName = familyMemberDao.getMemberByLogonName(getContext().getAppSessionUser().getLogonName());
+            FamilyMemberEntity memberByLogonName = familyMemberDao.getMemberByLogonName(getContext().getAppSessionUser().getLogonName());
             familyId = memberByLogonName.getFamilyId();
         } else {
             familyId = opRequest.getFamilyId();
         }
         // Fetch family details using family id.
-        Family familyDetailsFromDB = familyDao.getFamilyByFamilyId(familyId);
+        FamilyEntity familyDetailsFromDB = familyDao.getFamilyByFamilyId(familyId);
         // If family not found, throw ValidationException.
         if (familyDetailsFromDB == null) {
             throw new ValidationException("Family not found for the provided family id " + familyId);
@@ -79,8 +78,8 @@ public class GetFamilyDetailsOperation extends AbstractOperation<GetFamilyDetail
         GetFamilyDetailsResponse familyDetailsResponse = GetFamilyDetailsResponse.fromFamilyDBEntity(familyDetailsFromDB, null);
 
         // Fetch all the members of the family.
-        List<FamilyMember> familyMembers = familyMemberDao.allMembersForFamily(familyId);
-        FamilyMember headOfFamily = familyMemberDao.getHeadOfFamilyByFamilyId(familyId);
+        List<FamilyMemberEntity> familyMembers = familyMemberDao.allMembersForFamily(familyId);
+        FamilyMemberEntity headOfFamily = familyMemberDao.getHeadOfFamilyByFamilyId(familyId);
         // If head of family not found, throw ValidationException.
         if (headOfFamily == null) {
             throw new ValidationException("Family members not found for this family " + familyId);
@@ -99,10 +98,10 @@ public class GetFamilyDetailsOperation extends AbstractOperation<GetFamilyDetail
     private void buildFamilyTreeStructure(FamilyMemberDto treeNode) {
         int spouseMemberId = -1;
         if(treeNode.getSpouse() == null) {
-            MemberRelationship spouseForMember = memberRelationshipDao.getSpouseForMemberById(treeNode.getMemberId());
+            MemberRelationshipEntity spouseForMember = memberRelationshipDao.getSpouseForMemberById(treeNode.getMemberId());
             if(spouseForMember != null) {
                 spouseMemberId = spouseForMember.getRelatedMemberId();
-                FamilyMember spouse = familyMemberDao.getMemberById(spouseForMember.getRelatedMemberId());
+                FamilyMemberEntity spouse = familyMemberDao.getMemberById(spouseForMember.getRelatedMemberId());
                 if (spouse != null) {
                     String familyRelationship = null;
                     if(treeNode.getGender() == Gender.Male) {
@@ -115,10 +114,10 @@ public class GetFamilyDetailsOperation extends AbstractOperation<GetFamilyDetail
             }
         }
 
-        List<MemberRelationship> childrenForMember = memberRelationshipDao.getChildrenForMemberById(treeNode.getMemberId(), spouseMemberId);
+        List<MemberRelationshipEntity> childrenForMember = memberRelationshipDao.getChildrenForMemberById(treeNode.getMemberId(), spouseMemberId);
         if (childrenForMember != null) {
-            for (MemberRelationship childRelation : childrenForMember) {
-                FamilyMember child = familyMemberDao.getMemberById(childRelation.getRelatedMemberId());
+            for (MemberRelationshipEntity childRelation : childrenForMember) {
+                FamilyMemberEntity child = familyMemberDao.getMemberById(childRelation.getRelatedMemberId());
                 if (child != null) {
                     if(child.getFamilyId() != treeNode.getFamilyId()) {
                         log.warn("Child {} does not belong to the same family as parent {}", child.getFirstName(), treeNode.getFirstName());
@@ -142,15 +141,15 @@ public class GetFamilyDetailsOperation extends AbstractOperation<GetFamilyDetail
 
     public FamilyMemberDto addParentsAndSiblingsToFamilyTree(FamilyMemberDto familyMemberDto) {
         log.info("Adding parents for member: {}", familyMemberDto.getFirstName());
-        List<MemberRelationship> parents = memberRelationshipDao.getParentsForMemberById(familyMemberDto.getMemberId());
+        List<MemberRelationshipEntity> parents = memberRelationshipDao.getParentsForMemberById(familyMemberDto.getMemberId());
         if (parents == null || parents.isEmpty()) {
             log.info("No parents found for member: {}", familyMemberDto.getFirstName());
             return familyMemberDto;
         }
         FamilyMemberDto father = null;
         FamilyMemberDto mother = null;
-        for (MemberRelationship parentRelationship : parents) {
-            FamilyMember parentEntity = familyMemberDao.getMemberById(parentRelationship.getMemberId());
+        for (MemberRelationshipEntity parentRelationship : parents) {
+            FamilyMemberEntity parentEntity = familyMemberDao.getMemberById(parentRelationship.getMemberId());
             if (parentEntity != null) {
                 String familyRelationship = null;
                 if (parentEntity.getGender() == Gender.Male) {

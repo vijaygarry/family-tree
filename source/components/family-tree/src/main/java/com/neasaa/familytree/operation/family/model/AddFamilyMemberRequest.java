@@ -35,7 +35,7 @@ public class AddFamilyMemberRequest extends OperationRequest {
 	private Short birthYear;
 	private Date dateOfDeath;
 	private String maritalStatus;
-	private String weddingDate;
+	private Date weddingDate;
 	private String educationDetails;
 	private String occupation;
 	private String workingAt;

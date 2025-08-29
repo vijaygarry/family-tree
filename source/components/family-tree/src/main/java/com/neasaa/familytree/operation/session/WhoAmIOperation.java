@@ -5,7 +5,7 @@ import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.model.EmptyOperationRequest;
 import com.neasaa.base.app.service.AppSessionUser;
 import com.neasaa.familytree.dao.pg.FamilyMemberDao;
-import com.neasaa.familytree.entity.FamilyMember;
+import com.neasaa.familytree.entity.FamilyMemberEntity;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -36,13 +36,13 @@ public class WhoAmIOperation extends AbstractOperation<EmptyOperationRequest, Wh
     @Override
     public WhoAmIResponse doExecute(EmptyOperationRequest opRequest) throws OperationException {
         AppSessionUser appSessionUser = getContext().getAppSessionUser();
-        FamilyMember memberEntity = null;
+        FamilyMemberEntity memberEntity = null;
         if(appSessionUser.getOtherAttributes() == null || !appSessionUser.getOtherAttributes().containsKey(SESSION_MEMBER_ATTRIBUTE_KEY)) {
             String logonName = appSessionUser.getLogonName();
             memberEntity = familyMemberDao.getMemberByLogonName(logonName);
             appSessionUser.addOtherAttributes(SESSION_MEMBER_ATTRIBUTE_KEY, memberEntity);
         } else {
-            memberEntity = (FamilyMember) appSessionUser.getOtherAttributes().get(SESSION_MEMBER_ATTRIBUTE_KEY);
+            memberEntity = (FamilyMemberEntity) appSessionUser.getOtherAttributes().get(SESSION_MEMBER_ATTRIBUTE_KEY);
         }
 
         return WhoAmIResponse.builder()

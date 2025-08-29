@@ -4,7 +4,8 @@ import com.neasaa.base.app.operation.AbstractOperation;
 import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.familytree.dao.pg.FamilyDao;
-import com.neasaa.familytree.entity.Family;
+import com.neasaa.familytree.entity.FamilyEntity;
+import com.neasaa.familytree.entity.SearchFamilyEntity;
 import com.neasaa.familytree.operation.OperationNames;
 import com.neasaa.familytree.operation.family.model.SearchFamilyDto;
 import com.neasaa.familytree.operation.family.model.SearchFamilyRequest;
@@ -39,7 +40,7 @@ public class SearchFamilyOperation extends AbstractOperation<SearchFamilyRequest
     @Override
     public SearchFamilyResponse doExecute(SearchFamilyRequest opRequest) throws OperationException {
         log.info("Searching family{}", opRequest.getSearchString());
-        List<Family> families = familyDao.searchFamily(opRequest.getSearchString());
+        List<SearchFamilyEntity> families = familyDao.searchFamily(opRequest.getSearchString());
         SearchFamilyResponse response = new SearchFamilyResponse();
         if( families == null || families.isEmpty()) {
             response.setOperationMessage(String.format("No family found for selected search criteria: %s", opRequest.getSearchString()));

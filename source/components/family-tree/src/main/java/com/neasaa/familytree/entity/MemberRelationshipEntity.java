@@ -4,6 +4,7 @@
 
 package com.neasaa.familytree.entity;
 
+import java.io.Serial;
 import java.util.Date;
 
 import com.neasaa.base.app.entity.BaseEntity;
@@ -20,9 +21,11 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberRelationship extends BaseEntity {
+public class MemberRelationshipEntity extends BaseEntity {
 
-	public static final long serialVersionUID = 1748576601294L;
+	@Serial
+    private static final long serialVersionUID = 1748576601294L;
+
 	private int memberId;
 	private RelationshipType relationshipType;
 	private int relatedMemberId;
@@ -31,8 +34,8 @@ public class MemberRelationship extends BaseEntity {
 	private int lastUpdatedBy;
 	private Date lastUpdatedDate;
 
-	public static MemberRelationship inverseSpouseRelationship (MemberRelationship relationship) {
-		return MemberRelationship.builder()
+	public static MemberRelationshipEntity inverseSpouseRelationship (MemberRelationshipEntity relationship) {
+		return MemberRelationshipEntity.builder()
 				.memberId(relationship.relatedMemberId)
 				.relationshipType(RelationshipType.getReverseRelationship( relationship.relationshipType))
 				.relatedMemberId(relationship.memberId)

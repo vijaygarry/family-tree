@@ -1,7 +1,7 @@
 package com.neasaa.familytree.operation.family.model;
 
 import com.neasaa.base.app.operation.model.OperationResponse;
-import com.neasaa.familytree.entity.Family;
+import com.neasaa.familytree.entity.FamilyEntity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,7 +26,7 @@ public class GetFamilyDetailsResponse extends OperationResponse {
     private String familyImage;
     private FamilyMemberDto familyTreeRoot;
 
-    public static GetFamilyDetailsResponse fromFamilyDBEntity(Family family, FamilyMemberDto familyTreeRoot) {
+    public static GetFamilyDetailsResponse fromFamilyDBEntity(FamilyEntity family, FamilyMemberDto familyTreeRoot) {
         GetFamilyDetailsResponse response = new GetFamilyDetailsResponse();
         response.setFamilyId(family.getFamilyId());
         response.setFamilyName(family.getFamilyName());

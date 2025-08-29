@@ -8,6 +8,10 @@ import java.time.Year;
 import java.util.List;
 
 import com.neasaa.familytree.constants.ImageConstants;
+import com.neasaa.familytree.entity.AddressEntity;
+import com.neasaa.familytree.entity.FamilyEntity;
+import com.neasaa.familytree.entity.FamilyMemberEntity;
+import com.neasaa.familytree.entity.MemberRelationshipEntity;
 import com.neasaa.familytree.enums.Month;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -21,10 +25,6 @@ import com.neasaa.familytree.dao.pg.AddressDao;
 import com.neasaa.familytree.dao.pg.FamilyDao;
 import com.neasaa.familytree.dao.pg.FamilyMemberDao;
 import com.neasaa.familytree.dao.pg.MemberRelationshipDao;
-import com.neasaa.familytree.entity.Address;
-import com.neasaa.familytree.entity.Family;
-import com.neasaa.familytree.entity.FamilyMember;
-import com.neasaa.familytree.entity.MemberRelationship;
 import com.neasaa.familytree.enums.MaritalStatus;
 import com.neasaa.familytree.enums.RelationshipType;
 import com.neasaa.familytree.enums.Gender;
@@ -119,16 +119,16 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 	@Override
 	public AddFamilyMemberResponse doExecute(AddFamilyMemberRequest opRequest) throws OperationException {
 		log.info("Adding family member");
-		Family family = familyDao.getFamilyByFamilyId(opRequest.getFamilyId());
+		FamilyEntity family = familyDao.getFamilyByFamilyId(opRequest.getFamilyId());
 		if(family == null) {
 			log.info("Family not found for family id {}", opRequest.getFamilyId());
 			throw new ValidationException ("Family not found");
 		}
 		
-		FamilyMember relatedMember = null;
+		FamilyMemberEntity relatedMember = null;
 		
 		//Fetch list of family members
-		List<FamilyMember> familyMembers = familyMemberDao.allMembersForFamily(opRequest.getFamilyId());
+		List<FamilyMemberEntity> familyMembers = familyMemberDao.allMembersForFamily(opRequest.getFamilyId());
 		if(familyMembers == null || familyMembers.isEmpty()) {
 			// No member in family. So this member should be the head of family.
 			if(!opRequest.isHeadOfFamily()) {
@@ -149,13 +149,13 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 			log.info("Input Relationship {}'s {} is {} ({})", opRequest.getFirstName() , opRequest.getRelashinship().getRelationshipType(), opRequest.getRelashinship().getRelatedMemberName(), opRequest.getRelashinship().getRelatedMemberId());
 		}
 
-		Address memberAddress = getAddressFromRequest(opRequest);
+		AddressEntity memberAddress = getAddressFromRequest(opRequest);
 		int addressId = Constants.MEMBER_ADDRESS_SAME_AS_FAMILY_ADDRESS;
 		if(memberAddress != null) {
 			addressId = addressDao.addAddress(memberAddress);
 		}
-		
-		FamilyMember newMemberFromDb = familyMemberDao.addFamilyMember(getFamilyMemberFromRequest(opRequest, family, addressId));
+
+		FamilyMemberEntity newMemberFromDb = familyMemberDao.addFamilyMember(getFamilyMemberFromRequest(opRequest, family, addressId));
 		if(newMemberFromDb.isHeadOfFamily()) {
 			familyDao.updateFamilyDisplayName(family, newMemberFromDb, getAuditInfo());
 		}
@@ -168,8 +168,8 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 				log.info("Invalid relationship type provided: {}", opRequest.getRelashinship().getRelationshipType());
 				throw new ValidationException ("Invalid relationship type provided");
 			}
-			List<MemberRelationship> relationships = RelationshipUtils.buildRelationships(newMemberFromDb, relationshipType, relatedMember, getAuditInfo());
-			MemberRelationship relationship = relationships.get(0);
+			List<MemberRelationshipEntity> relationships = RelationshipUtils.buildRelationships(newMemberFromDb, relationshipType, relatedMember, getAuditInfo());
+			MemberRelationshipEntity relationship = relationships.get(0);
 			log.info("Member {}'s {} is {}", relationship.getMemberId(), relationship.getRelationshipType(), relationship.getRelatedMemberId());
 			updateRelationships(relationships);
 		}
@@ -179,7 +179,7 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 		return response;
 	}
 	
-	private Address getAddressFromRequest (AddFamilyMemberRequest opRequest) {
+	private AddressEntity getAddressFromRequest (AddFamilyMemberRequest opRequest) {
 		AddressDto inputAddress = opRequest.getMemberAddress();
 		if(inputAddress ==null) {
 			log.info("Member address is not provided, not creating address for member");
@@ -187,7 +187,7 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 		}
 		
 		AuditInfo auditInfo = getAuditInfo();
-		return Address.builder()
+		return AddressEntity.builder()
 				.addressLine1(inputAddress.getAddressLine1())
 				.addressLine2(inputAddress.getAddressLine2())
 				.addressLine3(inputAddress.getAddressLine3())
@@ -203,10 +203,11 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 				.build();
 	}
 	
-	private FamilyMember getFamilyMemberFromRequest (AddFamilyMemberRequest opRequest, Family family, int addressId) {
+	private FamilyMemberEntity getFamilyMemberFromRequest (AddFamilyMemberRequest opRequest, FamilyEntity family, int addressId) {
 		AuditInfo auditInfo = getAuditInfo();
 		String phoneNumber = DataFormatter.formatPhoneNumber(opRequest.getPhone());
-		return FamilyMember.builder()
+
+		return FamilyMemberEntity.builder()
 				.familyId(family.getFamilyId())
 				.headOfFamily(opRequest.isHeadOfFamily())
 				.firstName(opRequest.getFirstName())
@@ -220,7 +221,6 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 				.phone(phoneNumber)
 				.isPhoneWhatsappRegistered(opRequest.isPhoneWhatsappRegistered())
 				.email(opRequest.getEmail())
-				.linkedinUrl(opRequest.getLinkedinUrl())
 				.gender(Gender.getGenderByString(opRequest.getGender()))
 				.birthDay(opRequest.getBirthDay())
 				.birthMonth(Month.fromName(opRequest.getBirthMonth()))
@@ -230,7 +230,6 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 				.weddingDate(opRequest.getWeddingDate())
 				.educationDetails(opRequest.getEducationDetails())
 				.occupation(opRequest.getOccupation())
-				.workingAt(opRequest.getWorkingAt())
 				.hobby(opRequest.getHobby())
 				.profileImage(getDefaultImagePath(opRequest))
 				.profileImageThumbnail(getDefaultThumbnailImagePath(opRequest))
@@ -242,10 +241,10 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 				.build();
 	}
 	
-	private void updateRelationships (List<MemberRelationship> relationships) {
+	private void updateRelationships (List<MemberRelationshipEntity> relationships) {
 		log.info("Adding relationship");
-		for(MemberRelationship relationship : relationships) {
-			MemberRelationship memberRelationshipFromDb = memberRelationshipDao.getRelationshipBetweenMembers(relationship.getMemberId(), relationship.getRelatedMemberId());
+		for(MemberRelationshipEntity relationship : relationships) {
+			MemberRelationshipEntity memberRelationshipFromDb = memberRelationshipDao.getRelationshipBetweenMembers(relationship.getMemberId(), relationship.getRelatedMemberId());
 			if(memberRelationshipFromDb == null) {
 				log.info("Adding {} is {} of {}", relationship.getMemberId(), relationship.getRelationshipType(), relationship.getRelatedMemberId() );
 				memberRelationshipDao.addMemberRelationship(relationship);

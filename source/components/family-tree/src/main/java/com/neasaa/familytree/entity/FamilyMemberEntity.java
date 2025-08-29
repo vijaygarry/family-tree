@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
 import java.util.Date;
 
 import com.neasaa.base.app.entity.BaseEntity;
@@ -22,9 +23,11 @@ import com.neasaa.familytree.enums.Gender;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FamilyMember extends BaseEntity {
+public class FamilyMemberEntity extends BaseEntity {
 
-	public static final long serialVersionUID = 1748919840065L;
+	@Serial
+    private static final long serialVersionUID = 1748919840065L;
+
 	private int memberId;
 	private int familyId;
 	private String logonName;
@@ -35,23 +38,23 @@ public class FamilyMember extends BaseEntity {
 	private String maidenLastName;
 	private String nickName;
 	private String nickNameInHindi;
-	private boolean addressSameAsFamily;
-	private int memberAddressId;
-	private String phone;
-	private boolean isPhoneWhatsappRegistered;
-	private String email;
-	private String linkedinUrl;
 	private Gender gender;
 	private Short birthDay;
 	private Month birthMonth;
 	private Short birthYear;
-	private Date dateOfDeath;
 	private MaritalStatus maritalStatus;
-	private String weddingDate;
+	private Date weddingDate;
+	private Date dateOfDeath;
+	private String phone;
+	private boolean isPhoneWhatsappRegistered;
+	private String email;
+	private boolean addressSameAsFamily;
+	private int memberAddressId;
+
 	private String educationDetails;
 	private String occupation;
-	private String workingAt;
 	private String hobby;
+	private String membersearchtext;
 	private String profileImage;
 	private String profileImageThumbnail;
 	private Date imageLastUpdated;
