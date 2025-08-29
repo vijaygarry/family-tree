@@ -18,6 +18,7 @@ dependencies {
 apply plugin: 'eclipse-wtp'
 
 def uxDir = "$rootDir/components/family-tree-ux"
+def resourcesDir = "$projectDir/src/main/resources"
 
 task buildUx(type: Exec) {
     dependsOn jar // ensure app jar is built
@@ -31,16 +32,16 @@ task buildUx(type: Exec) {
 task copyUxFilesToBoot (type: Copy) {
     dependsOn buildUx
     from("$uxDir/build")                     // React build output
-    into("$buildDir/resources/main/static")        // Spring Boot static resources
+    into("$resourcesDir/static")        // Spring Boot static resources
 
     doFirst {
         println "🔍 Copying UX files from: $uxDir/build"
-        println "📂 Destination: $buildDir/resources/main/static"
+        println "📂 Destination: $resourcesDir/static"
     }
 
      doLast {
         println "✅ Copy complete. Files in static folder:"
-        println fileTree("$buildDir/resources/main/static").files
+        println fileTree("$resourcesDir/static").files
     }
 }
 
