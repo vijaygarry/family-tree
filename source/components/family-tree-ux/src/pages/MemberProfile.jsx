@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 import ERROR_MESSAGES from "../constants/messages";
 import FamilyTree from "../components/FamilyTree";
 import MemberListTable from "../components/MemberListTable";
-import { genderOptions, maritalStatusOptions, monthOptions } from "../constants/DropdownConstants";
+import { genderOptions, maritalStatusOptions, monthOptions, dayOptions } from "../constants/DropdownConstants";
 
 const MemberProfile = () => {
   const { id } = useParams(); // from route: /member/:id
@@ -55,14 +55,10 @@ const MemberProfile = () => {
 
   const validateForm = () => {
     if (!form.firstName?.trim()) return "First Name is required.";
-    if (!form.lastName?.trim()) return "Last Name is required.";
     if (!form.gender?.trim()) return "Gender is required.";
     if (!form.maritalStatus?.trim()) return "Marital Status is required.";
-    if (!form.birthDay?.trim() || !form.birthMonth?.trim() || !form.birthYear?.trim()) return "Complete Birth Date is required.";
+    if (!form.birthMonth?.trim() || !form.birthYear?.trim()) return "Complete Birth Date is required.";
     if (!form.phone?.trim()) return "Phone is required.";
-    if (!form.email?.trim()) return "Email is required.";
-    if (!form.educationDetails?.trim()) return "Education Details are required.";
-    if (!form.occupation?.trim()) return "Occupation is required.";
     return "";
   };
 
@@ -98,19 +94,19 @@ const MemberProfile = () => {
     </div>
     <div className="col-md-4">
       <label className="form-label fw-semibold">First Name (Hindi)</label>
-      <input name="firstNameInHindi" value={form.firstNameInHindi || ''} onChange={handleFormChange} className="form-control" required />
+      <input name="firstNameInHindi" value={form.firstNameInHindi || ''} onChange={handleFormChange} className="form-control" />
     </div>
     <div className="col-md-4">
       <label className="form-label fw-semibold">Maiden Last Name</label>
-      <input name="maidenLastName" value={form.maidenLastName || ''} onChange={handleFormChange} className="form-control" required />
+      <input name="maidenLastName" value={form.maidenLastName || ''} onChange={handleFormChange} className="form-control" />
     </div>
     <div className="col-md-4">
       <label className="form-label fw-semibold">Nick Name</label>
-      <input name="nickName" value={form.nickName || ''} onChange={handleFormChange} className="form-control" required />
+      <input name="nickName" value={form.nickName || ''} onChange={handleFormChange} className="form-control" />
     </div>
     <div className="col-md-4">
       <label className="form-label fw-semibold">Nick Name (Hindi)</label>
-      <input name="nickNameInHindi" value={form.nickNameInHindi || ''} onChange={handleFormChange} className="form-control" required />
+      <input name="nickNameInHindi" value={form.nickNameInHindi || ''} onChange={handleFormChange} className="form-control" />
     </div>
     <div className="col-md-4">
       <label className="form-label fw-semibold">Phone</label>
@@ -130,11 +126,13 @@ const MemberProfile = () => {
     </div>
     <div className="col-md-4">
       <label className="form-label fw-semibold">Wedding Date</label>
-      <input name="weddingDate" type="date" value={form.weddingDate || ''} onChange={handleFormChange} className="form-control" required={form.maritalStatus === 'Married'} />
+      <input name="weddingDate" type="date" value={form.weddingDate || ''} onChange={handleFormChange} className="form-control" />
     </div>
     <div className="col-md-4">
       <label className="form-label fw-semibold">Birth Day</label>
-      <input name="birthDay" type="number" min="1" max="31" value={form.birthDay || ''} onChange={handleFormChange} className="form-control" required />
+      <select name="birthDay" value={form.birthDay || ''} onChange={handleFormChange} className="form-select">
+        {dayOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+      </select>
     </div>
     <div className="col-md-4">
       <label className="form-label fw-semibold">Birth Month</label> 
@@ -148,16 +146,29 @@ const MemberProfile = () => {
     </div>
     <div className="col-md-4">
       <label className="form-label fw-semibold">Email</label>
-      <input name="email" type="email" value={form.email || ''} onChange={handleFormChange} className="form-control" required />
+      <input name="email" type="email" value={form.email || ''} onChange={handleFormChange} className="form-control" disabled={!!memberProfile.email} />
     </div>
     <div className="col-md-4">
       <label className="form-label fw-semibold">Education Details</label>
-      <input name="educationDetails" value={form.educationDetails || ''} onChange={handleFormChange} className="form-control" required />
+      <input name="educationDetails" value={form.educationDetails || ''} onChange={handleFormChange} className="form-control" />
     </div>
     <div className="col-md-4">
       <label className="form-label fw-semibold">Occupation</label>
-      <input name="occupation" value={form.occupation || ''} onChange={handleFormChange} className="form-control" required />
+      <input name="occupation" value={form.occupation || ''} onChange={handleFormChange} className="form-control" />
     </div>
+    
+        <span className="fw-semibold me-2">Address:</span>
+        <div className="col-md-4" style={{ width: '100%' }}>
+          Address Line 1: <input name="familyAddress.addressLine1" value={form.familyAddress?.addressLine1 || ''} onChange={handleFormChange} className="form-control" placeholder="Address Line 1" />
+          Address Line 2: <input name="familyAddress.addressLine2" value={form.familyAddress?.addressLine2 || ''} onChange={handleFormChange} className="form-control" placeholder="Address Line 2" />
+          Address Line 3: <input name="familyAddress.addressLine3" value={form.familyAddress?.addressLine3 || ''} onChange={handleFormChange} className="form-control" placeholder="Address Line 3" />
+          District: <input name="familyAddress.district" value={form.familyAddress?.district || ''} onChange={handleFormChange} className="form-control" placeholder="District" />
+          City: <input name="familyAddress.city" value={form.familyAddress?.city || ''} onChange={handleFormChange} className="form-control" placeholder="City" />
+          State: <input name="familyAddress.state" value={form.familyAddress?.state || ''} onChange={handleFormChange} className="form-control" placeholder="State" />
+          Postal Code: <input name="familyAddress.postalCode" value={form.familyAddress?.postalCode || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="Postal Code" />
+          Country: <input name="familyAddress.country" value={form.familyAddress?.country || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="Country" />
+        </div>
+    
     {editError && <div className="alert alert-danger py-1 my-2 col-12">{editError}</div>}
     {editSuccess && <div className="alert alert-success py-1 my-2 col-12">{editSuccess}</div>}
     <div className="col-12 mt-2">
@@ -225,6 +236,71 @@ const MemberProfile = () => {
             <span className="text-secondary"> {memberProfile.occupation}</span>
           </div>
         )}
+        {memberProfile.memberAddress && (
+          <div className="d-flex  mt-5">
+            <span className="fw-semibold me-2">Member Address:</span>
+            <address className="mb-0">
+              {memberProfile.memberAddress?.addressLine1}
+              <br />
+              {memberProfile.memberAddress?.addressLine2 && (
+                <>
+                  {memberProfile.memberAddress.addressLine2}
+                  <br />
+                </>
+              )}
+              {memberProfile.memberAddress?.addressLine3 && (
+                <>
+                  {memberProfile.memberAddress.addressLine3}
+                  <br />
+                </>
+              )}
+              {memberProfile.memberAddress?.district && (
+                <>
+                  {" "}
+                  District: {memberProfile.memberAddress.district}
+                  <br />
+                </>
+              )}
+              {memberProfile.memberAddress?.city}, {memberProfile.memberAddress?.state} -{" "}
+              {memberProfile.memberAddress?.postalCode.trim()}
+              <br />
+              {memberProfile.memberAddress?.country}
+            </address>
+          </div>
+        )}
+        {memberProfile.memberAddress && (
+          <div className="d-flex  mt-5">
+            <span className="fw-semibold me-2">Family Address:</span>
+            <address className="mb-0">
+              {memberProfile.memberAddress?.addressLine1}
+              <br />
+              {memberProfile.memberAddress?.addressLine2 && (
+                <>
+                  {memberProfile.memberAddress.addressLine2}
+                  <br />
+                </>
+              )}
+              {memberProfile.memberAddress?.addressLine3 && (
+                <>
+                  {memberProfile.memberAddress.addressLine3}
+                  <br />
+                </>
+              )}
+              {memberProfile.memberAddress?.district && (
+                <>
+                  {" "}
+                  District: {memberProfile.memberAddress.district}
+                  <br />
+                </>
+              )}
+              {memberProfile.memberAddress?.city}, {memberProfile.memberAddress?.state} -{" "}
+              {memberProfile.memberAddress?.postalCode.trim()}
+              <br />
+              {memberProfile.memberAddress?.country}
+            </address>
+          </div>
+        )}
+        
         <div className="mt-auto d-flex align-items-end" style={{ minHeight: '60px' }}>
           <div>
             <button

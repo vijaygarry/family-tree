@@ -27,3 +27,8 @@ export const monthOptions = [
   { value: 'Nov', label: 'November' },
   { value: 'Dec', label: 'December' },
 ];
+
+export const dayOptions = [
+  { value: '', label: 'Select Day' },
+  ...Array.from({ length: 31 }, (_, i) => ({ value: String(i + 1), label: String(i + 1) }))
+];
