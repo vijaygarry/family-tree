@@ -8,10 +8,8 @@ const getImagePath = (url) => {
 
 const MemberCard = ({ member }) => {
   let bgColor = "lightblue";
-  let age = "(40 years)";
-  if (member.dateOfDeath) {
+  if (member.isAlive === false) {
     bgColor = "lightgrey";
-    age = "(1916 - 2001)";
   } else if (member.gender === "Female") {
     bgColor = "pink";
   }
@@ -21,9 +19,9 @@ const MemberCard = ({ member }) => {
         className={`member-card d-flex align-items-center p-2 ${member.selectedNode ? "root-node" : ""}`}
         style={{ minWidth: "180px", borderRadius: "8px", backgroundColor: bgColor }}
       >
-        {member.profileImage && (
+        {member.profileImageThumbnail && (
           <img
-            src={getImagePath(member.profileImage)}
+            src={getImagePath(member.profileImageThumbnail)}
             alt={`${member.firstName}`}
             className="mb-2"
             style={{
@@ -39,25 +37,25 @@ const MemberCard = ({ member }) => {
           <h6 className="card-title mb-1">
             {member.firstName} {member.lastName}
           </h6>
-          {age}
+          {member.age}
         </div>
       </div>
     </Link>
   );
 };
 
-const CoupleNode = ({ member }) => (
+const CoupleNode = ({ node }) => (
   <div className="d-flex justify-content-center gap-2">
-    <MemberCard member={member} />
-    {member.spouse && <MemberCard member={member.spouse} />}
+    <MemberCard member={node.member} />
+    {node.spouse && <MemberCard member={node.spouse} />}
   </div>
 );
 
-const MemberNode = ({ member }) => (
-  <TreeNode label={<CoupleNode member={member} />}>
-    {member.children &&
-      member.children.map((child) => (
-        <MemberNode key={child.memberId} member={child} />
+const MemberNode = ({ node }) => (
+  <TreeNode label={<CoupleNode node={node} />}>
+    {node.children &&
+      node.children.map((child) => (
+        <MemberNode key={child.member.memberId} node={child} />
       ))}
   </TreeNode>
 );
@@ -69,11 +67,11 @@ const FamilyTree = ({ familyTreeRoot }) => {
       lineWidth={"2px"}
       lineColor={"#ccc"}
       lineBorderRadius={"10px"}
-      label={<CoupleNode member={familyTreeRoot} />}
+      label={<CoupleNode node={familyTreeRoot} />}
     >
       {familyTreeRoot.children &&
         familyTreeRoot.children.map((child) => (
-          <MemberNode key={child.memberId} member={child} />
+          <MemberNode key={child.member.memberId} node={child} />
         ))}
     </Tree>
   );

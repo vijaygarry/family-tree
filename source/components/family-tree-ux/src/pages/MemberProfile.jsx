@@ -8,60 +8,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
 import ERROR_MESSAGES from "../constants/messages";
 import FamilyTree from "../components/FamilyTree";
+import MemberListTable from "../components/MemberListTable";
 
-function flattenFamilyTree(root) {
-  const members = [];
-
-  function traverse(member, relationship) {
-    const memberName = `${member.firstName} ${member.lastName}`;
-    members.push({
-      memberId: member.memberId,
-      firstName: member.firstName,
-      lastName: member.lastName,
-      phone: member.phone || "",
-      email: member.email || "",
-      occupation: member.occupation || "",
-      relationship: relationship === "Head" ? "Head of Family" : relationship,
-      phoneWhatsappRegistered: member.phoneWhatsappRegistered,
-    });
-
-    if (member.spouse) {
-      const spouseName = `${member.spouse.firstName} ${member.spouse.lastName}`;
-      let spouseRel = "";
-      if (member.gender === "Male") {
-        spouseRel = `Wife of ${memberName}`;
-      } else if (member.gender === "Female") {
-        spouseRel = `Husband of ${memberName}`;
-      } else {
-        spouseRel = `Spouse of ${memberName}`;
-      }
-      members.push({
-        memberId: member.spouse.memberId,
-        firstName: member.spouse.firstName,
-        lastName: member.spouse.lastName,
-        phone: member.spouse.phone || "",
-        email: member.spouse.email || "",
-        occupation: member.spouse.occupation || "",
-        relationship: spouseRel,
-        phoneWhatsappRegistered: member.spouse.phoneWhatsappRegistered,
-      });
-    }
-
-    if (member.children) {
-      member.children.forEach((child) => {
-        let childRel = "Child of " + memberName;
-        if (child.gender === "Male") childRel = `Son of ${memberName}`;
-        else if (child.gender === "Female")
-          childRel = `Daughter of ${memberName}`;
-
-        traverse(child, childRel);
-      });
-    }
-  }
-
-  traverse(root, "Head");
-  return members;
-}
 
 const MemberProfile = () => {
   const { id } = useParams(); // from route: /member/:id
@@ -95,7 +43,7 @@ const MemberProfile = () => {
   if (error) return <div className="text-danger p-4">{error}</div>;
   if (!memberData) return <div className="p-4">Loading member profile...</div>;
   const { memberProfile } = memberData;
-  const membersList = flattenFamilyTree(memberData.familyTreeRoot);
+  
 
 
   const memberInformationEditForm = (
@@ -218,47 +166,11 @@ const MemberProfile = () => {
           padding: "10px",
         }}
       >
-        <FamilyTree familyTreeRoot={memberData.familyTreeRoot} />
+        <FamilyTree familyTreeRoot={memberData.familyRoot} />
       </div>
-
+      
       <div className="mb-4">
-        <h4>Family Members</h4>
-        <div className="table-responsive">
-          <table className="table table-bordered table-striped">
-            <thead className="table-light">
-              <tr>
-                <th>Name</th>
-                <th>Relationship</th>
-                <th>Phone</th>
-                <th>Email</th>
-                <th>Occupation</th>
-              </tr>
-            </thead>
-            <tbody>
-              {membersList.map((member) => (
-                <tr key={member.memberId}>
-                  <td>
-                    <Link
-                      to={`/member/${member.memberId}`}
-                      className="text-decoration-none"
-                    >
-                      {member.firstName} {member.lastName}
-                    </Link>
-                  </td>
-                  <td>{member.relationship}</td>
-                  <td>
-                    {getFormattedPhoneDisplay(
-                      member.phone,
-                      member.phoneWhatsappRegistered,
-                    )}
-                  </td>
-                  <td>{member.email}</td>
-                  <td>{member.occupation}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <MemberListTable membersList={memberData?.memberList} />
       </div>
 
     </div>

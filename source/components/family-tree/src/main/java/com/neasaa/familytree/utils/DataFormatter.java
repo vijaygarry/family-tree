@@ -4,13 +4,19 @@ import com.neasaa.familytree.entity.AddressEntity;
 import com.neasaa.familytree.entity.FamilyEntity;
 import com.neasaa.familytree.entity.FamilyMemberEntity;
 import com.neasaa.familytree.enums.IndianState;
+import com.neasaa.familytree.enums.MaritalStatus;
 import com.neasaa.familytree.enums.Month;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.ZoneId;
+import java.util.Date;
 
 public class DataFormatter {
-	
+
+	private static final String WEDDING_DATE_FORMAT = "dd-MMM-yyyy";
+
 	public static String formatPhoneNumber (String phoneNumber) {
 		//TODO: if phone number is not null,format as following:
 		// +91-912 345 6789
@@ -103,7 +109,7 @@ public class DataFormatter {
 
 		return sb.toString();
 	}
-	
+
 //	/**
 //	 * Automatically derived by the app as:
 //  	`[Head of Family Name] + [Region]`
@@ -123,12 +129,38 @@ public class DataFormatter {
 			return "Year " + year;
 		}
 		if (day <= 0 ) {
-			return String.format("%s-%s", month.getMonthName(), year);
+			return String.format("%s-%s", month.getShortMonthName(), year);
 		}
 		return String.format("%s-%s-%s", day, month.getShortMonthName(), year);
 	}
 
-	public static int getMemberAge (short day, Month month, short year) {
+	public static int getYearFromDate (Date date) {
+		if(date == null) {
+			return 0;
+		}
+		return date.toInstant()
+				.atZone(ZoneId.systemDefault())
+				.getYear();
+	}
+
+	public static String getFormattedMemberAge (FamilyMemberEntity familyMemberEntity) {
+		if(!familyMemberEntity.isAlive()) {
+			return "(" + familyMemberEntity.getBirthYear() + " - " + getYearFromDate(familyMemberEntity.getDateOfDeath()) + ")";
+		}
+		return "(" + getMemberAgeInYears(familyMemberEntity.getBirthDay(), familyMemberEntity.getBirthMonth(), familyMemberEntity.getBirthYear()) + " years)";
+	}
+
+	public static String getFormattedWeddingDate (FamilyMemberEntity familyMemberEntity) {
+		if(familyMemberEntity.getMaritalStatus() == MaritalStatus.Single) {
+			return null;
+		}
+		if(familyMemberEntity.getWeddingDate() == null) {
+			return null;
+		}
+		return new SimpleDateFormat(WEDDING_DATE_FORMAT).format(familyMemberEntity.getWeddingDate());
+	}
+
+	public static int getMemberAgeInYears (short day, Month month, short year) {
 		LocalDate birthDate = null;
 
 		if (month == null) {

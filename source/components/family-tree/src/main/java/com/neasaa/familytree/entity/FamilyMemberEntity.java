@@ -62,4 +62,8 @@ public class FamilyMemberEntity extends BaseEntity {
 	private Date createdDate;
 	private int lastUpdatedBy;
 	private Date lastUpdatedDate;
+
+	public boolean isAlive () {
+		return this.dateOfDeath == null;
+	}
 }

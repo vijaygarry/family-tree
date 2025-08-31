@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Link } from "react-router-dom";
 import { getFormattedPhoneDisplay } from "../utils/phoneUtils";
 import "./TreeNode.css";
 import "./FamilyDetails.css";
@@ -8,55 +7,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import api from "../api/axiosInstance";
 import ERROR_MESSAGES from "../constants/messages";
 import FamilyTree from "../components/FamilyTree";
+import MemberListTable from "../components/MemberListTable";
 
-function flattenFamilyTree(root) {
-  const members = [];
-
-  function traverse(member) {
-    members.push({
-      memberId: member.memberId,
-      firstName: member.firstName,
-      firstNameInHindi: member.firstNameInHindi,
-      lastName: member.lastName,
-      phone: member.phone || "",
-      email: member.email || "",
-      occupation: member.occupation || "",
-      relationship: member.familyRelationship,
-      phoneWhatsappRegistered: member.phoneWhatsappRegistered,
-      maritalStatus: member.maritalStatus,
-      birthDate: member.birthDate,
-      educationDetails: member.educationDetails,
-      workingAt: member.workingAt,
-    });
-
-    if (member.spouse) {
-      members.push({
-        memberId: member.spouse.memberId,
-        firstName: member.spouse.firstName,
-        firstNameInHindi: member.spouse.firstNameInHindi,
-        lastName: member.spouse.lastName,
-        phone: member.spouse.phone || "",
-        email: member.spouse.email || "",
-        occupation: member.spouse.occupation || "",
-        relationship: member.spouse.familyRelationship,
-        phoneWhatsappRegistered: member.spouse.phoneWhatsappRegistered,
-        maritalStatus: member.spouse.maritalStatus,
-        birthDate: member.spouse.birthDate,
-        educationDetails: member.spouse.educationDetails,
-        workingAt: member.spouse.workingAt,
-      });
-    }
-
-    if (member.children) {
-      member.children.forEach((child) => {
-        traverse(child);
-      });
-    }
-  }
-
-  traverse(root);
-  return members;
-}
 
 const FamilyDetails = () => {
   const [family, setFamily] = useState(null);
@@ -162,10 +114,6 @@ const FamilyDetails = () => {
         <input name="familyNameInHindi" value={form.familyNameInHindi} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Family Name (Hindi)" />
       </div>
       <div className="mb-2">
-        <span className="fw-semibold me-2">Head Of Family:</span>
-        <input name="headOfFamilyName" value={form.headOfFamilyName} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Head Of Family" readOnly/>
-      </div>
-      <div className="mb-2">
         <span className="fw-semibold me-2">Gotra:</span>
         <input name="gotra" value={form.gotra} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Gotra" />
       </div>
@@ -173,7 +121,6 @@ const FamilyDetails = () => {
         <span className="fw-semibold me-2">Email:</span>
         <input name="email" value={form.email} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Email" />
       </div>
-      
       <div className="mb-2">
         <span className="fw-semibold me-2">Phone:</span>
         <input name="phone" value={form.phone} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Phone" />
@@ -202,8 +149,8 @@ const FamilyDetails = () => {
 
   if (error) return <div style={{ color: "red" }}>{error}</div>;
   if (!family) return <div>Loading family tree...</div>;
-  const membersList = flattenFamilyTree(family.familyTreeRoot);
-
+  const membersList = family.memberList;
+  const familyDetails = family?.familyDetails;
 
   return (
     <div className="container p-4 bg-white rounded mt-4">
@@ -223,28 +170,28 @@ const FamilyDetails = () => {
        <div className="d-flex justify-content-between align-items-center">
             <h4 className="card-title mb-3 pb-2 fw-bold">
               <span className="fw-bold me-2">Family Name:</span>
-              <span className="text-black">{family.familyName} {family.familyNameInHindi && ` (${family.familyNameInHindi})`} </span>
+              <span className="text-black">{familyDetails.familyName} {familyDetails.familyNameInHindi && ` (${familyDetails.familyNameInHindi})`} </span>
             </h4>
    
           </div>
           <div className="mb-2">
               <span className="fw-bold me-2">Head Of Family:</span>
-              <span className="text-black">{family.headOfFamilyName}</span>
+              <span className="text-black">{familyDetails.headOfFamilyName}</span>
             </div>
             <div className="mb-2">
               <span className="fw-bold me-2">Gotra:</span>
-              <span className="text-black">{family.gotra}</span>
+              <span className="text-black">{familyDetails.gotra}</span>
             </div>
             <div className="mb-2">
               <span className="fw-bold me-2">Email:</span>
-              <span className="text-black">{family.email}</span>
+              <span className="text-black">{familyDetails.email}</span>
             </div>
             <div className="mb-2">
               <span className="fw-bold me-2">Phone:</span>
               <span className="text-black">
                 {getFormattedPhoneDisplay(
-                  family.phone,
-                  family.phoneWhatsappRegistered,
+                  familyDetails.phone,
+                  familyDetails.phoneWhatsappRegistered,
                 )}
               </span>
             </div>
@@ -253,40 +200,40 @@ const FamilyDetails = () => {
 <div className="d-flex  mt-5">
               <span className="fw-semibold me-2">Address:</span>
               <address className="mb-0">
-                {family.familyAddress?.addressLine1}
+                {familyDetails.familyAddress?.addressLine1}
                 <br />
-                {family.familyAddress?.addressLine2 && (
+                {familyDetails.familyAddress?.addressLine2 && (
                   <>
-                    {family.familyAddress.addressLine2}
+                    {familyDetails.familyAddress.addressLine2}
                     <br />
                   </>
                 )}
-                {family.familyAddress?.addressLine3 && (
+                {familyDetails.familyAddress?.addressLine3 && (
                   <>
-                    {family.familyAddress.addressLine3}
+                    {familyDetails.familyAddress.addressLine3}
                     <br />
                   </>
                 )}
-                {family.familyAddress?.district && (
+                {familyDetails.familyAddress?.district && (
                   <>
                     {" "}
-                    District: {family.familyAddress.district}
+                    District: {familyDetails.familyAddress.district}
                     <br />
                   </>
                 )}
-                {family.familyAddress?.city}, {family.familyAddress?.state} -{" "}
-                {family.familyAddress?.postalCode.trim()}
+                {familyDetails.familyAddress?.city}, {familyDetails.familyAddress?.state} -{" "}
+                {familyDetails.familyAddress?.postalCode.trim()}
                 <br />
-                {family.familyAddress?.country}
+                {familyDetails.familyAddress?.country}
               </address>
             </div>
           </div>
           <div className="col-sm-4">
             {/* Family Image (Right) */}
-          {family.familyImage && (
+          {familyDetails.familyImage && (
             <div style={{ flex: "0 0 auto" }}>
               <img
-                src={`/${family.familyImage}`}
+                src={`/${familyDetails.familyImage}`}
                 alt="Family"
                 style={{
                   width: "205px",
@@ -328,64 +275,19 @@ const FamilyDetails = () => {
         className="tree-container border"
         style={{
           width: "100%",
-          minHeight: "600px",
+          // minHeight: "600px",
           overflow: "auto",
           padding: "10px",
         }}
       >
-        <FamilyTree familyTreeRoot={family.familyTreeRoot} />
+        <FamilyTree familyTreeRoot={family.familyRoot} />
       </div>
 
-      {/* Members List */}
-      
       <div className="mb-5">
-        <h5 className="mb-3">Family Members</h5>
-        <div className="table-responsive">
-          <table className="table table-bordered table-striped">
-            <thead className="table-light">
-              <tr>
-                <th>Name</th>
-                <th>Relationship</th>
-                <th>Birth Date</th>
-                <th>Marital Status</th>
-                <th>Education</th>
-                <th>Occupation</th>
-                <th>Phone</th>
-              </tr>
-            </thead>
-            <tbody>
-              {membersList.map((member) => (
-                <tr key={member.memberId}>
-                  <td>
-                    <Link
-                      to={`/member/${member.memberId}`}
-                      className="text-decoration-none"
-                    >
-                      {member.firstName} {member.lastName} <br />
-                      {member.firstNameInHindi &&
-                        `${member.firstNameInHindi} ${family.familyNameInHindi}`}
-                    </Link>
-                  </td>
-                  <td>{member.relationship}</td>
-                  <td>{member.birthDate}</td>
-                  <td>{member.maritalStatus}</td>
-                  <td>{member.educationDetails}</td>
-                  <td>
-                    {member.occupation}{" "}
-                    {member.workingAt && `at ${member.workingAt}`}
-                  </td>
-                  <td>
-                    {getFormattedPhoneDisplay(
-                      member.phone,
-                      member.phoneWhatsappRegistered,
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        {/* This div added just to add space before below table.*/}  
       </div>
+      {/* Members List */}
+      <MemberListTable membersList={family?.memberList} familyNameInHindi={family?.familyDetails?.familyNameInHindi} />
 
       
     </div>

@@ -259,7 +259,7 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 	
 	private static String getDefaultImagePath (AddFamilyMemberRequest opRequest) {
 		Gender gender = Gender.getGenderByString(opRequest.getGender());
-		int memberAge = DataFormatter.getMemberAge(opRequest.getBirthDay(), Month.fromName(opRequest.getBirthMonth()), opRequest.getBirthYear());
+		int memberAge = DataFormatter.getMemberAgeInYears(opRequest.getBirthDay(), Month.fromName(opRequest.getBirthMonth()), opRequest.getBirthYear());
 		if(gender == Gender.Female) {
 			if (memberAge < 20) {
 				return ImageConstants.DEFAULT_KID_GIRL_IMAGE;

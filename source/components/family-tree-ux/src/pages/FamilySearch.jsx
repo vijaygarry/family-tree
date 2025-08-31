@@ -7,6 +7,7 @@ const FamilySearch = () => {
   const [search, setSearch] = useState({ searchString: "" });
   const [results, setResults] = useState([]);
   const [error, setError] = useState("");
+  const [hasSearched, setHasSearched] = useState(false);
   const navigate = useNavigate();
 
   const handleRowClick = (id) => {
@@ -17,12 +18,12 @@ const FamilySearch = () => {
     e?.preventDefault(); // Prevent page reload if used inside a form
     try {
       const res = await api.post("/family/searchfamily", search);
+      setHasSearched(true);
       setResults(res.data);
       setError(null);
     } catch (err) {
       console.error("Search failed to load family details", err);
       if (err.response?.data?.operationMessage) {
-        // API returned an error in payload
         setError(err.response?.data?.operationMessage);
       } else {
         setError(ERROR_MESSAGES.DEFAULT);
@@ -62,7 +63,7 @@ const FamilySearch = () => {
       </form>
 
       {error && <div className="alert alert-danger">{error}</div>}
-      {results.families == null && <div className="alert alert-danger">No family found for selected search criteria</div>}
+      {hasSearched && results.families == null && <div className="alert alert-danger">No family found for selected search criteria</div>}
       {results.families?.length > 0 && (
         <table className="table table-bordered mt-4">
           <thead>

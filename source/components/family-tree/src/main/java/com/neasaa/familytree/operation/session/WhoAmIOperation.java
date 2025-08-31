@@ -6,6 +6,7 @@ import com.neasaa.base.app.operation.model.EmptyOperationRequest;
 import com.neasaa.base.app.service.AppSessionUser;
 import com.neasaa.familytree.dao.pg.FamilyMemberDao;
 import com.neasaa.familytree.entity.FamilyMemberEntity;
+import com.neasaa.familytree.utils.SessionUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -18,7 +19,7 @@ import static com.neasaa.familytree.operation.OperationNames.WHO_AM_I;
 @Scope("prototype")
 public class WhoAmIOperation extends AbstractOperation<EmptyOperationRequest, WhoAmIResponse> {
 
-    private static final String SESSION_MEMBER_ATTRIBUTE_KEY = "MEMBER_DETAILS";
+
 
     @Autowired
     private FamilyMemberDao familyMemberDao;
@@ -36,13 +37,13 @@ public class WhoAmIOperation extends AbstractOperation<EmptyOperationRequest, Wh
     @Override
     public WhoAmIResponse doExecute(EmptyOperationRequest opRequest) throws OperationException {
         AppSessionUser appSessionUser = getContext().getAppSessionUser();
-        FamilyMemberEntity memberEntity = null;
-        if(appSessionUser.getOtherAttributes() == null || !appSessionUser.getOtherAttributes().containsKey(SESSION_MEMBER_ATTRIBUTE_KEY)) {
+        FamilyMemberEntity memberEntity = SessionUtils.getFamilyMemberFromSession(appSessionUser);
+
+        //If member not in session, fetch from DB and set in session
+        if(memberEntity == null) {
             String logonName = appSessionUser.getLogonName();
             memberEntity = familyMemberDao.getMemberByLogonName(logonName);
-            appSessionUser.addOtherAttributes(SESSION_MEMBER_ATTRIBUTE_KEY, memberEntity);
-        } else {
-            memberEntity = (FamilyMemberEntity) appSessionUser.getOtherAttributes().get(SESSION_MEMBER_ATTRIBUTE_KEY);
+            SessionUtils.setFamilyMemberInSession(appSessionUser, memberEntity);
         }
 
         return WhoAmIResponse.builder()

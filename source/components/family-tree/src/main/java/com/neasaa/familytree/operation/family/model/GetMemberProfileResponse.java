@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Builder
@@ -15,7 +16,8 @@ public class GetMemberProfileResponse extends OperationResponse {
     private static final long serialVersionUID = -3478291045823901842L;
 
     private MemberProfile memberProfile;
-    private FamilyMemberDto familyTreeRoot;
+    private List<MemberSummaryDto> memberList;
+    private FamilyTreeNode familyRoot;
 
     @Getter
     @Builder
