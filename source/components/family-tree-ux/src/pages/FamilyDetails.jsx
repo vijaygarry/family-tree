@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getFormattedPhoneDisplay } from "../utils/phoneUtils";
-import "./TreeNode.css";
 import "./FamilyDetails.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import api from "../api/axiosInstance";
@@ -29,18 +28,19 @@ const FamilyDetails = () => {
         );
         setFamily(response.data);
         setForm({
-          familyName: response.data.familyName || '',
-          familyNameInHindi: response.data.familyNameInHindi || '',
-          headOfFamilyName: response.data.headOfFamilyName || '',
-          gotra: response.data.gotra || '',
-          email: response.data.email || '',
-          phone: response.data.phone || '',
-          phoneWhatsappRegistered: response.data.phoneWhatsappRegistered || false,
-          familyAddress: { ...response.data.familyAddress } || {},
+          familyName: response.data.familyDetails.familyName || '',
+          familyNameInHindi: response.data.familyDetails.familyNameInHindi || '',
+          gotra: response.data.familyDetails.gotra || '',
+          email: response.data.familyDetails.email || '',
+          phone: response.data.familyDetails.phone || '',
+          phoneWhatsappRegistered: response.data.familyDetails.phoneWhatsappRegistered || false,
+          familyAddress: { ...response.data.familyDetails.familyAddress } || {},
         });
+        setEditMode(false);
       } catch (err) {
         console.error("Failed to load family data", err);
         if (err.response?.data?.operationMessage) {
+          // API returned an error in payload
           setError(err.response?.data?.operationMessage);
         } else {
           setError(ERROR_MESSAGES.DEFAULT);
@@ -70,12 +70,10 @@ const FamilyDetails = () => {
       setForm((prev) => ({ ...prev, [name]: value }));
     }
   };
+
   const validateForm = () => {
     if (!form.familyName.trim()) return "Family Name is required.";
-    if (!form.headOfFamilyName.trim()) return "Head Of Family is required.";
     if (!form.gotra.trim()) return "Gotra is required.";
-    if (!form.email.trim()) return "Email is required.";
-    if (!form.phone.trim()) return "Phone is required.";
     if (!form.familyAddress?.addressLine1?.trim()) return "Address Line 1 is required.";
     if (!form.familyAddress?.city?.trim()) return "City is required.";
     if (!form.familyAddress?.state?.trim()) return "State is required.";
@@ -84,7 +82,8 @@ const FamilyDetails = () => {
     return "";
   };
 
-  const handleSave = async () => {
+  const handleSave = async (e) => {
+    e.preventDefault();
     setEditError("");
     setEditSuccess("");
     const validationMsg = validateForm();
@@ -104,6 +103,11 @@ const FamilyDetails = () => {
   };
 
   const familyInformationEditForm = (
+    <div>
+      {/* Update Family Form */}
+      <h5 className="mb-3 float-start">Edit Family Information</h5>
+    <div className="clearfix"></div>
+    <div className="card mb-5 p-4 bg-body-secondary border-0">
     <form onSubmit={handleSave}>
       <div className="mb-2">
         <span className="fw-semibold me-2">Family Name:</span>
@@ -141,40 +145,40 @@ const FamilyDetails = () => {
       {editError && <div className="alert alert-danger py-1 my-2">{editError}</div>}
       {editSuccess && <div className="alert alert-success py-1 my-2">{editSuccess}</div>}
       <div className="mt-2">
-        <button className="btn btn-success btn-sm me-2" onClick={handleSave}>Save</button>
+        <button className="btn btn-success btn-sm me-2" type="submit">Save</button>
         <button className="btn btn-secondary btn-sm" onClick={handleCancelEdit}>Cancel</button>
       </div>
     </form>
+    </div>
+    </div>
   );
 
   if (error) return <div style={{ color: "red" }}>{error}</div>;
   if (!family) return <div>Loading family tree...</div>;
-  const membersList = family.memberList;
   const familyDetails = family?.familyDetails;
 
-  return (
-    <div className="container p-4 bg-white rounded mt-4">
+  const showFamilyDetails = (
+    <div>
       {/* Family Info Section */}
       <h5 className="mb-3 float-start">Family Information</h5>
-               <button
-                  className="btn btn-primary fw-bold float-end"
-                  onClick={handleEditClick}
-                  title="Edit Family Details"
-                >
-                  <i className="bi bi-pencil-square"></i> Edit
-                </button>
-                <div className="clearfix"></div>
+      <button
+        className="btn btn-primary fw-bold float-end"
+        onClick={handleEditClick}
+        title="Edit Family Details"
+      >
+        <i className="bi bi-pencil-square"></i> Edit
+      </button>
+      <div className="clearfix"></div>
       <div className="card mb-5 p-4 bg-body-secondary border-0">
         <div className="row">
           <div className="col-sm-4">
-       <div className="d-flex justify-content-between align-items-center">
-            <h4 className="card-title mb-3 pb-2 fw-bold">
-              <span className="fw-bold me-2">Family Name:</span>
-              <span className="text-black">{familyDetails.familyName} {familyDetails.familyNameInHindi && ` (${familyDetails.familyNameInHindi})`} </span>
-            </h4>
-   
-          </div>
-          <div className="mb-2">
+            <div className="d-flex justify-content-between align-items-center">
+              <h4 className="card-title mb-3 pb-2 fw-bold">
+                <span className="fw-bold me-2">Family Name:</span>
+                <span className="text-black">{familyDetails.familyName} {familyDetails.familyNameInHindi && ` (${familyDetails.familyNameInHindi})`} </span>
+              </h4>
+            </div>
+            <div className="mb-2">
               <span className="fw-bold me-2">Head Of Family:</span>
               <span className="text-black">{familyDetails.headOfFamilyName}</span>
             </div>
@@ -197,7 +201,7 @@ const FamilyDetails = () => {
             </div>
           </div>
           <div className="col-sm-4">
-<div className="d-flex  mt-5">
+            <div className="d-flex  mt-5">
               <span className="fw-semibold me-2">Address:</span>
               <address className="mb-0">
                 {familyDetails.familyAddress?.addressLine1}
@@ -230,52 +234,39 @@ const FamilyDetails = () => {
           </div>
           <div className="col-sm-4">
             {/* Family Image (Right) */}
-          {familyDetails.familyImage && (
-            <div style={{ flex: "0 0 auto" }}>
-              <img
-                src={`/${familyDetails.familyImage}`}
-                alt="Family"
-                style={{
-                  width: "205px",
-                  height: "205px",
-                  objectFit: "cover",
-                  borderRadius: "8px",
-                }}
-              />
-            </div>
-          )}
+            {familyDetails.familyImage && (
+              <div style={{ flex: "0 0 auto" }}>
+                <img
+                  src={`/${familyDetails.familyImage}`}
+                  alt="Family"
+                  style={{
+                    width: "205px",
+                    height: "205px",
+                    objectFit: "cover",
+                    borderRadius: "8px",
+                  }}
+                />
+              </div>
+            )}
           </div>
-        </div>
-        <div
-          className="card-body d-flex flex-wrap align-items-start p-0"
-          style={{ gap: "1rem" }}
-        >
-        {editMode
-          ? familyInformationEditForm
-          : (
-            <div
-          className="card-body d-flex flex-wrap align-items-start p-0"
-          style={{ gap: "1rem" }}
-        >
-          <div style={{ flex: "1 1 10%" }}>
-     
-            
-            
-          </div>
-          
-          </div>
-          )
-        }
         </div>
       </div>
+    </div>
+  );
 
+  return (
+    <div className="container p-4 bg-white rounded mt-4">
+      {editMode
+        ? familyInformationEditForm
+        : showFamilyDetails
+      }
       {/* Tree View */}
       <h5 className="mb-3">Family Tree</h5>
       <div
         className="tree-container border"
         style={{
           width: "100%",
-          // minHeight: "600px",
+          minHeight: "600px",
           overflow: "auto",
           padding: "10px",
         }}
@@ -284,12 +275,10 @@ const FamilyDetails = () => {
       </div>
 
       <div className="mb-5">
-        {/* This div added just to add space before below table.*/}  
+        {/* This div added just to add space before below table.*/}
       </div>
       {/* Members List */}
       <MemberListTable membersList={family?.memberList} familyNameInHindi={family?.familyDetails?.familyNameInHindi} />
-
-      
     </div>
   );
 };
