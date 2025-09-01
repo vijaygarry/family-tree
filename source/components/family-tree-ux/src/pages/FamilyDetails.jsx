@@ -7,12 +7,14 @@ import api from "../api/axiosInstance";
 import ERROR_MESSAGES from "../constants/messages";
 import FamilyTree from "../components/FamilyTree";
 import MemberListTable from "../components/MemberListTable";
+import ImageUploadCropModal from "../components/ImageUploadCropModal";
 
 
 const FamilyDetails = () => {
   const [family, setFamily] = useState(null);
   const [error, setError] = useState(null);
   const [editMode, setEditMode] = useState(false);
+  const [showImageEdit, setShowImageEdit] = useState(false);
   const [form, setForm] = useState({});
   const [editError, setEditError] = useState("");
   const [editSuccess, setEditSuccess] = useState("");
@@ -69,6 +71,36 @@ const FamilyDetails = () => {
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
     }
+  };
+
+  const handleImageSave = async (croppedImageBlob) => {
+    setEditError("");
+    setEditSuccess("");
+    try {
+      const formData = new FormData();
+      formData.append("familyId", 1);
+      formData.append("image", croppedImageBlob, "family-image.jpg");
+      const response = await api.post(
+          "/family/uploadFamilyImage",
+          formData, {headers: { "Content-Type": "multipart/form-data" },
+        });
+      
+      if (response.data && response.data.imagePath) {
+        setFamily((prev) => ({
+          ...prev,
+          familyDetails: {
+            ...prev.familyDetails,
+            familyImage: response.data.imagePath,
+          },
+        }));
+        setEditSuccess("Family image updated successfully.");
+      } else {
+        setEditError("Image upload failed. Please try again.");
+      }
+    } catch (err) {
+      setEditError("Image upload failed. Please try again.");
+    }
+    setShowImageEdit(false);
   };
 
   const validateForm = () => {
@@ -235,7 +267,7 @@ const FamilyDetails = () => {
           <div className="col-sm-4">
             {/* Family Image (Right) */}
             {familyDetails.familyImage && (
-              <div style={{ flex: "0 0 auto" }}>
+              <div style={{ flex: "0 0 auto", position: "relative" }}>
                 <img
                   src={`/${familyDetails.familyImage}`}
                   alt="Family"
@@ -246,7 +278,20 @@ const FamilyDetails = () => {
                     borderRadius: "8px",
                   }}
                 />
+                <button
+                  className="btn btn-outline-primary btn-sm mt-2 w-100"
+                  onClick={() => setShowImageEdit(true)}
+                  style={{ position: "absolute", left: 0, bottom: -40 }}
+                >
+                  <i className="bi bi-pencil-square"></i> Edit Image
+                </button>
               </div>
+            )}
+            {showImageEdit && (
+              <ImageUploadCropModal
+                onClose={() => setShowImageEdit(false)}
+                onSave={handleImageSave}
+              />
             )}
           </div>
         </div>
