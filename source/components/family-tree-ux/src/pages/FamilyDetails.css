@@ -27,3 +27,9 @@
   gap: 10px;
   justify-content: center;
 }
+
+select.form-select.form-select-lg.w-auto {
+    font-size: 16px;
+    width: 100% !important;
+    /* background: #e8e8e8; */
+}

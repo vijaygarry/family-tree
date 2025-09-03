@@ -48,14 +48,95 @@ thead.table-light tr th {
     font-weight: 500;
 }
 .d-flex.justify-content-center.gap-2 a.text-decoration-none .member-card.d-flex.align-items-center.p-2{
-     background:   #C0EDFF;
-    color: #000;
-    font-weight: 400;
-    border-color: #C0EDFF;
+     background:   #C0EDFF !important;
+    color: #000 !important;
+    font-weight: 400 !important;
+    border-color: #C0EDFF !important;
 }
 .d-flex.justify-content-center.gap-2 a.text-decoration-none:last-child .member-card.d-flex.align-items-center.p-2 {
-    background: #FFC2E1;
+    background: #FFC2E1 !important;
+    color: #000 !important;
+    font-weight: 400 !important;
+      border-color: #FFC2E1 !important;
+}
+
+.member-card{
+     background:   #C0EDFF !important;
+    color: #000 !important;
+    font-weight: 400 !important;
+    border-color: #C0EDFF !important;
+}
+a.text-decoration-none:last-child .member-card{
+    background: #FFC2E1 !important;
+    color: #000 !important;
+    font-weight: 400 !important;
+      border-color: #FFC2E1 !important;
+}
+
+
+ul.nav.nav-tabs {
+    border: none;
+}
+ul.nav.nav-tabs button {
+    background: #A42502;
+    border: 1px solid #A42502;
+    margin-right: 10px;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: 600;
+}
+
+ul.nav.nav-tabs button.active {
+    background: #e8e8e8;
+    border-color: #E8E8E8;
     color: #000;
-    font-weight: 400;
-      border-color: #FFC2E1;
+}
+
+.tab-content .card-title.h5 {
+    font-size: 18px;
+    font-weight: 700;
+}
+.tab-content  .text-muted.card-subtitle.h6{
+color: #A42502 !important;
+font-weight: 600;
+font-size: 14px;
+}
+.tab-content .shadow-sm.event-card.card {
+    background: #fff !important;
+    border: none !important;
+}
+.tab-content .card-img-top{
+  border: none !important;
+}
+.pagination li.page-item {
+    margin: 0 5px;
+}
+.pagination li.page-item a.page-link,.pagination li.page-item span.page-link{
+  border-radius: 0;
+}
+.pagination li.page-item a.page-link,.pagination li.page-item.disabled span.page-link{
+  background: #A42502;
+  color: #fff;
+  font-weight: 600;
+}
+.pagination li.page-item.active span.page-link{
+  background: #E8E8E8;
+  color: #000;
+  border-color: #E8E8E8;
+    font-weight: 600;
+}
+
+table.min-w-full.table-auto.border.w-100 thead tr th {
+    background: #FFE0B7;
+    border-color: #FFE0B7 !important;
+}
+
+
+table.min-w-full.table-auto.border.w-100 tbody tr:nth-child(even) td {
+  background: #FFF6EB;
+  border-color: #FFE0B7 !important;
+}
+table.min-w-full.table-auto.border.w-100 tbody tr:nth-child(odd) td {
+  background: #FFF;
+    border-color: #FFE0B7 !important;
 }

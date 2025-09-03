@@ -59,7 +59,7 @@ const ChangePassword = ({ changePassword }) => {
   };
 
   return (
-    <div className="container mt-5" style={{ maxWidth: "500px" }}>
+    <div className="container p-4 bg-white rounded mt-4" style={{ maxWidth: "500px" }}>
       <h3 className="mb-4">Change Password</h3>
 
       {error && <div className="alert alert-danger">{error}</div>}

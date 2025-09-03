@@ -130,35 +130,46 @@ const AccountsPage = () => {
       </div>
 
       {accountDetails && (
-        <div className="border p-4 rounded shadow mb-4">
-          <h3 className="font-semibold text-lg mb-2">Account Details</h3>
-          <p>
+        <div className="border p-4 rounded shadow my-4">
+          <h3 className="font-semibold text-lg mb-4">Account Details</h3>
+          <div className="row">
+            <div className="col-sm-4">
+ <p>
             <strong>Account:</strong> {accountDetails.accountName}
           </p>
           <p>
             <strong>Balance:</strong> ₹{accountDetails.currentBalance}
           </p>
-          <p>
+            </div>
+            <div className="col-sm-4">
+        <p>
             <strong>Manager:</strong> {accountDetails.accountManager}
           </p>
           <p>
             <strong>Bank:</strong> {accountDetails.bankName}
           </p>
-          <p>
+            </div>
+            <div className="col-sm-4">
+         <p>
             <strong>Bank Account ID:</strong> {accountDetails.bankAccountId}
           </p>
           <p>
             <strong>Type:</strong> {accountDetails.bankAccountType}
           </p>
+            </div>
+          </div>
+         
+  
+ 
         </div>
       )}
 
       {transactions.length > 0 && (
         <div className="overflow-x-auto">
-          <table className="min-w-full table-auto border">
+          <table className="min-w-full table-auto border w-100">
             <thead>
               <tr className="bg-gray-200">
-                <th className="p-2 border">Date</th>
+                <th className="p-2 border">Transaction Date</th>
                 <th className="p-2 border">Description</th>
                 <th className="p-2 border">Credit</th>
                 <th className="p-2 border">Debit</th>

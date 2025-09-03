@@ -88,8 +88,8 @@ const MemberProfile = () => {
 
   const memberInformationEditForm = (
     <form onSubmit={handleSave} className="row g-3">
-    <div className="col-md-4">
-      <label className="form-label fw-semibold">First Name</label>
+    <div className="mb-2">
+        <span className="fw-semibold me-2">First Name:</span>
       <input name="firstName" value={form.firstName || ''} onChange={handleFormChange} className="form-control" required />
     </div>
     <div className="col-md-4">
@@ -313,7 +313,7 @@ const MemberProfile = () => {
             <button
               className="btn btn-outline-primary btn-sm ms-2"
               onClick={handleEditClick}
-              title="Edit Member Details"
+              title="Edit Member Details" style={{ background: "transparent", borderColor: "#A42502", color: "#A42502" }}
             >
               <i className="bi bi-pencil-square"></i> Edit
             </button>
@@ -332,34 +332,25 @@ const MemberProfile = () => {
   );
 
   return (
-    <div className="container py-4">
-      <div className="card mb-4">
-        <div className="card-header bg-info text-white">
-          <h4 className="mb-0">Member Profile</h4>
+    <div className="container p-4 bg-white rounded mt-4">
+      <div className="card mb-4" style={{ borderColor: "#FFDCB0" }}>
+        <div className="card-header text-black" style={{ background: "#FFDCB0" }}>
+          <h5 className="mb-0">Member Profile</h5>
         </div>
-        <div className="card-body">
+        <div className="card-body"  style={{ borderColor: "#FFDCB0" }}>
           {editMode ? memberInformationEditForm : memberReadOnlyView}
         </div>
       </div>
 
       {/* Tree View */}
       <h5 className="mb-3">Family Tree</h5>
-      <div
-        className="tree-container border"
-        style={{
-          width: "100%",
-          minHeight: "600px",
-          overflow: "auto",
-          padding: "10px",
-        }}
-      >
+      <div className="overflow-auto">
         <FamilyTree familyTreeRoot={memberData.familyRoot} />
       </div>
       
       <div className="mb-4">
         <MemberListTable membersList={memberData?.memberList} />
       </div>
-
     </div>
   );
 };

@@ -1,6 +1,9 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { Tree, TreeNode } from "react-organizational-chart";
 import { getFormattedPhoneDisplay } from "../utils/phoneUtils";
+import "./TreeNode.css";
 import "./FamilyDetails.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import api from "../api/axiosInstance";
@@ -135,11 +138,6 @@ const FamilyDetails = () => {
   };
 
   const familyInformationEditForm = (
-    <div>
-      {/* Update Family Form */}
-      <h5 className="mb-3 float-start">Edit Family Information</h5>
-    <div className="clearfix"></div>
-    <div className="card mb-5 p-4 bg-body-secondary border-0">
     <form onSubmit={handleSave}>
       <div className="mb-2">
         <span className="fw-semibold me-2">Family Name:</span>
@@ -176,21 +174,20 @@ const FamilyDetails = () => {
       </div>
       {editError && <div className="alert alert-danger py-1 my-2">{editError}</div>}
       {editSuccess && <div className="alert alert-success py-1 my-2">{editSuccess}</div>}
-      <div className="mt-2">
+      <div className="mt-3 text-end">
         <button className="btn btn-success btn-sm me-2" type="submit">Save</button>
-        <button className="btn btn-secondary btn-sm" onClick={handleCancelEdit}>Cancel</button>
+        <button className="btn btn-danger btn-sm" onClick={handleCancelEdit}>Cancel</button>
       </div>
     </form>
-    </div>
-    </div>
   );
 
   if (error) return <div style={{ color: "red" }}>{error}</div>;
   if (!family) return <div>Loading family tree...</div>;
   const familyDetails = family?.familyDetails;
 
+
   const showFamilyDetails = (
-    <div>
+    <div className="container p-4 bg-white rounded mt-4">
       {/* Family Info Section */}
       <h5 className="mb-3 float-start">Family Information</h5>
       <button
@@ -209,6 +206,7 @@ const FamilyDetails = () => {
                 <span className="fw-bold me-2">Family Name:</span>
                 <span className="text-black">{familyDetails.familyName} {familyDetails.familyNameInHindi && ` (${familyDetails.familyNameInHindi})`} </span>
               </h4>
+
             </div>
             <div className="mb-2">
               <span className="fw-bold me-2">Head Of Family:</span>
@@ -267,7 +265,7 @@ const FamilyDetails = () => {
           <div className="col-sm-4">
             {/* Family Image (Right) */}
             {familyDetails.familyImage && (
-              <div style={{ flex: "0 0 auto", position: "relative" }}>
+              <div style={{ flex: "0 0 auto" }}>
                 <img
                   src={`/${familyDetails.familyImage}`}
                   alt="Family"
@@ -279,9 +277,9 @@ const FamilyDetails = () => {
                   }}
                 />
                 <button
-                  className="btn btn-outline-primary btn-sm mt-2 w-100"
+                  className="btn btn-outline-primary btn-sm mt-2"
                   onClick={() => setShowImageEdit(true)}
-                  style={{ position: "absolute", left: 0, bottom: -40 }}
+                  style={{ position: "absolute", right: 0, bottom: -40 }}
                 >
                   <i className="bi bi-pencil-square"></i> Edit Image
                 </button>
@@ -301,29 +299,33 @@ const FamilyDetails = () => {
 
   return (
     <div className="container p-4 bg-white rounded mt-4">
-      {editMode
-        ? familyInformationEditForm
-        : showFamilyDetails
-      }
-      {/* Tree View */}
-      <h5 className="mb-3">Family Tree</h5>
       <div
-        className="tree-container border"
-        style={{
-          width: "100%",
-          minHeight: "600px",
-          overflow: "auto",
-          padding: "10px",
-        }}
+        className="card-body d-flex flex-wrap align-items-start p-0"
+        style={{ gap: "1rem" }}
       >
-        <FamilyTree familyTreeRoot={family.familyRoot} />
+        {editMode ? familyInformationEditForm : showFamilyDetails}
       </div>
+      {/* Tree View */}
+      <div className="mb-4">
+        <h5 className="mb-3">Family Tree</h5>
+        <div
+          className="tree-container"
+          style={{
+            width: "100%",
+            minHeight: "600px",
+            overflow: "auto",
+            padding: "10px",
+          }}
+        >
+          <FamilyTree familyTreeRoot={family.familyRoot} />
+        </div>
 
-      <div className="mb-5">
-        {/* This div added just to add space before below table.*/}
+        <div className="mb-5">
+          {/* This div added just to add space before below table.*/}
+        </div>
+        {/* Members List */}
+        <MemberListTable membersList={family?.memberList} familyNameInHindi={family?.familyDetails?.familyNameInHindi} />
       </div>
-      {/* Members List */}
-      <MemberListTable membersList={family?.memberList} familyNameInHindi={family?.familyDetails?.familyNameInHindi} />
     </div>
   );
 };

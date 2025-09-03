@@ -40,9 +40,9 @@ function EventDetailPage() {
   const allImages = [event.eventImage, ...photos];
 
   return (
-    <Container className="py-4">
+    <Container className="p-4 bg-white rounded mt-4">
       <Button
-        variant="outline-secondary"
+        variant="btn btn-primary fw-bold"
         onClick={() => navigate(-1)}
         className="mb-3"
       >

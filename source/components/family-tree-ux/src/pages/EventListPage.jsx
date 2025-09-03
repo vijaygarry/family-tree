@@ -37,9 +37,9 @@ function EventListPage() {
   const pastEvents = events;
 
   return (
-    <Container className="py-4">
+    <Container className="p-4 bg-white rounded mt-4">
       <h2 className="text-center mb-4">Family Events</h2>
-      <Tabs defaultActiveKey="upcoming" className="mb-3">
+      <Tabs defaultActiveKey="upcoming" className="mb-4">
         <Tab eventKey="upcoming" title="Upcoming Events">
           {loading ? (
             <Spinner animation="border" />

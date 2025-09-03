@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./Header.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { NavLink } from "react-router-dom";
 
 const Header = () => {
   const { logout, user } = useAuth();
@@ -55,11 +56,16 @@ const Header = () => {
 
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
-            <li className="nav-item">
-              <Link className="nav-link" to="/">
-                Home
-              </Link>
-            </li>
+           <li className="nav-item">
+  <NavLink
+    to="/"
+    className={({ isActive }) =>
+      "nav-link" + (isActive ? " active" : "")
+    }
+  >
+    Home
+  </NavLink>
+</li>
 
             {/* Dropdown Menu */}
             <li className="nav-item dropdown">
@@ -90,16 +96,26 @@ const Header = () => {
               </ul>
             </li>
 
-            <li className="nav-item">
-              <Link className="nav-link" to="/events">
-                Events
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/accounts">
-                Accounts
-              </Link>
-            </li>
+    <li className="nav-item">
+  <NavLink
+    to="/events"
+    className={({ isActive }) =>
+      "nav-link" + (isActive ? " active" : "")
+    }
+  >
+    Events
+  </NavLink>
+</li>
+<li className="nav-item">
+  <NavLink
+    to="/accounts"
+    className={({ isActive }) =>
+      "nav-link" + (isActive ? " active" : "")
+    }
+  >
+    Accounts
+  </NavLink>
+</li>
 
             {/* User dropdown */}
             <li className="nav-item dropdown">

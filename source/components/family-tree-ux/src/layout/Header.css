@@ -1,7 +1,11 @@
 /* Show dropdown on hover */
 .nav-item.dropdown:hover .dropdown-menu {
-  display: block;
-  margin-top: 0;
+    display: block;
+    margin-top: 0;
+    padding: 0;
+border: 1px solid #a32721;
+    border-top: 8px solid #a32721;
+    right: 0;
 }
 
 /* Optional: Ensure smooth behavior */
@@ -51,4 +55,10 @@
 .avatar-small {
   width: 20px;
   height: 20px;
+}
+
+.header .nav-link.active {
+  background-color: #a42108; /* or your theme color */
+  color: #fff !important;
+  border-radius: 6px; /* optional for rounded look */
 }
