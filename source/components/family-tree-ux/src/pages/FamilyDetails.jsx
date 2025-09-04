@@ -84,10 +84,11 @@ const FamilyDetails = () => {
       formData.append("familyId", 1);
       formData.append("image", croppedImageBlob, "family-image.jpg");
       const response = await api.post(
-          "/family/uploadFamilyImage",
-          formData, {headers: { "Content-Type": "multipart/form-data" },
-        });
-      
+        "/family/uploadFamilyImage",
+        formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+      });
+
       if (response.data && response.data.imagePath) {
         setFamily((prev) => ({
           ...prev,
@@ -158,7 +159,7 @@ const FamilyDetails = () => {
       <div className="mb-2">
         <span className="fw-semibold me-2">Phone:</span>
         <input name="phone" value={form.phone} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Phone" />
-      </div>  
+      </div>
       <div className="d-flex">
         <span className="fw-semibold me-2">Address:</span>
         <div style={{ width: '100%' }}>

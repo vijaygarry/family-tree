@@ -32,9 +32,8 @@ const Header = () => {
 
   return (
     <header
-      className={`bg-white text-black shadow-sm sticky-sm-top header ${
-        scrolled ? "header-scrolled" : ""
-      }`}
+      className={`bg-white text-black shadow-sm sticky-sm-top header ${scrolled ? "header-scrolled" : ""
+        }`}
     >
       <nav className="navbar navbar-expand-lg navbar-dark container">
         <Link className="navbar-brand d-flex align-items-center" to="/">
@@ -56,16 +55,16 @@ const Header = () => {
 
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
-           <li className="nav-item">
-  <NavLink
-    to="/"
-    className={({ isActive }) =>
-      "nav-link" + (isActive ? " active" : "")
-    }
-  >
-    Home
-  </NavLink>
-</li>
+            <li className="nav-item">
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
+                  "nav-link" + (isActive ? " active" : "")
+                }
+              >
+                Home
+              </NavLink>
+            </li>
 
             {/* Dropdown Menu */}
             <li className="nav-item dropdown">
@@ -96,26 +95,26 @@ const Header = () => {
               </ul>
             </li>
 
-    <li className="nav-item">
-  <NavLink
-    to="/events"
-    className={({ isActive }) =>
-      "nav-link" + (isActive ? " active" : "")
-    }
-  >
-    Events
-  </NavLink>
-</li>
-<li className="nav-item">
-  <NavLink
-    to="/accounts"
-    className={({ isActive }) =>
-      "nav-link" + (isActive ? " active" : "")
-    }
-  >
-    Accounts
-  </NavLink>
-</li>
+            <li className="nav-item">
+              <NavLink
+                to="/events"
+                className={({ isActive }) =>
+                  "nav-link" + (isActive ? " active" : "")
+                }
+              >
+                Events
+              </NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink
+                to="/accounts"
+                className={({ isActive }) =>
+                  "nav-link" + (isActive ? " active" : "")
+                }
+              >
+                Accounts
+              </NavLink>
+            </li>
 
             {/* User dropdown */}
             <li className="nav-item dropdown">
@@ -133,9 +132,8 @@ const Header = () => {
                 <img
                   src={user.profileImageThumbnail}
                   alt="User Avatar"
-                  className={`rounded-circle me-2 user-avatar ${
-                    scrolled ? "avatar-small" : ""
-                  }`}
+                  className={`rounded-circle me-2 user-avatar ${scrolled ? "avatar-small" : ""
+                    }`}
                   width="25"
                   height="25"
                   onError={(e) => (e.currentTarget.src = fallbackAvatar)}

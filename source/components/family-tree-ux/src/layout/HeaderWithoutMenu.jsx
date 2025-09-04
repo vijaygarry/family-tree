@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 
 const HeaderWithoutMenu = () => {
   return (
-      <header className="bg-white text-black mb-3 shadow-sm">
+    <header className="bg-white text-black mb-3 shadow-sm">
       <nav className="navbar navbar-expand-lg navbar-dark container">
         <Link className="navbar-brand d-flex align-items-center" to="/">
-          <img src="/logo.svg" alt="Logo" height={60}/>
+          <img src="/logo.svg" alt="Logo" height={60} />
         </Link>
         <button
           className="navbar-toggler"

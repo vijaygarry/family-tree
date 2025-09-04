@@ -10,6 +10,7 @@ import ERROR_MESSAGES from "../constants/messages";
 import FamilyTree from "../components/FamilyTree";
 import MemberListTable from "../components/MemberListTable";
 import { genderOptions, maritalStatusOptions, monthOptions, dayOptions } from "../constants/DropdownConstants";
+import ImageUploadCropModal from "../components/ImageUploadCropModal";
 
 const MemberProfile = () => {
   const { id } = useParams(); // from route: /member/:id
@@ -19,7 +20,8 @@ const MemberProfile = () => {
   const [form, setForm] = useState({});
   const [editError, setEditError] = useState("");
   const [editSuccess, setEditSuccess] = useState("");
-  
+  const [showImageEdit, setShowImageEdit] = useState(false);
+
   useEffect(() => {
     const fetchMember = async () => {
       try {
@@ -80,102 +82,133 @@ const MemberProfile = () => {
     }
   };
 
+  const handleImageSave = async (croppedImageBlob) => {
+    setEditError("");
+    setEditSuccess("");
+    try {
+      const formData = new FormData();
+      formData.append("memberId", 1);
+      formData.append("image", croppedImageBlob, "family-image.jpg");
+      const response = await api.post(
+        "/family/uploadMemberImage",
+        formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      if (response.data && response.data.imagePath) {
+        setMemberData((prev) => ({
+          ...prev,
+          memberProfile: {
+            ...prev.memberProfile,
+            memberProfileImage: response.data.imagePath,
+          },
+        }));
+        setEditSuccess("Member image updated successfully.");
+      } else {
+        setEditError("Image upload failed. Please try again.");
+      }
+    } catch (err) {
+      setEditError("Image upload failed. Please try again.");
+    }
+    setShowImageEdit(false);
+  };
+
   if (error) return <div className="text-danger p-4">{error}</div>;
   if (!memberData) return <div className="p-4">Loading member profile...</div>;
   const { memberProfile } = memberData;
-  
+
 
 
   const memberInformationEditForm = (
     <form onSubmit={handleSave} className="row g-3">
-    <div className="mb-2">
+      <div className="mb-2">
         <span className="fw-semibold me-2">First Name:</span>
-      <input name="firstName" value={form.firstName || ''} onChange={handleFormChange} className="form-control" required />
-    </div>
-    <div className="col-md-4">
-      <label className="form-label fw-semibold">First Name (Hindi)</label>
-      <input name="firstNameInHindi" value={form.firstNameInHindi || ''} onChange={handleFormChange} className="form-control" />
-    </div>
-    <div className="col-md-4">
-      <label className="form-label fw-semibold">Maiden Last Name</label>
-      <input name="maidenLastName" value={form.maidenLastName || ''} onChange={handleFormChange} className="form-control" />
-    </div>
-    <div className="col-md-4">
-      <label className="form-label fw-semibold">Nick Name</label>
-      <input name="nickName" value={form.nickName || ''} onChange={handleFormChange} className="form-control" />
-    </div>
-    <div className="col-md-4">
-      <label className="form-label fw-semibold">Nick Name (Hindi)</label>
-      <input name="nickNameInHindi" value={form.nickNameInHindi || ''} onChange={handleFormChange} className="form-control" />
-    </div>
-    <div className="col-md-4">
-      <label className="form-label fw-semibold">Phone</label>
-      <input name="phone" value={form.phone || ''} onChange={handleFormChange} className="form-control" required />
-    </div>
-    <div className="col-md-4">
-      <label className="form-label fw-semibold">Gender</label>
-      <select name="gender" value={form.gender || ''} onChange={handleFormChange} className="form-select" required>
-        {genderOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-      </select>
-    </div>
-    <div className="col-md-4">
-      <label className="form-label fw-semibold">Marital Status</label>
-      <select name="maritalStatus" value={form.maritalStatus || ''} onChange={handleFormChange} className="form-select" required>
-        {maritalStatusOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-      </select>
-    </div>
-    <div className="col-md-4">
-      <label className="form-label fw-semibold">Wedding Date</label>
-      <input name="weddingDate" type="date" value={form.weddingDate || ''} onChange={handleFormChange} className="form-control" />
-    </div>
-    <div className="col-md-4">
-      <label className="form-label fw-semibold">Birth Day</label>
-      <select name="birthDay" value={form.birthDay || ''} onChange={handleFormChange} className="form-select">
-        {dayOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-      </select>
-    </div>
-    <div className="col-md-4">
-      <label className="form-label fw-semibold">Birth Month</label> 
-      <select name="birthMonth" value={form.birthMonth || ''} onChange={handleFormChange} className="form-select" required>
-        {monthOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-      </select>
-    </div>
-    <div className="col-md-4">
-      <label className="form-label fw-semibold">Birth Year</label>
-      <input name="birthYear" type="number" min="1900" max={new Date().getFullYear()} value={form.birthYear || ''} onChange={handleFormChange} className="form-control" required />
-    </div>
-    <div className="col-md-4">
-      <label className="form-label fw-semibold">Email</label>
-      <input name="email" type="email" value={form.email || ''} onChange={handleFormChange} className="form-control" disabled={!!memberProfile.email} />
-    </div>
-    <div className="col-md-4">
-      <label className="form-label fw-semibold">Education Details</label>
-      <input name="educationDetails" value={form.educationDetails || ''} onChange={handleFormChange} className="form-control" />
-    </div>
-    <div className="col-md-4">
-      <label className="form-label fw-semibold">Occupation</label>
-      <input name="occupation" value={form.occupation || ''} onChange={handleFormChange} className="form-control" />
-    </div>
-    
-        <span className="fw-semibold me-2">Address:</span>
-        <div className="col-md-4" style={{ width: '100%' }}>
-          Address Line 1: <input name="familyAddress.addressLine1" value={form.familyAddress?.addressLine1 || ''} onChange={handleFormChange} className="form-control" placeholder="Address Line 1" />
-          Address Line 2: <input name="familyAddress.addressLine2" value={form.familyAddress?.addressLine2 || ''} onChange={handleFormChange} className="form-control" placeholder="Address Line 2" />
-          Address Line 3: <input name="familyAddress.addressLine3" value={form.familyAddress?.addressLine3 || ''} onChange={handleFormChange} className="form-control" placeholder="Address Line 3" />
-          District: <input name="familyAddress.district" value={form.familyAddress?.district || ''} onChange={handleFormChange} className="form-control" placeholder="District" />
-          City: <input name="familyAddress.city" value={form.familyAddress?.city || ''} onChange={handleFormChange} className="form-control" placeholder="City" />
-          State: <input name="familyAddress.state" value={form.familyAddress?.state || ''} onChange={handleFormChange} className="form-control" placeholder="State" />
-          Postal Code: <input name="familyAddress.postalCode" value={form.familyAddress?.postalCode || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="Postal Code" />
-          Country: <input name="familyAddress.country" value={form.familyAddress?.country || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="Country" />
-        </div>
-    
-    {editError && <div className="alert alert-danger py-1 my-2 col-12">{editError}</div>}
-    {editSuccess && <div className="alert alert-success py-1 my-2 col-12">{editSuccess}</div>}
-    <div className="col-12 mt-2">
-      <button className="btn btn-success btn-sm me-2" type="submit">Save</button>
-      <button className="btn btn-secondary btn-sm" type="button" onClick={handleCancelEdit}>Cancel</button>
-    </div>
-  </form>
+        <input name="firstName" value={form.firstName || ''} onChange={handleFormChange} className="form-control" required />
+      </div>
+      <div className="col-md-4">
+        <label className="form-label fw-semibold">First Name (Hindi)</label>
+        <input name="firstNameInHindi" value={form.firstNameInHindi || ''} onChange={handleFormChange} className="form-control" />
+      </div>
+      <div className="col-md-4">
+        <label className="form-label fw-semibold">Maiden Last Name</label>
+        <input name="maidenLastName" value={form.maidenLastName || ''} onChange={handleFormChange} className="form-control" />
+      </div>
+      <div className="col-md-4">
+        <label className="form-label fw-semibold">Nick Name</label>
+        <input name="nickName" value={form.nickName || ''} onChange={handleFormChange} className="form-control" />
+      </div>
+      <div className="col-md-4">
+        <label className="form-label fw-semibold">Nick Name (Hindi)</label>
+        <input name="nickNameInHindi" value={form.nickNameInHindi || ''} onChange={handleFormChange} className="form-control" />
+      </div>
+      <div className="col-md-4">
+        <label className="form-label fw-semibold">Phone</label>
+        <input name="phone" value={form.phone || ''} onChange={handleFormChange} className="form-control" required />
+      </div>
+      <div className="col-md-4">
+        <label className="form-label fw-semibold">Gender</label>
+        <select name="gender" value={form.gender || ''} onChange={handleFormChange} className="form-select" required>
+          {genderOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+        </select>
+      </div>
+      <div className="col-md-4">
+        <label className="form-label fw-semibold">Marital Status</label>
+        <select name="maritalStatus" value={form.maritalStatus || ''} onChange={handleFormChange} className="form-select" required>
+          {maritalStatusOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+        </select>
+      </div>
+      <div className="col-md-4">
+        <label className="form-label fw-semibold">Wedding Date</label>
+        <input name="weddingDate" type="date" value={form.weddingDate || ''} onChange={handleFormChange} className="form-control" />
+      </div>
+      <div className="col-md-4">
+        <label className="form-label fw-semibold">Birth Day</label>
+        <select name="birthDay" value={form.birthDay || ''} onChange={handleFormChange} className="form-select">
+          {dayOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+        </select>
+      </div>
+      <div className="col-md-4">
+        <label className="form-label fw-semibold">Birth Month</label>
+        <select name="birthMonth" value={form.birthMonth || ''} onChange={handleFormChange} className="form-select" required>
+          {monthOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+        </select>
+      </div>
+      <div className="col-md-4">
+        <label className="form-label fw-semibold">Birth Year</label>
+        <input name="birthYear" type="number" min="1900" max={new Date().getFullYear()} value={form.birthYear || ''} onChange={handleFormChange} className="form-control" required />
+      </div>
+      <div className="col-md-4">
+        <label className="form-label fw-semibold">Email</label>
+        <input name="email" type="email" value={form.email || ''} onChange={handleFormChange} className="form-control" disabled={!!memberProfile.email} />
+      </div>
+      <div className="col-md-4">
+        <label className="form-label fw-semibold">Education Details</label>
+        <input name="educationDetails" value={form.educationDetails || ''} onChange={handleFormChange} className="form-control" />
+      </div>
+      <div className="col-md-4">
+        <label className="form-label fw-semibold">Occupation</label>
+        <input name="occupation" value={form.occupation || ''} onChange={handleFormChange} className="form-control" />
+      </div>
+
+      <span className="fw-semibold me-2">Address:</span>
+      <div className="col-md-4" style={{ width: '100%' }}>
+        Address Line 1: <input name="familyAddress.addressLine1" value={form.familyAddress?.addressLine1 || ''} onChange={handleFormChange} className="form-control" placeholder="Address Line 1" />
+        Address Line 2: <input name="familyAddress.addressLine2" value={form.familyAddress?.addressLine2 || ''} onChange={handleFormChange} className="form-control" placeholder="Address Line 2" />
+        Address Line 3: <input name="familyAddress.addressLine3" value={form.familyAddress?.addressLine3 || ''} onChange={handleFormChange} className="form-control" placeholder="Address Line 3" />
+        District: <input name="familyAddress.district" value={form.familyAddress?.district || ''} onChange={handleFormChange} className="form-control" placeholder="District" />
+        City: <input name="familyAddress.city" value={form.familyAddress?.city || ''} onChange={handleFormChange} className="form-control" placeholder="City" />
+        State: <input name="familyAddress.state" value={form.familyAddress?.state || ''} onChange={handleFormChange} className="form-control" placeholder="State" />
+        Postal Code: <input name="familyAddress.postalCode" value={form.familyAddress?.postalCode || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="Postal Code" />
+        Country: <input name="familyAddress.country" value={form.familyAddress?.country || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="Country" />
+      </div>
+
+      {editError && <div className="alert alert-danger py-1 my-2 col-12">{editError}</div>}
+      {editSuccess && <div className="alert alert-success py-1 my-2 col-12">{editSuccess}</div>}
+      <div className="col-12 mt-2">
+        <button className="btn btn-success btn-sm me-2" type="submit">Save</button>
+        <button className="btn btn-secondary btn-sm" type="button" onClick={handleCancelEdit}>Cancel</button>
+      </div>
+    </form>
   );
 
   const memberReadOnlyView = (
@@ -300,7 +333,7 @@ const MemberProfile = () => {
             </address>
           </div>
         )}
-        
+
         <div className="mt-auto d-flex align-items-end" style={{ minHeight: '60px' }}>
           <div>
             <button
@@ -327,6 +360,19 @@ const MemberProfile = () => {
           className="me-3"
           style={{ width: "360px", height: "360px", objectFit: "cover", borderRadius: "8px" }}
         />
+        <button
+          className="btn btn-outline-primary btn-sm mt-2"
+          onClick={() => setShowImageEdit(true)}
+          style={{ position: "absolute", right: 0, bottom: -40 }}
+        >
+          <i className="bi bi-pencil-square"></i> Edit Image
+        </button>
+        {showImageEdit && (
+          <ImageUploadCropModal
+            onClose={() => setShowImageEdit(false)}
+            onSave={handleImageSave}
+          />
+        )}
       </div>
     </div>
   );
@@ -337,7 +383,7 @@ const MemberProfile = () => {
         <div className="card-header text-black" style={{ background: "#FFDCB0" }}>
           <h5 className="mb-0">Member Profile</h5>
         </div>
-        <div className="card-body"  style={{ borderColor: "#FFDCB0" }}>
+        <div className="card-body" style={{ borderColor: "#FFDCB0" }}>
           {editMode ? memberInformationEditForm : memberReadOnlyView}
         </div>
       </div>
@@ -347,7 +393,7 @@ const MemberProfile = () => {
       <div className="overflow-auto">
         <FamilyTree familyTreeRoot={memberData.familyRoot} />
       </div>
-      
+
       <div className="mb-4">
         <MemberListTable membersList={memberData?.memberList} />
       </div>

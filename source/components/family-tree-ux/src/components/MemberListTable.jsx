@@ -2,7 +2,7 @@ import { getFormattedPhoneDisplay } from "../utils/phoneUtils";
 import { Link } from "react-router-dom";
 
 const MemberListTable = ({ membersList, familyNameInHindi }) => {
-  if (!membersList) return null;
+    if (!membersList) return null;
     return (
         <div className="mb-4 mt-5">
             <h5 className="mb-4">Family Members</h5>
