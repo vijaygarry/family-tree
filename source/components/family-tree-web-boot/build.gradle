@@ -21,7 +21,6 @@ def uxDir = "$rootDir/components/family-tree-ux"
 def resourcesDir = "$projectDir/src/main/resources"
 
 task buildUx(type: Exec) {
-    dependsOn jar // ensure app jar is built
     workingDir uxDir
     commandLine 'npm', 'run', 'build'
     doFirst {
@@ -37,6 +36,11 @@ task copyUxFilesToBoot (type: Copy) {
     doFirst {
         println "🔍 Copying UX files from: $uxDir/build"
         println "📂 Destination: $resourcesDir/static"
+        def destDir = file("$resourcesDir/static")
+        if (destDir.exists()) {
+            println "🗑️ Deleting existing static directory before copy"
+            destDir.deleteDir()
+        }
     }
 
      doLast {
@@ -44,6 +48,8 @@ task copyUxFilesToBoot (type: Copy) {
         println fileTree("$resourcesDir/static").files
     }
 }
+
+jar.dependsOn copyUxFilesToBoot
 
 task runApp(type: JavaExec) {
     group = 'application'
@@ -76,7 +82,7 @@ eclipse {
 
 // Task to copy app jar + dependency jars
 tasks.register('buildDist', Copy) {
-    dependsOn copyUxFilesToBoot
+    dependsOn jar // ensure app jar is built
     from(jar) {
         into 'lib'
     }
