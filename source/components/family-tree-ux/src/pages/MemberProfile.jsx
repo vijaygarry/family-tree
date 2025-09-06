@@ -205,8 +205,8 @@ const MemberProfile = () => {
       {editError && <div className="alert alert-danger py-1 my-2 col-12">{editError}</div>}
       {editSuccess && <div className="alert alert-success py-1 my-2 col-12">{editSuccess}</div>}
       <div className="col-12 mt-2">
-        <button className="btn btn-success btn-sm me-2" type="submit">Save</button>
-        <button className="btn btn-secondary btn-sm" type="button" onClick={handleCancelEdit}>Cancel</button>
+        <button className="btn btn-primary fw-bold me-2" type="submit">Save</button>
+        <button className="btn btn-outline-primary btn-sm" type="button" onClick={handleCancelEdit}>Cancel</button>
       </div>
     </form>
   );
@@ -335,7 +335,7 @@ const MemberProfile = () => {
         )}
 
         <div className="mt-auto d-flex align-items-end" style={{ minHeight: '60px' }}>
-          <div>
+          <div className="text-end w-100">
             <button
               className="btn btn-primary me-2"
               onClick={() => window.location.href = `/family/${memberProfile.familyId}`}
@@ -353,17 +353,17 @@ const MemberProfile = () => {
           </div>
         </div>
       </div>
-      <div className="col-md-4 d-flex flex-column justify-content-end align-items-end">
+      <div className="col-md-4 d-flex flex-column  align-items-end">
         <img
           src={`/${memberProfile.profileImage}`}
           alt={memberProfile.firstName}
-          className="me-3"
-          style={{ width: "360px", height: "360px", objectFit: "cover", borderRadius: "8px" }}
+          className="mb-3"
+          style={{ width: "100%", height: "360px", objectFit: "cover", borderRadius: "8px" }}
         />
         <button
           className="btn btn-outline-primary btn-sm mt-2"
           onClick={() => setShowImageEdit(true)}
-          style={{ position: "absolute", right: 0, bottom: -40 }}
+          style={{  }}
         >
           <i className="bi bi-pencil-square"></i> Edit Image
         </button>

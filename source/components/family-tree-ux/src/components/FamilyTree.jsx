@@ -37,7 +37,7 @@ const MemberCard = ({ member }) => {
           <h6 className="card-title mb-1">
             {member.firstName} {member.lastName}
           </h6>
-          {member.age}
+          <p className="m-0 fs-12">{member.age}</p>
         </div>
       </div>
     </Link>

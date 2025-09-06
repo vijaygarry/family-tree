@@ -176,8 +176,8 @@ const FamilyDetails = () => {
       {editError && <div className="alert alert-danger py-1 my-2">{editError}</div>}
       {editSuccess && <div className="alert alert-success py-1 my-2">{editSuccess}</div>}
       <div className="mt-3 text-end">
-        <button className="btn btn-success btn-sm me-2" type="submit">Save</button>
-        <button className="btn btn-danger btn-sm" onClick={handleCancelEdit}>Cancel</button>
+        <button className="btn btn-primary fw-bold me-2" type="submit">Save</button>
+        <button className="btn btn-outline-primary btn-sm" onClick={handleCancelEdit}>Cancel</button>
       </div>
     </form>
   );
@@ -266,12 +266,12 @@ const FamilyDetails = () => {
           <div className="col-sm-4">
             {/* Family Image (Right) */}
             {familyDetails.familyImage && (
-              <div style={{ flex: "0 0 auto" }}>
+              <div className="text-end" style={{ flex: "0 0 auto" }}>
                 <img
                   src={`/${familyDetails.familyImage}`}
                   alt="Family"
                   style={{
-                    width: "205px",
+                    width: "100%",
                     height: "205px",
                     objectFit: "cover",
                     borderRadius: "8px",
@@ -280,7 +280,7 @@ const FamilyDetails = () => {
                 <button
                   className="btn btn-outline-primary btn-sm mt-2"
                   onClick={() => setShowImageEdit(true)}
-                  style={{ position: "absolute", right: 0, bottom: -40 }}
+                  style={{  }}
                 >
                   <i className="bi bi-pencil-square"></i> Edit Image
                 </button>

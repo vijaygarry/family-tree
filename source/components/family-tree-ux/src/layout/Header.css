@@ -52,10 +52,10 @@ border: 1px solid #a32721;
   height: 25px;
   transition: all 0.3s ease-in-out;
 }
-.avatar-small {
+/* .avatar-small {
   width: 20px;
   height: 20px;
-}
+} */
 
 .header .nav-link.active {
   background-color: #a42108; /* or your theme color */
