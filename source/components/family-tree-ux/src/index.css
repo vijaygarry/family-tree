@@ -152,6 +152,87 @@ button.btn.btn-outline-primary:hover {
    background:  #a42108;
     color: #fff;
 }
+.tree-container .member-card {
+    width: 220px !important;
+}
+
+
+.card-body.d-flex.flex-wrap.align-items-start.p-0 form  span.fw-semibold.me-2 {
+    display: block;
+    margin: 15px 0 5px !important;
+}
+.card-body.d-flex.flex-wrap.align-items-start.p-0 form  input.form-control.d-inline.w-auto {
+    width: 100% !important;
+}
+.card-body.d-flex.flex-wrap.align-items-start.p-0 form .d-flex {
+    display: block !important;
+}
+.card-body.d-flex.flex-wrap.align-items-start.p-0 form .d-flex span.fw-semibold.me-2 {
+    display: block;
+}
+.card-body.d-flex.flex-wrap.align-items-start.p-0 form .d-flex span.fw-semibold.me-2 {
+    display: block;
+    margin: 15px 0 5px !important;
+}
+
+
+
+
+@media (max-width: 768px) {
+  table.family-members {
+    border: 0;
+  }
+
+  table.family-members thead {
+    display: none;
+  }
+
+  table.family-members tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  table.family-members td {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border: none;
+    border-bottom: 1px solid #f1f1f1;
+  }
+
+  table.family-members td:last-child {
+    border-bottom: 0;
+  }
+
+  table.family-members td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    text-transform: capitalize;
+    flex: 1;
+    text-align: left;
+    color: #555;
+  }
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* Responsive */
 
@@ -188,6 +269,9 @@ div#navbarNav {
 }
 .css-1vs3jbz:first-of-type::after,.css-1vs3jbz:last-of-type::before,.css-1vs3jbz::before, .css-1vs3jbz::after{
   display: none;
+}
+.tree-container .member-card {
+    width: 100% !important;
 }
 
 }

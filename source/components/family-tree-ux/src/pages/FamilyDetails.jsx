@@ -140,37 +140,55 @@ const FamilyDetails = () => {
 
   const familyInformationEditForm = (
     <form onSubmit={handleSave}>
-      <div className="mb-2">
+      <div className="row">
+      <div className="col-sm-4">
         <span className="fw-semibold me-2">Family Name:</span>
         <input name="familyName" value={form.familyName} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Family Name" />
       </div>
-      <div className="mb-2">
+      <div className="col-sm-4">
         <span className="fw-semibold me-2">Family Name (Hindi):</span>
         <input name="familyNameInHindi" value={form.familyNameInHindi} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Family Name (Hindi)" />
       </div>
-      <div className="mb-2">
+      <div className="col-sm-4">
         <span className="fw-semibold me-2">Gotra:</span>
         <input name="gotra" value={form.gotra} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Gotra" />
       </div>
-      <div className="mb-2">
+      <div className="col-sm-4">
         <span className="fw-semibold me-2">Email:</span>
         <input name="email" value={form.email} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Email" />
       </div>
-      <div className="mb-2">
+      <div className="col-sm-4">
         <span className="fw-semibold me-2">Phone:</span>
         <input name="phone" value={form.phone} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Phone" />
       </div>
+      </div>
       <div className="d-flex">
         <span className="fw-semibold me-2">Address:</span>
-        <div style={{ width: '100%' }}>
+        <div className="row">
+          <div className="col-sm-4">
           Address Line 1: <input name="familyAddress.addressLine1" value={form.familyAddress?.addressLine1 || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="Address Line 1" />
+          </div>
+          <div className="col-sm-4">
           Address Line 2: <input name="familyAddress.addressLine2" value={form.familyAddress?.addressLine2 || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="Address Line 2" />
+          </div>
+          <div className="col-sm-4">
           Address Line 3: <input name="familyAddress.addressLine3" value={form.familyAddress?.addressLine3 || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="Address Line 3" />
+          </div>
+          <div className="col-sm-4">
           District: <input name="familyAddress.district" value={form.familyAddress?.district || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="District" />
+          </div>
+          <div className="col-sm-4">
           City: <input name="familyAddress.city" value={form.familyAddress?.city || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="City" />
+          </div>
+          <div className="col-sm-4">
           State: <input name="familyAddress.state" value={form.familyAddress?.state || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="State" />
+          </div>
+          <div className="col-sm-4">
           Postal Code: <input name="familyAddress.postalCode" value={form.familyAddress?.postalCode || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="Postal Code" />
+          </div>
+          <div className="col-sm-4">
           Country: <input name="familyAddress.country" value={form.familyAddress?.country || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="Country" />
+          </div>
         </div>
       </div>
       {editError && <div className="alert alert-danger py-1 my-2">{editError}</div>}

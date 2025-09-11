@@ -390,10 +390,17 @@ const MemberProfile = () => {
 
       {/* Tree View */}
       <h5 className="mb-3">Family Tree</h5>
-      <div className="overflow-auto">
-        <FamilyTree familyTreeRoot={memberData.familyRoot} />
-      </div>
-
+        <div
+          className="tree-container"
+          style={{
+            width: "100%",
+            minHeight: "600px",
+            overflow: "auto",
+            padding: "10px",
+          }}
+        >
+          <FamilyTree familyTreeRoot={memberData.familyRoot} />
+        </div>
       <div className="mb-4">
         <MemberListTable membersList={memberData?.memberList} />
       </div>
