@@ -28,9 +28,14 @@ VALUES ('INDIVIDUAL_ROLE', 'SEARCH_FAMILY', 1, now(), 1, now());
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('INDIVIDUAL_ROLE', 'GET_FAMILY_DETAILS', 1, now(), 1, now());
+/*
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('INDIVIDUAL_ROLE', 'GET_SESSION_DETAILS', 1, now(), 1, now());
+*/
+INSERT INTO shared_schema.lkproleoperationmap(
+	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
+VALUES ('INDIVIDUAL_ROLE', 'WHO_AM_I', 1, now(), 1, now());
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('INDIVIDUAL_ROLE', 'GET_EVENTS', 1, now(), 1, now());
@@ -42,6 +47,10 @@ VALUES ('INDIVIDUAL_ROLE', 'GET_ACCOUNT_LIST', 1, now(), 1, now());
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('INDIVIDUAL_ROLE', 'GET_ACCOUNT_STATEMENT', 1, now(), 1, now());
+
+INSERT INTO shared_schema.lkproleoperationmap(
+	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
+VALUES ('INDIVIDUAL_ROLE', 'UPDATE_MY_FAMILY_IMAGE', 1, now(), 1, now());
 
 
 INSERT INTO shared_schema.lkproleoperationmap(
@@ -56,9 +65,14 @@ VALUES ('FAMILY_ADMIN_ROLE', 'SEARCH_FAMILY', 1, now(), 1, now());
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('FAMILY_ADMIN_ROLE', 'GET_FAMILY_DETAILS', 1, now(), 1, now());
+/*
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('FAMILY_ADMIN_ROLE', 'GET_SESSION_DETAILS', 1, now(), 1, now());
+*/
+INSERT INTO shared_schema.lkproleoperationmap(
+	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
+VALUES ('FAMILY_ADMIN_ROLE', 'WHO_AM_I', 1, now(), 1, now());
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('FAMILY_ADMIN_ROLE', 'GET_EVENTS', 1, now(), 1, now());
@@ -70,6 +84,12 @@ VALUES ('FAMILY_ADMIN_ROLE', 'GET_ACCOUNT_LIST', 1, now(), 1, now());
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('FAMILY_ADMIN_ROLE', 'GET_ACCOUNT_STATEMENT', 1, now(), 1, now());
+
+INSERT INTO shared_schema.lkproleoperationmap(
+	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
+VALUES ('FAMILY_ADMIN_ROLE', 'UPDATE_MY_FAMILY_IMAGE', 1, now(), 1, now());
+
+
 
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
@@ -85,8 +105,12 @@ INSERT INTO shared_schema.lkproleoperationmap(
 VALUES ('APPLICATION_ADMIN_ROLE', 'GET_FAMILY_DETAILS', 1, now(), 1, now());
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
+VALUES ('APPLICATION_ADMIN_ROLE', 'WHO_AM_I', 1, now(), 1, now());
+/*
+INSERT INTO shared_schema.lkproleoperationmap(
+	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('APPLICATION_ADMIN_ROLE', 'GET_SESSION_DETAILS', 1, now(), 1, now());
-
+*/
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('APPLICATION_ADMIN_ROLE', 'GET_EVENTS', 1, now(), 1, now());
@@ -98,6 +122,14 @@ VALUES ('APPLICATION_ADMIN_ROLE', 'GET_ACCOUNT_LIST', 1, now(), 1, now());
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('APPLICATION_ADMIN_ROLE', 'GET_ACCOUNT_STATEMENT', 1, now(), 1, now());
+
+INSERT INTO shared_schema.lkproleoperationmap(
+	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
+VALUES ('APPLICATION_ADMIN_ROLE', 'UPDATE_MY_FAMILY_IMAGE', 1, now(), 1, now());
+
+INSERT INTO shared_schema.lkproleoperationmap(
+	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
+VALUES ('APPLICATION_ADMIN_ROLE', 'UPDATE_ANY_FAMILY_IMAGE', 1, now(), 1, now());
 
 
 INSERT INTO shared_schema.lkproleoperationmap(
@@ -112,9 +144,14 @@ VALUES ('SUPER_ADMIN_ROLE', 'SEARCH_FAMILY', 1, now(), 1, now());
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('SUPER_ADMIN_ROLE', 'GET_FAMILY_DETAILS', 1, now(), 1, now());
+/*
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('SUPER_ADMIN_ROLE', 'GET_SESSION_DETAILS', 1, now(), 1, now());
+*/
+INSERT INTO shared_schema.lkproleoperationmap(
+	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
+VALUES ('SUPER_ADMIN_ROLE', 'WHO_AM_I', 1, now(), 1, now());
 
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
@@ -140,3 +177,12 @@ VALUES ('SUPER_ADMIN_ROLE', 'ADD_FAMILY_MEMBER', 1, now(), 1, now());
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('SUPER_ADMIN_ROLE', 'MANAGE_RELATIONSHIP', 1, now(), 1, now());
+
+
+INSERT INTO shared_schema.lkproleoperationmap(
+	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
+VALUES ('SUPER_ADMIN_ROLE', 'UPDATE_MY_FAMILY_IMAGE', 1, now(), 1, now());
+
+INSERT INTO shared_schema.lkproleoperationmap(
+	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
+VALUES ('SUPER_ADMIN_ROLE', 'UPDATE_ANY_FAMILY_IMAGE', 1, now(), 1, now());

@@ -45,6 +45,9 @@ public class FamilyDao extends AbstractDao {
 	private static final String UPDATE_FAMILY_DISPLAY_NAME = "UPDATE " + BASE_SCHEMA_NAME + "FAMILY " +
 			"SET region = ?, familysearchtext = ?, LASTUPDATEDBY = ?, lastupdateddate = ? WHERE FAMILYID = ?";
 
+	private static final String UPDATE_FAMILY_IMAGE_PATH = "UPDATE " + BASE_SCHEMA_NAME + "FAMILY " +
+			"SET familyimage = ?, imagelastupdated = ?, LASTUPDATEDBY = ?, lastupdateddate = ? WHERE FAMILYID = ?";
+
 	private static final String FAMILY_INSERT_STATEMENT = "INSERT INTO " + BASE_SCHEMA_NAME + "FAMILY " +
 			"(FAMILYNAME, FAMILYNAMEINHINDI, GOTRA, ADDRESSID, REGION, PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, FAMILYSEARCHTEXT, " +
 			"ACTIVE, FAMILYIMAGE, IMAGELASTUPDATED, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE) "
@@ -80,6 +83,11 @@ public class FamilyDao extends AbstractDao {
 		log.info("Updating family search text to '{}' and region to '{}' for family id: {}", searchString, familyRegion, family.getFamilyId());
 		getJdbcTemplate().update(UPDATE_FAMILY_DISPLAY_NAME, familyRegion, searchString, auditInfo.getLastUpdatedBy(), auditInfo.getLastUpdatedDate(), family.getFamilyId());
         log.info("Family region and search text is updated for family id: {}", family.getFamilyId());
+	}
+
+	public void updateFamilyImagePath (int familyId, String familyImagePath, AuditInfo auditInfo) {
+		getJdbcTemplate().update(UPDATE_FAMILY_IMAGE_PATH, familyImagePath, auditInfo.getLastUpdatedDate(), auditInfo.getLastUpdatedBy(), auditInfo.getLastUpdatedDate(), familyId);
+		log.info("Family image path is updated for family id: {}", familyId);
 	}
 
 	public int addFamily (FamilyEntity aFamily) {

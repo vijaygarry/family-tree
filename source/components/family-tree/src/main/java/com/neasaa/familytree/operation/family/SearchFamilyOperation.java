@@ -4,7 +4,6 @@ import com.neasaa.base.app.operation.AbstractOperation;
 import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.familytree.dao.pg.FamilyDao;
-import com.neasaa.familytree.entity.FamilyEntity;
 import com.neasaa.familytree.entity.SearchFamilyEntity;
 import com.neasaa.familytree.operation.OperationNames;
 import com.neasaa.familytree.operation.family.model.SearchFamilyDto;

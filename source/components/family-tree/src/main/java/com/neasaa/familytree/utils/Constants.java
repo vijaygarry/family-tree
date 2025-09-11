@@ -5,4 +5,7 @@ public interface Constants {
 	String INDIA_COUNTRY = "INDIA";
 
 	int MEMBER_ADDRESS_SAME_AS_FAMILY_ADDRESS = 0;
+
+	int MAX_IMAGE_SIZE_ALLOWED_IN_KB = 5120; // 5 MB
+
 }
