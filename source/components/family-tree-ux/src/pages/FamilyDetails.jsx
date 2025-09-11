@@ -81,20 +81,20 @@ const FamilyDetails = () => {
     setEditSuccess("");
     try {
       const formData = new FormData();
-      formData.append("familyId", 1);
-      formData.append("image", croppedImageBlob, "family-image.jpg");
+      //formData.append("familyId", family.familyId);
+      formData.append("familyId", 1); // TODO: Temporary hardcoded to 1 for testing. Change later.
+      formData.append("image", croppedImageBlob, "familyImage.jpeg");
       const response = await api.post(
-        "/family/uploadFamilyImage",
+        "/family/updateFamilyImage",
         formData, {
           headers: { "Content-Type": "multipart/form-data" },
       });
-
-      if (response.data && response.data.imagePath) {
+      if (response.data && response.data.uploadedImagePath) {
         setFamily((prev) => ({
           ...prev,
           familyDetails: {
             ...prev.familyDetails,
-            familyImage: response.data.imagePath,
+            familyImage: response.data.uploadedImagePath,
           },
         }));
         setEditSuccess("Family image updated successfully.");
