@@ -14,6 +14,7 @@ import EventDetailPage from "./pages/EventDetailPage";
 import AccountsPage from "./pages/AccountsPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import SignUp from "./pages/SignUp";
+import HelpPage from "./pages/HelpPage";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 //import UserDetails from "./pages/UserDetails";
@@ -43,6 +44,24 @@ const App = () => (
         <LoginLayout>
           <SignUp />
         </LoginLayout>
+      }
+    />
+    {/* Show this page without login */}
+    <Route
+      path="/helpWithoutMenu"
+      element={
+        <LoginLayout>
+          <HelpPage />
+        </LoginLayout>
+      }
+    />
+    {/* Show this route in header menu */}
+    <Route
+      path="/helpWithMenu"
+      element={
+        <MainLayout>
+          <HelpPage />
+        </MainLayout>
       }
     />
     {/* Protected routes with layout */}
