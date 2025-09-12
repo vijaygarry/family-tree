@@ -262,6 +262,7 @@ div#navbarNav {
 } 
 .container.p-4.bg-white.rounded.mt-4 {
     padding: 7px !important;
+            margin: 0 !important;
 }
 
 .css-to7de5,.d-flex.justify-content-center.gap-2{
@@ -272,6 +273,25 @@ div#navbarNav {
 }
 .tree-container .member-card {
     width: 100% !important;
+}
+.about-content {
+    margin-top: 20px;
+}
+.bg-body-secondary.p-4.rounded div {
+    padding: 5px !important;
+}
+.my-5 img.w-100 {
+    margin-bottom: 10px;
+}
+.d-flex.gap-2.align-items-center.mb-3 {
+    display: block !important;
+}
+select.form-select.form-select-lg.w-auto {
+    margin-bottom: 15px !important;
+}
+ul.nav.nav-tabs button {
+    padding: 7px 10px;
+    font-size: 14px;
 }
 
 }

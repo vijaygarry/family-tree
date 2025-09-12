@@ -135,7 +135,6 @@ const Header = () => {
               <NavLink to="/help" className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}>
                 Help
               </NavLink>
-
             </li>
           </ul>
         </div>
