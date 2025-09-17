@@ -343,6 +343,7 @@ const MemberProfile = () => {
             >
               View {memberProfile.firstName}'s Family
             </button>
+            {memberProfile.canUpdateMember && (
             <button
               className="btn btn-outline-primary btn-sm ms-2"
               onClick={handleEditClick}
@@ -350,6 +351,7 @@ const MemberProfile = () => {
             >
               <i className="bi bi-pencil-square"></i> Edit
             </button>
+            )}
           </div>
         </div>
       </div>
@@ -360,6 +362,7 @@ const MemberProfile = () => {
           className="mb-3"
           style={{ width: "100%", height: "360px", objectFit: "cover", borderRadius: "8px" }}
         />
+        {memberProfile.canUpdateMember && (
         <button
           className="btn btn-outline-primary btn-sm mt-2"
           onClick={() => setShowImageEdit(true)}
@@ -367,6 +370,7 @@ const MemberProfile = () => {
         >
           <i className="bi bi-pencil-square"></i> Edit Image
         </button>
+        )}
         {showImageEdit && (
           <ImageUploadCropModal
             onClose={() => setShowImageEdit(false)}

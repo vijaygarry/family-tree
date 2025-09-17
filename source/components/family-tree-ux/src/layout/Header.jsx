@@ -88,7 +88,7 @@ const Header = () => {
               <ul className="dropdown-menu">
                 <li><Link className="dropdown-item" to="/family">My Family</Link></li>
                 <li><Link className="dropdown-item" to="/searchfamily">Browse Family</Link></li>
-                <li><Link className="dropdown-item" to="/searchfamily">Add Family</Link></li>
+                {/* <li><Link className="dropdown-item" to="/searchfamily">Add Family</Link></li> */}
               </ul>
             </li>
 

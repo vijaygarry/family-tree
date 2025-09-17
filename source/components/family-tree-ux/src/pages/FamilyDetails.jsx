@@ -128,13 +128,18 @@ const FamilyDetails = () => {
       return;
     }
     try {
-      const payload = { ...form, familyId: family.familyId };
-      await api.post('/family/updateFamily', payload);
+      const payload = { ...form, familyId: family.familyDetails.familyId };
+      await api.post('/family/updateFamilyDetails', payload);
       setEditMode(false);
       setFamily((prev) => ({ ...prev, ...form }));
       setEditSuccess("Family details updated successfully.");
     } catch (err) {
-      setEditError('Failed to update family details.');
+      if (err.response?.data?.operationMessage) {
+        // API returned an error in payload
+        setEditError(err.response?.data?.operationMessage);
+      } else {
+        setEditError(ERROR_MESSAGES.DEFAULT);
+      }
     }
   };
 
@@ -209,6 +214,7 @@ const FamilyDetails = () => {
     <div className="container p-4 bg-white rounded mt-4">
       {/* Family Info Section */}
       <h5 className="mb-3 float-start">Family Information</h5>
+      { familyDetails.canUpdateFamilyDetails && (
       <button
         className="btn btn-primary fw-bold float-end"
         onClick={handleEditClick}
@@ -216,6 +222,7 @@ const FamilyDetails = () => {
       >
         <i className="bi bi-pencil-square"></i> Edit
       </button>
+      )}
       <div className="clearfix"></div>
       <div className="card mb-5 p-4 bg-body-secondary border-0">
         <div className="row">
@@ -295,6 +302,7 @@ const FamilyDetails = () => {
                     borderRadius: "8px",
                   }}
                 />
+                { familyDetails.canUpdateFamilyDetails && (
                 <button
                   className="btn btn-outline-primary btn-sm mt-2"
                   onClick={() => setShowImageEdit(true)}
@@ -302,6 +310,7 @@ const FamilyDetails = () => {
                 >
                   <i className="bi bi-pencil-square"></i> Edit Image
                 </button>
+                )}
               </div>
             )}
             {showImageEdit && (
