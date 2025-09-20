@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.neasaa.base.app.operation.AuditInfo;
+import com.neasaa.base.app.operation.exception.InternalServerException;
 import com.neasaa.familytree.entity.FamilyEntity;
 import com.neasaa.familytree.entity.FamilyMemberEntity;
 import com.neasaa.familytree.entity.SearchFamilyEntity;
@@ -26,7 +27,9 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Repository
 public class FamilyDao extends AbstractDao {
-	
+
+	private static final String UPDATE_OPERATION = "UPDATE";
+
 	private static final String SELECT_FAMILY_BY_FAMILYID = "SELECT f.familyid, f.familyname, f.familynameinhindi, f.gotra, f.addressid, " +
 			"f.region, f.phone, f.isphonewhatsappregistered, f.email, f.familysearchtext, " +
 			"f.active, f.familyimage, f.imagelastupdated, " +
@@ -53,11 +56,22 @@ public class FamilyDao extends AbstractDao {
 			"ACTIVE, FAMILYIMAGE, IMAGELASTUPDATED, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE) "
 			+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+	// Family image and image update date is not updated here
 	private static final String UPDATE_FAMILY_BY_ID_STATEMENT = "UPDATE " + BASE_SCHEMA_NAME + "FAMILY " +
 			"SET FAMILYNAME = ? , FAMILYNAMEINHINDI = ? , GOTRA = ? , ADDRESSID = ? , REGION = ? , " +
 			"PHONE = ? , ISPHONEWHATSAPPREGISTERED = ? , EMAIL = ? , FAMILYSEARCHTEXT = ? , " +
-			"ACTIVE = ? , FAMILYIMAGE = ? , IMAGELASTUPDATED = ? , LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  " +
+			"ACTIVE = ? , LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  " +
 			"where FAMILYID = ?";
+
+	private static final String FAMILY_HISTORY_INSERT_STATEMENT =
+			"INSERT INTO " + BASE_SCHEMA_NAME + "familyhistory " +
+					"(operation, familyid, familyname, familynameinhindi, gotra, addressid, region, phone, " +
+					" isphonewhatsappregistered, email, familysearchtext, active, familyimage, imagelastupdated, " +
+					" createdby, createddate, lastupdatedby, lastupdateddate) " +
+					" SELECT ?, familyid, familyname, familynameinhindi, gotra, addressid, region, phone, " +
+					" isphonewhatsappregistered, email, familysearchtext, active, familyimage, imagelastupdated, " +
+					" createdby, createddate, lastupdatedby, lastupdateddate" +
+					" FROM " + BASE_SCHEMA_NAME + "family WHERE familyid = ?";
 
 	private static final String DELETE_FAMILY_BY_ID_STATEMENT = "DELETE FROM " + BASE_SCHEMA_NAME + "FAMILY WHERE FAMILYID = ?";
 
@@ -129,19 +143,22 @@ public class FamilyDao extends AbstractDao {
 		return prepareStatement;
 	}
 
-
-
-	public int updateFamily(FamilyEntity aFamily) throws SQLException {
-		return getJdbcTemplate().update(new PreparedStatementCreator() {
-			@Override
-			public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {
-				return buildUpdateStatement(aCon, aFamily);
-			}
-		});
-
+	public int updateFamily(FamilyEntity aFamily, AuditInfo auditInfo) {
+		try {
+			getJdbcTemplate().update(FAMILY_HISTORY_INSERT_STATEMENT, UPDATE_OPERATION, aFamily.getFamilyId());
+			return getJdbcTemplate().update(new PreparedStatementCreator() {
+				@Override
+				public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {
+					return buildUpdateStatement(aCon, aFamily, auditInfo);
+				}
+			});
+		} catch (Exception e) {
+			log.error("Error while updating family details for family id: {}", aFamily.getFamilyId(), e);
+			throw new InternalServerException("Error while updating family details. Please try again later");
+		}
 	}
 
-	public PreparedStatement buildUpdateStatement(Connection aConection, FamilyEntity aFamily) throws SQLException {
+	public PreparedStatement buildUpdateStatement(Connection aConection, FamilyEntity aFamily, AuditInfo auditInfo) throws SQLException {
 
 		PreparedStatement prepareStatement = aConection.prepareStatement(UPDATE_FAMILY_BY_ID_STATEMENT);
 		setStringInStatement(prepareStatement, 1, aFamily.getFamilyName());
@@ -154,11 +171,9 @@ public class FamilyDao extends AbstractDao {
 		setStringInStatement(prepareStatement, 8, aFamily.getEmail());
 		setStringInStatement(prepareStatement, 9, aFamily.getFamilysearchtext());
 		setBooleanInStatement(prepareStatement, 10, aFamily.isActive());
-		setStringInStatement(prepareStatement, 11, aFamily.getFamilyImage());
-		setTimestampInStatement(prepareStatement, 12, aFamily.getImageLastUpdated());
-		setIntInStatement(prepareStatement, 13, aFamily.getLastUpdatedBy());
-		setTimestampInStatement(prepareStatement, 14, aFamily.getLastUpdatedDate());
-		setIntInStatement(prepareStatement, 15, aFamily.getFamilyId());
+		setIntInStatement(prepareStatement, 11, auditInfo.getLastUpdatedBy());
+		setTimestampInStatement(prepareStatement, 12, auditInfo.getLastUpdatedDate());
+		setIntInStatement(prepareStatement, 13, aFamily.getFamilyId());
 		return prepareStatement;
 
 	}

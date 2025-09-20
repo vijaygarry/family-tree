@@ -18,8 +18,10 @@ public class FamilyDetailsDto {
     private String email;
     private AddressDto familyAddress;
     private String familyImage;
+    // Is family edit allowed
+    private boolean canUpdateFamilyDetails;
 
-    public static FamilyDetailsDto fromFamilyDBEntity (FamilyEntity family, String headOfFamilyName) {
+    public static FamilyDetailsDto fromFamilyDBEntity (FamilyEntity family, String headOfFamilyName, boolean canUpdateFamilyDetails) {
         FamilyDetailsDto familyDetails = new FamilyDetailsDto();
         familyDetails.setFamilyId(family.getFamilyId());
         familyDetails.setFamilyName(family.getFamilyName());
@@ -34,6 +36,7 @@ public class FamilyDetailsDto {
             familyDetails.setFamilyAddress(addressDto);
         }
         familyDetails.setFamilyImage(family.getFamilyImage());
+        familyDetails.setCanUpdateFamilyDetails(canUpdateFamilyDetails);
         return familyDetails;
     }
 }

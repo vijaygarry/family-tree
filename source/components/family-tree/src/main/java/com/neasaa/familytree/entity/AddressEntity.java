@@ -12,14 +12,19 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.util.Date;
+import java.util.Objects;
 
 import com.neasaa.base.app.entity.BaseEntity;
+import lombok.ToString;
+import lombok.extern.log4j.Log4j2;
 
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Log4j2
+@ToString
 public class AddressEntity extends BaseEntity {
 
 	@Serial
@@ -39,4 +44,17 @@ public class AddressEntity extends BaseEntity {
 	private Date lastUpdatedDate;
 
 
+	public boolean equals(AddressEntity otherAddress) {
+		if (otherAddress == null ) {
+			log.info("Other address is null, so address is not equal");
+			return false;
+		}
+		if (this == otherAddress) {
+			return true;
+		}
+		return Objects.equals(addressLine1, otherAddress.addressLine1) && Objects.equals(addressLine2, otherAddress.addressLine2)
+				&& Objects.equals(addressLine3, otherAddress.addressLine3) && Objects.equals(city, otherAddress.city)
+				&& Objects.equals(district, otherAddress.district) && Objects.equals(state, otherAddress.state)
+				&& Objects.equals(postalCode, otherAddress.postalCode) && Objects.equals(country, otherAddress.country);
+	}
 }

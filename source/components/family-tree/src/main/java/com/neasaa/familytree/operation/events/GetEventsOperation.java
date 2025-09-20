@@ -49,7 +49,7 @@ public class GetEventsOperation extends AbstractOperation<GetEventsRequest, GetE
                 .eventPlace(address)
                 .eventOrganizer("Mr. Sanjayrao Deshmukh")
                 .notes("Please bring your own drinks and snacks.")
-                .eventImage("https://example.com/event-image.jpg")
+                .eventImage("/uploads/events/birthday.png")
                 .build();
         events.add(event);
         event = EventDto.builder()
@@ -62,7 +62,7 @@ public class GetEventsOperation extends AbstractOperation<GetEventsRequest, GetE
                 .eventPlace(address)
                 .eventOrganizer("Mr. Sanjayrao Deshmukh")
                 .notes("Please bring your own drinks and snacks.")
-                .eventImage("https://example.com/event-image.jpg")
+                .eventImage("/uploads/events/wedding.png")
                 .build();
         events.add(event);
         event = EventDto.builder()
@@ -75,7 +75,7 @@ public class GetEventsOperation extends AbstractOperation<GetEventsRequest, GetE
                 .eventPlace(address)
                 .eventOrganizer("Mr. Sanjayrao Deshmukh")
                 .notes("Please bring your own drinks and snacks.")
-                .eventImage("https://example.com/event-image.jpg")
+                .eventImage("/uploads/events/death.png")
                 .build();
         events.add(event);
         event = EventDto.builder()
@@ -88,7 +88,7 @@ public class GetEventsOperation extends AbstractOperation<GetEventsRequest, GetE
                 .eventPlace(address)
                 .eventOrganizer("Mr. Sanjayrao Deshmukh")
                 .notes("Please bring your own drinks and snacks.")
-                .eventImage("https://example.com/event-image.jpg")
+                .eventImage("/uploads/events/birthday.png")
                 .build();
         events.add(event);
 

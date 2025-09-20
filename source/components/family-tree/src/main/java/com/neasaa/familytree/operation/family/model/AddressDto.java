@@ -35,4 +35,31 @@ public class AddressDto {
 				.country(address.getCountry())
 				.build();
 	}
+
+	public void trimFields() {
+		if (addressLine1 != null) {
+			addressLine1 = addressLine1.trim();
+		}
+		if (addressLine2 != null) {
+			addressLine2 = addressLine2.trim();
+		}
+		if (addressLine3 != null) {
+			addressLine3 = addressLine3.trim();
+		}
+		if (city != null) {
+			city = city.trim();
+		}
+		if (district != null) {
+			district = district.trim();
+		}
+		if (state != null) {
+			state = state.trim();
+		}
+		if (postalCode != null) {
+			postalCode = postalCode.trim();
+		}
+		if (country != null) {
+			country = country.trim();
+		}
+	}
 }

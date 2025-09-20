@@ -179,4 +179,15 @@ public class DataFormatter {
 		// Calculate age
 		return Period.between(birthDate, today).getYears();
 	}
+
+	public static String capitalizeFirstLetter (String value) {
+		if(value == null || value.isEmpty()) {
+			return value;
+		}
+		if(value.length() == 1) {
+			return value.toUpperCase();
+		}
+		String trimValue = value.trim();
+		return trimValue.substring(0, 1).toUpperCase() + trimValue.substring(1);
+	}
 }

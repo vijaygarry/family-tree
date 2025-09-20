@@ -16,6 +16,7 @@ import com.neasaa.familytree.operation.family.model.FamilyTreeNode;
 import com.neasaa.familytree.operation.family.model.GetMemberProfileRequest;
 import com.neasaa.familytree.operation.family.model.GetMemberProfileResponse;
 import com.neasaa.familytree.operation.family.model.MemberSummaryDto;
+import com.neasaa.familytree.utils.SessionUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.neasaa.familytree.operation.OperationNames.UPDATE_MY_FAMILY_MEMBER;
 import static com.neasaa.familytree.operation.family.GetFamilyDetailsOperation.BROTHER_OF_MEMBER;
 import static com.neasaa.familytree.operation.family.GetFamilyDetailsOperation.DAUGHTER_OF_MEMBER;
 import static com.neasaa.familytree.operation.family.GetFamilyDetailsOperation.FATHER_OF_MEMBER;
@@ -88,13 +90,31 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
         treeRootNode = addParentsAndSiblingsToFamilyTree(treeRootNode, false);
         List<MemberSummaryDto> memberListToDisplay = new ArrayList<>();
         getMemberListToDisplay(treeRootNode, memberListToDisplay);
-        GetMemberProfileResponse.MemberProfile memberProfile = GetMemberProfileResponse.MemberProfile.fromFamilyMemberDBEntity(memberEntity, getAddress(memberEntity));
+        boolean familyMemberUpdateAllowedForUser = isFamilyMemberUpdateAllowedForUser(memberEntity.getFamilyId());
+        GetMemberProfileResponse.MemberProfile memberProfile = GetMemberProfileResponse.MemberProfile.fromFamilyMemberDBEntity(memberEntity, getAddress(memberEntity), familyMemberUpdateAllowedForUser);
 
         return GetMemberProfileResponse.builder()
                 .memberProfile(memberProfile)
                 .familyRoot(treeRootNode)
                 .memberList(memberListToDisplay)
                 .build();
+    }
+
+    private boolean isFamilyMemberUpdateAllowedForUser(int familyId) {
+        if(getContext() == null || getContext().getAppSessionUser() == null) {
+            log.info("Operation context or AppSessionUser is null, cannot check if family member update allowed for user");
+            return false;
+        }
+        FamilyMemberEntity memberEntity = SessionUtils.getFamilyMemberFromSession( getContext().getAppSessionUser());
+        if(memberEntity == null) {
+            log.info("Family member not found in session, cannot check if family member update allowed for user");
+            return false;
+        }
+        if(memberEntity.getFamilyId() != familyId) {
+            // Only allowed to edit own family members.
+            return false;
+        }
+        return isOperationAllowedForUser(UPDATE_MY_FAMILY_MEMBER);
     }
 
     private void buildFamilyTreeStructure(FamilyTreeNode treeNode, int numberOfLevels) {

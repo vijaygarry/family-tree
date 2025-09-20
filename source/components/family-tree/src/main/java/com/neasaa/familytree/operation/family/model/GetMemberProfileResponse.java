@@ -51,7 +51,9 @@ public class GetMemberProfileResponse extends OperationResponse {
         private String profileImageThumbnail;
         private Date lastUpdatedDate;
 
-        public static MemberProfile fromFamilyMemberDBEntity(FamilyMemberEntity familyMember, AddressDto address) {
+        private boolean canUpdateMember;
+
+        public static MemberProfile fromFamilyMemberDBEntity(FamilyMemberEntity familyMember, AddressDto address, boolean canUpdateMember) {
             return MemberProfile.builder()
                     .memberId(familyMember.getMemberId())
                     .familyId(familyMember.getFamilyId())
@@ -78,6 +80,7 @@ public class GetMemberProfileResponse extends OperationResponse {
                     .hobby(familyMember.getHobby())
                     .profileImage(familyMember.getProfileImage())
                     .profileImageThumbnail(familyMember.getProfileImageThumbnail())
+                    .canUpdateMember (canUpdateMember)
                     .build();
         }
     }

@@ -126,7 +126,19 @@ INSERT INTO shared_schema.lkpoperation(
 INSERT INTO shared_schema.lkpoperation(
 	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype, 
     active, createdby, createddate, lastupdatedby, lastupdateddate)
-	VALUES ('UPDATE_ANY_FAMILY_IMAGE', 'Update any family image', 'updateFamilyImage', true, true, 'ROLE_BASE', 
+	VALUES ('UPDATE_MY_FAMILY_IMAGE', 'Update my and related family image', 'updateFamilyImage', true, true, 'ROLE_BASE', 
+    true, 1, now(), 1, now());
+
+INSERT INTO shared_schema.lkpoperation(
+	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype, 
+    active, createdby, createddate, lastupdatedby, lastupdateddate)
+	VALUES ('UPDATE_MY_FAMILY_DETAILS', 'Update my family details', 'updateFamilyDetails', true, true, 'ROLE_BASE', 
+    true, 1, now(), 1, now());
+
+INSERT INTO shared_schema.lkpoperation(
+	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype, 
+    active, createdby, createddate, lastupdatedby, lastupdateddate)
+	VALUES ('UPDATE_MY_FAMILY_MEMBER', 'Update my member details', 'updateFamilyMemberDetails', true, true, 'ROLE_BASE', 
     true, 1, now(), 1, now());
 
 -- Get Family stats

@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.neasaa.familytree.operation.OperationNames.UPDATE_MY_FAMILY_DETAILS;
 import static java.util.stream.Collectors.toMap;
 
 @Log4j2
@@ -104,12 +105,13 @@ public class GetFamilyDetailsOperation extends AbstractOperation<GetFamilyDetail
         MemberSummaryDto headOfFamily = getHeadOfFamily(memberSummaryDtoList);
 
         FamilyDetailsDto familyDetails = null;
+        boolean isFamilyUpdateAllowed = isFamilyUpdateAllowedForUser(familyId);
         if(headOfFamily == null) {
             log.error("Head of family not found in family members list.");
-            familyDetails = FamilyDetailsDto.fromFamilyDBEntity(familyDetailsFromDB, "Head of Family not defined");
+            familyDetails = FamilyDetailsDto.fromFamilyDBEntity(familyDetailsFromDB, "Head of Family not defined", isFamilyUpdateAllowed);
         } else {
             log.info("Head of family found: {}", headOfFamily.getFirstName());
-            familyDetails = FamilyDetailsDto.fromFamilyDBEntity(familyDetailsFromDB, headOfFamily.getFirstName() + " " + headOfFamily.getLastName());
+            familyDetails = FamilyDetailsDto.fromFamilyDBEntity(familyDetailsFromDB, headOfFamily.getFirstName() + " " + headOfFamily.getLastName(), isFamilyUpdateAllowed);
         }
 
         // Create a map of memberId to MemberSummaryDto for easy lookup
@@ -132,6 +134,23 @@ public class GetFamilyDetailsOperation extends AbstractOperation<GetFamilyDetail
                 .familyRoot(familyTreeRootNode)
                 .memberList(memberListToDisplay)
                 .build();
+    }
+
+    private boolean isFamilyUpdateAllowedForUser(int familyId) {
+        if(getContext() == null || getContext().getAppSessionUser() == null) {
+            log.info("Operation context or AppSessionUser is null, cannot check if family edit allowed for user");
+            return false;
+        }
+        FamilyMemberEntity memberEntity = SessionUtils.getFamilyMemberFromSession( getContext().getAppSessionUser());
+        if(memberEntity == null) {
+            log.info("Family member not found in session, cannot check if family edit allowed for user");
+            return false;
+        }
+        if(memberEntity.getFamilyId() != familyId) {
+            // Only allowed to edit own family details.
+            return false;
+        }
+        return isOperationAllowedForUser(UPDATE_MY_FAMILY_DETAILS);
     }
 
     private FamilyTreeNode buildFamilyTree(MemberSummaryDto headOfFamily, Map<Integer, MemberSummaryDto> familyMemberMap) {

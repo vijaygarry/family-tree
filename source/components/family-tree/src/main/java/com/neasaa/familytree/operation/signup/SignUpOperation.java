@@ -62,7 +62,8 @@ public class SignUpOperation extends AbstractOperation<SignUpRequest, EmptyOpera
         checkValuePresent(opRequest.getOtp(), "One time password (OTP)");
         checkValuePresent(opRequest.getRequestId(), "Request Id");
         checkValuePresent(opRequest.getPassword(), "Password");
-        EmailValidator.validateEmail(opRequest.getEmailId());
+        boolean isEmailMandatory = true;
+        EmailValidator.validateEmail(opRequest.getEmailId(), isEmailMandatory);
     }
 
     @Override

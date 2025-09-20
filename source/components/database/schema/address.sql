@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS shared_schema.address
     city character varying(120) COLLATE pg_catalog."default" NOT NULL,
     district character varying(120) COLLATE pg_catalog."default",
     state character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    postalcode character(10) COLLATE pg_catalog."default" NOT NULL,
+    postalcode character varying(10) COLLATE pg_catalog."default" NOT NULL,
     country character varying(100) COLLATE pg_catalog."default" DEFAULT 'India'::character varying,
     createdby integer NOT NULL,
     createddate timestamp with time zone NOT NULL,

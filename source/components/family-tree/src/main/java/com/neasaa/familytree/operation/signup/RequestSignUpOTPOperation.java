@@ -50,7 +50,8 @@ public class RequestSignUpOTPOperation extends AbstractOperation<RequestSignUpOT
             throw new ValidationException("Invalid request provided.");
         }
         checkValuePresent(opRequest.getEmailId(), "Email Id");
-        EmailValidator.validateEmail(opRequest.getEmailId());
+        boolean isEmailMandatory = true;
+        EmailValidator.validateEmail(opRequest.getEmailId(), isEmailMandatory);
     }
 
     @Override
