@@ -148,26 +148,30 @@ const FamilyDetails = () => {
   const familyInformationEditForm = (
     <form onSubmit={handleSave}>
       <div className="row">
-      <div className="col-sm-4">
-        <span className="fw-semibold me-2">Family Name:</span>
-        <input name="familyName" value={form.familyName} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Family Name" />
+      <h5 className="mb-3 float-start">Edit {form.familyName} Family Details</h5>
       </div>
-      <div className="col-sm-4">
-        <span className="fw-semibold me-2">Family Name (Hindi):</span>
-        <input name="familyNameInHindi" value={form.familyNameInHindi} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Family Name (Hindi)" />
-      </div>
-      <div className="col-sm-4">
-        <span className="fw-semibold me-2">Gotra:</span>
-        <input name="gotra" value={form.gotra} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Gotra" />
-      </div>
-      <div className="col-sm-4">
-        <span className="fw-semibold me-2">Email:</span>
-        <input name="email" value={form.email} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Email" />
-      </div>
-      <div className="col-sm-4">
-        <span className="fw-semibold me-2">Phone:</span>
-        <input name="phone" value={form.phone} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Phone" />
-      </div>
+      <div className="card mb-5 p-4 bg-body-secondary border-0"> 
+      <div className="row">
+        <div className="col-sm-4">
+          <span className="fw-semibold me-2">Family Name:</span>
+          <input name="familyName" value={form.familyName} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Family Name" />
+        </div>
+        <div className="col-sm-4">
+          <span className="fw-semibold me-2">Family Name (Hindi):</span>
+          <input name="familyNameInHindi" value={form.familyNameInHindi} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Family Name (Hindi)" />
+        </div>
+        <div className="col-sm-4">
+          <span className="fw-semibold me-2">Gotra:</span>
+          <input name="gotra" value={form.gotra} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Gotra" />
+        </div>
+        <div className="col-sm-4">
+          <span className="fw-semibold me-2">Email:</span>
+          <input name="email" value={form.email} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Email" />
+        </div>
+        <div className="col-sm-4">
+          <span className="fw-semibold me-2">Phone:</span>
+          <input name="phone" value={form.phone} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Phone" />
+        </div>
       </div>
       <div className="d-flex">
         <span className="fw-semibold me-2">Address:</span>
@@ -204,6 +208,7 @@ const FamilyDetails = () => {
         <button className="btn btn-primary fw-bold me-2" type="submit">Save</button>
         <button className="btn btn-outline-primary btn-sm" onClick={handleCancelEdit}>Cancel</button>
       </div>
+      </div>
     </form>
   );
 
@@ -229,12 +234,43 @@ const FamilyDetails = () => {
       <div className="card mb-5 p-4 bg-body-secondary border-0">
         <div className="row">
           <div className="col-sm-4">
+            {/* Family Image (Right) */}
+            {familyDetails.familyImage && (
+              <div className="text-end" style={{ flex: "0 0 auto" }}>
+                <img
+                  src={`/${familyDetails.familyImage}`}
+                  alt="Family"
+                  style={{
+                    width: "100%",
+                    height: "205px",
+                    objectFit: "cover",
+                    borderRadius: "8px",
+                  }}
+                />
+                { familyDetails.canUpdateFamilyDetails && (
+                <button
+                  className="btn btn-outline-primary btn-sm mt-2"
+                  onClick={() => setShowImageEdit(true)}
+                  style={{  }}
+                >
+                  <i className="bi bi-pencil-square"></i> Edit Image
+                </button>
+                )}
+              </div>
+            )}
+            {showImageEdit && (
+              <ImageUploadCropModal
+                onClose={() => setShowImageEdit(false)}
+                onSave={handleImageSave}
+              />
+            )}
+          </div>
+          <div className="col-sm-4">
             <div className="d-flex justify-content-between align-items-center">
               <h4 className="card-title mb-3 pb-2 fw-bold">
                 <span className="fw-bold me-2">Family Name:</span>
                 <span className="text-black">{familyDetails.familyName} {familyDetails.familyNameInHindi && ` (${familyDetails.familyNameInHindi})`} </span>
               </h4>
-
             </div>
             <div className="mb-2">
               <span className="fw-bold me-2">Head Of Family:</span>
@@ -289,38 +325,6 @@ const FamilyDetails = () => {
                 {familyDetails.familyAddress?.country}
               </address>
             </div>
-          </div>
-          <div className="col-sm-4">
-            {/* Family Image (Right) */}
-            {familyDetails.familyImage && (
-              <div className="text-end" style={{ flex: "0 0 auto" }}>
-                <img
-                  src={`/${familyDetails.familyImage}`}
-                  alt="Family"
-                  style={{
-                    width: "100%",
-                    height: "205px",
-                    objectFit: "cover",
-                    borderRadius: "8px",
-                  }}
-                />
-                { familyDetails.canUpdateFamilyDetails && (
-                <button
-                  className="btn btn-outline-primary btn-sm mt-2"
-                  onClick={() => setShowImageEdit(true)}
-                  style={{  }}
-                >
-                  <i className="bi bi-pencil-square"></i> Edit Image
-                </button>
-                )}
-              </div>
-            )}
-            {showImageEdit && (
-              <ImageUploadCropModal
-                onClose={() => setShowImageEdit(false)}
-                onSave={handleImageSave}
-              />
-            )}
           </div>
         </div>
       </div>

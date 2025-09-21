@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Tree, TreeNode } from "react-organizational-chart";
+import { useParams } from "react-router-dom";
 import api from "../api/axiosInstance";
 import { getFormattedPhoneDisplay } from "../utils/phoneUtils";
 import "./TreeNode.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Link } from "react-router-dom";
 import ERROR_MESSAGES from "../constants/messages";
 import FamilyTree from "../components/FamilyTree";
 import MemberListTable from "../components/MemberListTable";
@@ -28,6 +26,10 @@ const MemberProfile = () => {
         const requestBody = id ? { memberId: parseInt(id) } : {};
         const res = await api.post("/family/getmemberprofile", requestBody);
         setMemberData(res.data);
+        setForm({
+          ...res.data?.memberProfile,
+          memberAddress: {...res.data?.memberProfile?.memberAddress} || {},
+        });
         setError("");
       } catch (err) {
         console.error("Failed to fetch member data", err);
@@ -120,278 +122,340 @@ const MemberProfile = () => {
 
 
   const memberInformationEditForm = (
-    <form onSubmit={handleSave} className="row g-3">
-      <div className="mb-2">
-        <span className="fw-semibold me-2">First Name:</span>
-        <input name="firstName" value={form.firstName || ''} onChange={handleFormChange} className="form-control" required />
+    <form onSubmit={handleSave}>
+      {/* Member Profile Section */}
+      <div className="row">
+      <h5 className="mb-3 float-start">Edit {memberProfile.firstName} {memberProfile.lastName}'s Profile</h5>
       </div>
-      <div className="col-md-4">
-        <label className="form-label fw-semibold">First Name (Hindi)</label>
-        <input name="firstNameInHindi" value={form.firstNameInHindi || ''} onChange={handleFormChange} className="form-control" />
+      <div className="card mb-5 p-4 bg-body-secondary border-0"> 
+      <div className="row">
+        <div className="col-sm-4">
+          <span className="fw-semibold me-2">First Name:</span>
+          <input name="firstName" value={form.firstName || ''} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="First Name" required />
+        </div>
+        <div className="col-sm-4">
+          <span className="fw-semibold me-2">First Name (Hindi)</span>
+          <input name="firstNameInHindi" value={form.firstNameInHindi || ''} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="First Name (Hindi)" />
+        </div>
+        <div className="col-sm-4">
+          <span className="fw-semibold me-2">Maiden Last Name</span>
+          <input name="maidenLastName" value={form.maidenLastName || ''} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Maiden Last Name" />
+        </div>
       </div>
-      <div className="col-md-4">
-        <label className="form-label fw-semibold">Maiden Last Name</label>
-        <input name="maidenLastName" value={form.maidenLastName || ''} onChange={handleFormChange} className="form-control" />
-      </div>
-      <div className="col-md-4">
-        <label className="form-label fw-semibold">Nick Name</label>
-        <input name="nickName" value={form.nickName || ''} onChange={handleFormChange} className="form-control" />
-      </div>
-      <div className="col-md-4">
-        <label className="form-label fw-semibold">Nick Name (Hindi)</label>
-        <input name="nickNameInHindi" value={form.nickNameInHindi || ''} onChange={handleFormChange} className="form-control" />
-      </div>
-      <div className="col-md-4">
-        <label className="form-label fw-semibold">Phone</label>
-        <input name="phone" value={form.phone || ''} onChange={handleFormChange} className="form-control" required />
-      </div>
-      <div className="col-md-4">
-        <label className="form-label fw-semibold">Gender</label>
-        <select name="gender" value={form.gender || ''} onChange={handleFormChange} className="form-select" required>
-          {genderOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-        </select>
-      </div>
-      <div className="col-md-4">
-        <label className="form-label fw-semibold">Marital Status</label>
-        <select name="maritalStatus" value={form.maritalStatus || ''} onChange={handleFormChange} className="form-select" required>
-          {maritalStatusOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-        </select>
-      </div>
-      <div className="col-md-4">
-        <label className="form-label fw-semibold">Wedding Date</label>
-        <input name="weddingDate" type="date" value={form.weddingDate || ''} onChange={handleFormChange} className="form-control" />
-      </div>
-      <div className="col-md-4">
-        <label className="form-label fw-semibold">Birth Day</label>
-        <select name="birthDay" value={form.birthDay || ''} onChange={handleFormChange} className="form-select">
-          {dayOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-        </select>
-      </div>
-      <div className="col-md-4">
-        <label className="form-label fw-semibold">Birth Month</label>
-        <select name="birthMonth" value={form.birthMonth || ''} onChange={handleFormChange} className="form-select" required>
-          {monthOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-        </select>
-      </div>
-      <div className="col-md-4">
-        <label className="form-label fw-semibold">Birth Year</label>
-        <input name="birthYear" type="number" min="1900" max={new Date().getFullYear()} value={form.birthYear || ''} onChange={handleFormChange} className="form-control" required />
-      </div>
-      <div className="col-md-4">
-        <label className="form-label fw-semibold">Email</label>
-        <input name="email" type="email" value={form.email || ''} onChange={handleFormChange} className="form-control" disabled={!!memberProfile.email} />
-      </div>
-      <div className="col-md-4">
-        <label className="form-label fw-semibold">Education Details</label>
-        <input name="educationDetails" value={form.educationDetails || ''} onChange={handleFormChange} className="form-control" />
-      </div>
-      <div className="col-md-4">
-        <label className="form-label fw-semibold">Occupation</label>
-        <input name="occupation" value={form.occupation || ''} onChange={handleFormChange} className="form-control" />
+      <div className="row">
+        <div className="col-sm-4">
+          <span className="fw-semibold me-2">Nick Name</span>
+          <input name="nickName" value={form.nickName || ''} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="" />
+        </div>
+        <div className="col-sm-4">
+          <span className="fw-semibold me-2">Nick Name (Hindi)</span>
+          <input name="nickNameInHindi" value={form.nickNameInHindi || ''} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="" />
+        </div>
+        <div className="col-md-4">
+          <span className="fw-semibold me-2">Phone</span>
+          <input name="phone" value={form.phone || ''} onChange={handleFormChange} className="form-control d-inline w-auto" required placeholder="Phone" />
+        </div>
       </div>
 
-      <span className="fw-semibold me-2">Address:</span>
-      <div className="col-md-4" style={{ width: '100%' }}>
-        Address Line 1: <input name="familyAddress.addressLine1" value={form.familyAddress?.addressLine1 || ''} onChange={handleFormChange} className="form-control" placeholder="Address Line 1" />
-        Address Line 2: <input name="familyAddress.addressLine2" value={form.familyAddress?.addressLine2 || ''} onChange={handleFormChange} className="form-control" placeholder="Address Line 2" />
-        Address Line 3: <input name="familyAddress.addressLine3" value={form.familyAddress?.addressLine3 || ''} onChange={handleFormChange} className="form-control" placeholder="Address Line 3" />
-        District: <input name="familyAddress.district" value={form.familyAddress?.district || ''} onChange={handleFormChange} className="form-control" placeholder="District" />
-        City: <input name="familyAddress.city" value={form.familyAddress?.city || ''} onChange={handleFormChange} className="form-control" placeholder="City" />
-        State: <input name="familyAddress.state" value={form.familyAddress?.state || ''} onChange={handleFormChange} className="form-control" placeholder="State" />
-        Postal Code: <input name="familyAddress.postalCode" value={form.familyAddress?.postalCode || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="Postal Code" />
-        Country: <input name="familyAddress.country" value={form.familyAddress?.country || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="Country" />
+      <div className="row">
+        <div className="col-md-4">
+          <span className="fw-semibold me-2">Gender</span>
+          <select name="gender" value={form.gender || ''} onChange={handleFormChange} className="form-select" required placeholder="Gender">
+            {genderOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+          </select>
+        </div>
+        <div className="col-md-4">
+          <span className="fw-semibold me-2">Marital Status</span>
+          <select name="maritalStatus" value={form.maritalStatus || ''} onChange={handleFormChange} className="form-select" required placeholder="Marital Status">
+            {maritalStatusOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+          </select>
+        </div>
+        <div className="col-md-4">
+          <span className="fw-semibold me-2">Wedding Date</span>
+          <input name="weddingDate" type="date" value={form.weddingDate || ''} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Wedding Date" />
+        </div>
+      </div>
+
+      <div className="row">
+        <div className="col-md-4">
+          <span className="fw-semibold me-2">Birth Day</span>
+          <select name="birthDay" value={form.birthDay || ''} onChange={handleFormChange} className="form-select" placeholder="Birth Day">
+            {dayOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+          </select>
+        </div>
+        <div className="col-md-4">
+          <span className="fw-semibold me-2">Birth Month</span>
+          <select name="birthMonth" value={form.birthMonth || ''} onChange={handleFormChange} className="form-select" required placeholder="Birth Month">
+            {monthOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+          </select>
+        </div>
+        <div className="col-md-4">
+          <span className="fw-semibold me-2">Birth Year</span>
+          <input name="birthYear" type="number" min="1900" max={new Date().getFullYear()} value={form.birthYear || ''} onChange={handleFormChange} className="form-control d-inline w-auto" required placeholder="Birth Year" />
+        </div>
+      </div>
+
+      <div className="row">
+        <div className="col-md-4">
+          <span className="fw-semibold me-2">Email</span>
+          <input name="email" type="email" value={form.email || ''} onChange={handleFormChange} className="form-control d-inline w-auto" disabled={!!memberProfile.email} placeholder="Email" />
+        </div>
+      </div>
+      <div className="row">
+        <div className="col-md-4">
+          <span className="fw-semibold me-2">Education Details</span>
+          <input name="educationDetails" value={form.educationDetails || ''} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Education Details" />
+        </div>
+        <div className="col-md-4">
+          <span className="fw-semibold me-2">Occupation</span>
+          <input name="occupation" value={form.occupation || ''} onChange={handleFormChange} className="form-control d-inline w-auto" placeholder="Occupation" />
+        </div>
+      </div>
+      <div className="d-flex">
+        <span className="fw-semibold me-2">Member Address:</span>
+        <div className="row">
+          <div className="col-sm-4">
+            <span className="fw-semibold me-2">Address Line 1</span>
+            <input name="memberAddress.addressLine1" value={form.memberAddress?.addressLine1 || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="Address Line 1" />
+          </div>
+          <div className="col-sm-4">
+            <span className="fw-semibold me-2">Address Line 2</span>
+            <input name="memberAddress.addressLine2" value={form.memberAddress?.addressLine2 || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="Address Line 2" />
+          </div>
+          <div className="col-sm-4">
+            <span className="fw-semibold me-2">Address Line 3</span>
+            <input name="memberAddress.addressLine3" value={form.memberAddress?.addressLine3 || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="Address Line 3" />
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-sm-4">
+            <span className="fw-semibold me-2">District</span>
+            <input name="memberAddress.district" value={form.memberAddress?.district || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="District" />
+          </div>
+          <div className="col-sm-4">
+            <span className="fw-semibold me-2">City</span>
+            <input name="memberAddress.city" value={form.memberAddress?.city || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="City" />
+          </div>
+          <div className="col-sm-4">
+            <span className="fw-semibold me-2">State</span>
+            <input name="memberAddress.state" value={form.memberAddress?.state || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="State" />
+          </div>
+          <div className="col-sm-4">
+            <span className="fw-semibold me-2">Postal Code</span>
+            <input name="memberAddress.postalCode" value={form.memberAddress?.postalCode || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="Postal Code" />
+          </div>
+          <div className="col-sm-4">
+            <span className="fw-semibold me-2">Country</span>
+            <input name="memberAddress.country" value={form.memberAddress?.country || ''} onChange={handleFormChange} className="form-control mb-1" placeholder="Country" />
+          </div>
+        </div>
       </div>
 
       {editError && <div className="alert alert-danger py-1 my-2 col-12">{editError}</div>}
       {editSuccess && <div className="alert alert-success py-1 my-2 col-12">{editSuccess}</div>}
-      <div className="col-12 mt-2">
+      <div className="mt-3 text-end">
         <button className="btn btn-primary fw-bold me-2" type="submit">Save</button>
         <button className="btn btn-outline-primary btn-sm" type="button" onClick={handleCancelEdit}>Cancel</button>
+      </div>
       </div>
     </form>
   );
 
   const memberReadOnlyView = (
-    <div className="row mb-3 align-items-stretch">
-      <div className="col-md-8 d-flex flex-column">
-        <div className="mb-2">
-          <span className="fw-semibold me-2">Name :</span>
-          <span className="text-secondary">{memberProfile.firstName} {memberProfile.firstNameInHindi && ` (${memberProfile.firstNameInHindi}) `} {memberProfile.lastName}</span>
-        </div>
-        {memberProfile.maidenLastName && (
-          <div className="mb-2">
-            <span className="fw-semibold me-2">Maiden Last Name :</span>
-            <span className="text-secondary">{memberProfile.maidenLastName}</span>
-          </div>
-        )}
-        {memberProfile.nickName && (
-          <div className="mb-2">
-            <span className="fw-semibold me-2">Nick Name :</span>
-            <span className="text-secondary">{memberProfile.nickName} {memberProfile.nickNameInHindi && ` (${memberProfile.nickNameInHindi}) `}</span>
-          </div>
-        )}
-        <div className="mb-2">
-          <span className="fw-semibold me-2">Gender :</span>
-          <span className="text-secondary">{memberProfile.gender}</span>
-        </div>
-        <div className="mb-2">
-          <span className="fw-semibold me-2">Marital Status :</span>
-          <span className="text-secondary">{memberProfile.maritalStatus} {memberProfile.weddingDate && ` married on ${memberProfile.weddingDate}`}</span>
-        </div>
-        <div className="mb-2">
-          <span className="fw-semibold me-2">Birth Date :</span>
-          <span className="text-secondary"> 🎂 {memberProfile.birthDay} {memberProfile.birthMonth} {memberProfile.birthYear}</span>
-        </div>
-        {memberProfile.phone && (
-          <div className="mb-2">
-            <span className="fw-semibold me-2">Phone :</span>
-            <span className="text-secondary">{getFormattedPhoneDisplay(
-              memberProfile.phone,
-              memberProfile.phoneWhatsappRegistered,
-            )}</span>
-          </div>
-        )}
-        {memberProfile.email && (
-          <div className="mb-2">
-            <span className="fw-semibold me-2">Email Id :</span>
-            <span className="text-secondary">✉️ {memberProfile.email}</span>
-          </div>
-        )}
-        {memberProfile.educationDetails && (
-          <div className="mb-2">
-            <span className="fw-semibold me-2">Education details :</span>
-            <span className="text-secondary"> {memberProfile.educationDetails}</span>
-          </div>
-        )}
-        {memberProfile.occupation && (
-          <div className="mb-2">
-            <span className="fw-semibold me-2">Occupation :</span>
-            <span className="text-secondary"> {memberProfile.occupation}</span>
-          </div>
-        )}
-        {memberProfile.memberAddress && (
-          <div className="d-flex  mt-5">
-            <span className="fw-semibold me-2">Member Address:</span>
-            <address className="mb-0">
-              {memberProfile.memberAddress?.addressLine1}
-              <br />
-              {memberProfile.memberAddress?.addressLine2 && (
-                <>
-                  {memberProfile.memberAddress.addressLine2}
-                  <br />
-                </>
-              )}
-              {memberProfile.memberAddress?.addressLine3 && (
-                <>
-                  {memberProfile.memberAddress.addressLine3}
-                  <br />
-                </>
-              )}
-              {memberProfile.memberAddress?.district && (
-                <>
-                  {" "}
-                  District: {memberProfile.memberAddress.district}
-                  <br />
-                </>
-              )}
-              {memberProfile.memberAddress?.city}, {memberProfile.memberAddress?.state} -{" "}
-              {memberProfile.memberAddress?.postalCode.trim()}
-              <br />
-              {memberProfile.memberAddress?.country}
-            </address>
-          </div>
-        )}
-        {memberProfile.memberAddress && (
-          <div className="d-flex  mt-5">
-            <span className="fw-semibold me-2">Family Address:</span>
-            <address className="mb-0">
-              {memberProfile.memberAddress?.addressLine1}
-              <br />
-              {memberProfile.memberAddress?.addressLine2 && (
-                <>
-                  {memberProfile.memberAddress.addressLine2}
-                  <br />
-                </>
-              )}
-              {memberProfile.memberAddress?.addressLine3 && (
-                <>
-                  {memberProfile.memberAddress.addressLine3}
-                  <br />
-                </>
-              )}
-              {memberProfile.memberAddress?.district && (
-                <>
-                  {" "}
-                  District: {memberProfile.memberAddress.district}
-                  <br />
-                </>
-              )}
-              {memberProfile.memberAddress?.city}, {memberProfile.memberAddress?.state} -{" "}
-              {memberProfile.memberAddress?.postalCode.trim()}
-              <br />
-              {memberProfile.memberAddress?.country}
-            </address>
-          </div>
-        )}
-
-        <div className="mt-auto d-flex align-items-end" style={{ minHeight: '60px' }}>
-          <div className="text-end w-100">
-            <button
-              className="btn btn-primary me-2"
-              onClick={() => window.location.href = `/family/${memberProfile.familyId}`}
-              disabled={!memberProfile.familyId}
-            >
-              View {memberProfile.firstName}'s Family
-            </button>
-            {memberProfile.canUpdateMember && (
-            <button
-              className="btn btn-outline-primary btn-sm ms-2"
-              onClick={handleEditClick}
-              title="Edit Member Details" style={{ background: "transparent", borderColor: "#A42502", color: "#A42502" }}
-            >
-              <i className="bi bi-pencil-square"></i> Edit
-            </button>
+    <div className="container p-4 bg-white rounded mt-4">
+      {/* Member Profile Section */}
+      <h5 className="mb-3 float-start">{memberProfile.firstName} {memberProfile.firstNameInHindi && ` (${memberProfile.firstNameInHindi}) `} {memberProfile.lastName} Profile</h5>
+      {memberProfile.canUpdateMember && (
+        <button
+          className="btn btn-primary fw-bold float-end"
+          onClick={handleEditClick}
+          title="Edit Member Details"
+        >
+          <i className="bi bi-pencil-square"></i> Edit Profile
+        </button>
+      )}
+      <div className="clearfix"></div>
+      <div className="card mb-5 p-4 bg-body-secondary border-0">
+        <div className="row">
+          <div className="col-sm-4">
+            {/* Member Image (Right) */}
+            {memberProfile.profileImage && (
+              <div className="text-end" style={{ flex: "0 0 auto" }}>
+                <img
+                  src={`/${memberProfile.profileImage}`}
+                  alt={memberProfile.firstName}
+                  style={{ width: "100%", height: "360px", objectFit: "cover", borderRadius: "8px" }}
+                />
+                {memberProfile.canUpdateMember && (
+                  <button
+                    className="btn btn-outline-primary btn-sm mt-2"
+                    onClick={() => setShowImageEdit(true)}
+                    style={{}}
+                  >
+                    <i className="bi bi-pencil-square"></i> Edit Image
+                  </button>
+                )}
+              </div>
+            )}
+            {showImageEdit && (
+              <ImageUploadCropModal
+                onClose={() => setShowImageEdit(false)}
+                onSave={handleImageSave}
+              />
             )}
           </div>
+          <div className="col-sm-4">
+            {/* <div className="d-flex justify-content-between align-items-center">
+            <h4 className="card-title mb-3 pb-2 fw-bold">
+              <span className="fw-bold me-2">Member Name:</span>
+              <span className="text-black">{memberProfile.firstName} {memberProfile.firstNameInHindi && ` (${memberProfile.firstNameInHindi}) `} {memberProfile.lastName}</span>
+            </h4>
+          </div> */}
+            {memberProfile.maidenLastName && (
+              <div className="mb-2">
+                <span className="fw-semibold me-2">Maiden Last Name :</span>
+                <span className="text-secondary">{memberProfile.maidenLastName}</span>
+              </div>
+            )}
+            {memberProfile.nickName && (
+              <div className="mb-2">
+                <span className="fw-semibold me-2">Nick Name :</span>
+                <span className="text-secondary">{memberProfile.nickName} {memberProfile.nickNameInHindi && ` (${memberProfile.nickNameInHindi}) `}</span>
+              </div>
+            )}
+            <div className="mb-2">
+              <span className="fw-semibold me-2">Gender :</span>
+              <span className="text-secondary">{memberProfile.gender}</span>
+            </div>
+            <div className="mb-2">
+              <span className="fw-semibold me-2">Marital Status :</span>
+              <span className="text-secondary">{memberProfile.maritalStatus} {memberProfile.weddingDate && ` married on ${memberProfile.weddingDate}`}</span>
+            </div>
+            <div className="mb-2">
+              <span className="fw-semibold me-2">Birth Date :</span>
+              <span className="text-secondary"> 🎂 {memberProfile.birthDay} {memberProfile.birthMonth} {memberProfile.birthYear}</span>
+            </div>
+            {memberProfile.phone && (
+              <div className="mb-2">
+                <span className="fw-semibold me-2">Phone :</span>
+                <span className="text-secondary">{getFormattedPhoneDisplay(
+                  memberProfile.phone,
+                  memberProfile.phoneWhatsappRegistered,
+                )}</span>
+              </div>
+            )}
+            {memberProfile.email && (
+              <div className="mb-2">
+                <span className="fw-semibold me-2">Email Id :</span>
+                <span className="text-secondary">✉️ {memberProfile.email}</span>
+              </div>
+            )}
+            {memberProfile.educationDetails && (
+              <div className="mb-2">
+                <span className="fw-semibold me-2">Education details :</span>
+                <span className="text-secondary"> {memberProfile.educationDetails}</span>
+              </div>
+            )}
+            {memberProfile.occupation && (
+              <div className="mb-2">
+                <span className="fw-semibold me-2">Occupation :</span>
+                <span className="text-secondary"> {memberProfile.occupation}</span>
+              </div>
+            )}
+          </div>
+          <div className="col-sm-4">
+
+            {memberProfile.memberAddress && (
+              <div className="d-flex  mt-5">
+                <span className="fw-semibold me-2">Member Address:</span>
+                <address className="mb-0">
+                  {memberProfile.memberAddress?.addressLine1}
+                  <br />
+                  {memberProfile.memberAddress?.addressLine2 && (
+                    <>
+                      {memberProfile.memberAddress.addressLine2}
+                      <br />
+                    </>
+                  )}
+                  {memberProfile.memberAddress?.addressLine3 && (
+                    <>
+                      {memberProfile.memberAddress.addressLine3}
+                      <br />
+                    </>
+                  )}
+                  {memberProfile.memberAddress?.district && (
+                    <>
+                      {" "}
+                      District: {memberProfile.memberAddress.district}
+                      <br />
+                    </>
+                  )}
+                  {memberProfile.memberAddress?.city}, {memberProfile.memberAddress?.state} -{" "}
+                  {memberProfile.memberAddress?.postalCode.trim()}
+                  <br />
+                  {memberProfile.memberAddress?.country}
+                </address>
+              </div>
+            )} { /*End of Member Address */}
+            {/* TODO: Currently backend system does not return family addrress, so member is used as filler*/}
+            {memberProfile.memberAddress && (
+              <div className="d-flex  mt-5">
+                <span className="fw-semibold me-2">Family Address:</span>
+                <address className="mb-0">
+                  {memberProfile.memberAddress?.addressLine1}
+                  <br />
+                  {memberProfile.memberAddress?.addressLine2 && (
+                    <>
+                      {memberProfile.memberAddress.addressLine2}
+                      <br />
+                    </>
+                  )}
+                  {memberProfile.memberAddress?.addressLine3 && (
+                    <>
+                      {memberProfile.memberAddress.addressLine3}
+                      <br />
+                    </>
+                  )}
+                  {memberProfile.memberAddress?.district && (
+                    <>
+                      {" "}
+                      District: {memberProfile.memberAddress.district}
+                      <br />
+                    </>
+                  )}
+                  {memberProfile.memberAddress?.city}, {memberProfile.memberAddress?.state} -{" "}
+                  {memberProfile.memberAddress?.postalCode.trim()}
+                  <br />
+                  {memberProfile.memberAddress?.country}
+                </address>
+              </div>
+            )} { /*End of Member Family Address */}
+
+          </div>
+          <div className="mt-auto d-flex align-items-end" style={{ minHeight: '60px' }}>
+            <div className="text-end w-100">
+              <button
+                className="btn btn-primary me-2"
+                onClick={() => window.location.href = `/family/${memberProfile.familyId}`}
+                disabled={!memberProfile.familyId}
+              >
+                View {memberProfile.firstName}'s Family
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-      <div className="col-md-4 d-flex flex-column  align-items-end">
-        <img
-          src={`/${memberProfile.profileImage}`}
-          alt={memberProfile.firstName}
-          className="mb-3"
-          style={{ width: "100%", height: "360px", objectFit: "cover", borderRadius: "8px" }}
-        />
-        {memberProfile.canUpdateMember && (
-        <button
-          className="btn btn-outline-primary btn-sm mt-2"
-          onClick={() => setShowImageEdit(true)}
-          style={{  }}
-        >
-          <i className="bi bi-pencil-square"></i> Edit Image
-        </button>
-        )}
-        {showImageEdit && (
-          <ImageUploadCropModal
-            onClose={() => setShowImageEdit(false)}
-            onSave={handleImageSave}
-          />
-        )}
       </div>
     </div>
   );
 
   return (
     <div className="container p-4 bg-white rounded mt-4">
-      <div className="card mb-4" style={{ borderColor: "#A42502" }}>
-        <div className="card-header text-black" style={{ background: "#A42502" }}>
-          <h5 className="mb-0">Member Profile</h5>
-        </div>
-        <div className="card-body" style={{ borderColor: "#A42502" }}>
-          {editMode ? memberInformationEditForm : memberReadOnlyView}
-        </div>
+      <div
+        className="card-body d-flex flex-wrap align-items-start p-0"
+        style={{ gap: "1rem" }}
+      >
+      {editMode ? memberInformationEditForm : memberReadOnlyView}
       </div>
-
       {/* Tree View */}
       <h5 className="mb-3">Family Tree</h5>
         <div
