@@ -230,7 +230,7 @@ const SignUp = () => {
           onClick={() => (window.location.href = "/login")}
           style={{
             padding: "8px 16px",
-            background: "#1976d2",
+            background: "#A42502",
             color: "#fff",
             border: "none",
             borderRadius: 4,

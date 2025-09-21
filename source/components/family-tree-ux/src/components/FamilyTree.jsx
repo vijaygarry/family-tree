@@ -7,12 +7,13 @@ const getImagePath = (url) => {
 };
 
 const MemberCard = ({ member }) => {
-  let bgColor = "lightblue";
-  if (member.isAlive === false) {
-    bgColor = "lightgrey";
+  let bgColor = "#C0EDFF";
+  if (member.alive === false) {
+    bgColor = "#AFAFAF";
   } else if (member.gender === "Female") {
-    bgColor = "pink";
+    bgColor = "#FFC2E1";
   }
+  
   return (
     <Link to={`/member/${member.memberId}`} className="text-decoration-none">
       <div

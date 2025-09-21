@@ -20,57 +20,37 @@ code {
 button.btn.btn-primary {
     background: #A42502 !important;
     border-color: #A42502 !important;
-    font-weight: 700;
+    font-weight: 700 !important;
+    font-size: 14px !important;
 }
 h2,h3,h5{
   font-size: 1.75rem;
   font-weight: 700 !important;
 }
-thead.table-light tr th {
-    background: #FFE0B7 !important;
-    border-color: #FFE0B7 !important;
-}
-.table-striped>tbody>tr:nth-of-type(odd)>* {
-    background: #ffffff !important;
-    --bs-table-bg-type: rgb(255 255 255);
-        border-color: #FFDCB0;
-}
-.table-striped>tbody>tr:nth-of-type(even)>* {
-    background: #FFF6EB !important;
-    --bs-table-bg-type: #FFF6EB;
-        border-color: #FFDCB0;
-}
+
 .table-bordered>:not(caption)>*>* {
     border-width: 1px var(--bs-border-width);
 }
 .table-bordered>:not(caption)>*>* a.text-decoration-none {
-    color: #000;
+    color: #fff;
     font-weight: 500;
 }
 .d-flex.justify-content-center.gap-2 a.text-decoration-none .member-card.d-flex.align-items-center.p-2{
-     background:   #C0EDFF !important;
     color: #000 !important;
     font-weight: 400 !important;
-    border-color: #C0EDFF !important;
 }
 .d-flex.justify-content-center.gap-2 a.text-decoration-none:last-child .member-card.d-flex.align-items-center.p-2 {
-    background: #FFC2E1 !important;
     color: #000 !important;
     font-weight: 400 !important;
-      border-color: #FFC2E1 !important;
 }
 
 .member-card{
-     background:   #C0EDFF !important;
     color: #000 !important;
     font-weight: 400 !important;
-    border-color: #C0EDFF !important;
 }
 a.text-decoration-none:last-child .member-card{
-    background: #FFC2E1 !important;
     color: #000 !important;
     font-weight: 400 !important;
-      border-color: #FFC2E1 !important;
 }
 
 
@@ -126,19 +106,22 @@ font-size: 14px;
     font-weight: 600;
 }
 
-table.min-w-full.table-auto.border.w-100 thead tr th,table thead tr th {
-    background: #FFE0B7 !important;
-    border-color: #FFE0B7 !important;
+table thead tr th,table thead tr th,table.table.table-bordered.table-striped.family-members thead.table-light tr th {
+    background: #A42502 !important;
+    border-color: #A42502 !important;
+    color: #fff !important;
 }
 
 
-table.min-w-full.table-auto.border.w-100 tbody tr:nth-child(even) td,table tbody tr:nth-child(even) td {
-  background: #FFF6EB !important;
-  border-color: #FFE0B7 !important;
+table tbody tr:nth-child(even) td,table.table.table-bordered.table-striped.family-members tbody tr:nth-child(even) td{
+  background: #a33e22 !important;
+  border-color: #a33e22 !important;
+      color: #fff !important;
 }
-table.min-w-full.table-auto.border.w-100 tbody tr:nth-child(odd) td,table tbody tr:nth-child(even) td {
-  background: #FFF !important;
-    border-color: #FFE0B7 !important;
+table tbody tr:nth-child(odd) td,table.table.table-bordered.table-striped.family-members tbody tr:nth-child(odd) td{
+  background: #e25b35 !important;
+    border-color: #e25b35 !important;
+        color: #fff !important;
 }
 .fs-12{
   font-size: 12px;
@@ -175,10 +158,21 @@ button.btn.btn-outline-primary:hover {
     margin: 15px 0 5px !important;
 }
 
+button.btn.btn-secondary {
+    background: transparent;
+    color: #a42502;
+    font-weight: 700;
+    border-color: #a42502;
+}
+.card-header.text-black{
+      background: #a42502 !important;
+}
+.card-header.text-black h5.mb-0 {
+    color: #fff;
+}
 
 
-
-@media (max-width: 768px) {
+@media (max-width: 700px) {
   table.family-members {
     border: 0;
   }
@@ -224,8 +218,8 @@ button.btn.btn-outline-primary:hover {
 
 /* Responsive */
 
-@media(max-width:520px) {
 
+@media(max-width:700px) {
   header {
     padding: 10px;
   }

@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Link } from "react-router-dom";
-import { Tree, TreeNode } from "react-organizational-chart";
 import { getFormattedPhoneDisplay } from "../utils/phoneUtils";
 import "./TreeNode.css";
 import "./FamilyDetails.css";
@@ -81,8 +79,7 @@ const FamilyDetails = () => {
     setEditSuccess("");
     try {
       const formData = new FormData();
-      //formData.append("familyId", family.familyId);
-      formData.append("familyId", 1); // TODO: Temporary hardcoded to 1 for testing. Change later.
+      formData.append("familyId", family.familyDetails.familyId);
       formData.append("image", croppedImageBlob, "familyImage.jpeg");
       const response = await api.post(
         "/family/updateFamilyImage",
@@ -129,9 +126,14 @@ const FamilyDetails = () => {
     }
     try {
       const payload = { ...form, familyId: family.familyDetails.familyId };
-      await api.post('/family/updateFamilyDetails', payload);
-      setEditMode(false);
-      setFamily((prev) => ({ ...prev, ...form }));
+      const response = await api.post('/family/updateFamilyDetails', payload);
+      if (response.data) {
+        setFamily((prev) => ({
+          ...prev,
+          ...response.data
+        }));
+        setEditMode(false);
+      }
       setEditSuccess("Family details updated successfully.");
     } catch (err) {
       if (err.response?.data?.operationMessage) {

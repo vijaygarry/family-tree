@@ -383,11 +383,11 @@ const MemberProfile = () => {
 
   return (
     <div className="container p-4 bg-white rounded mt-4">
-      <div className="card mb-4" style={{ borderColor: "#FFDCB0" }}>
-        <div className="card-header text-black" style={{ background: "#FFDCB0" }}>
+      <div className="card mb-4" style={{ borderColor: "#A42502" }}>
+        <div className="card-header text-black" style={{ background: "#A42502" }}>
           <h5 className="mb-0">Member Profile</h5>
         </div>
-        <div className="card-body" style={{ borderColor: "#FFDCB0" }}>
+        <div className="card-body" style={{ borderColor: "#A42502" }}>
           {editMode ? memberInformationEditForm : memberReadOnlyView}
         </div>
       </div>
