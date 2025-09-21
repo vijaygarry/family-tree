@@ -114,7 +114,23 @@ public abstract class AbstractOperation<Request extends OperationRequest, Respon
 		}
 		return operationEntity;
 	}
-	
+
+	protected boolean isOperationAllowedForUser (String aOperationName) {
+		OperationEntity operationEntity = getOperationEntityByName(aOperationName);
+		if(operationEntity == null) {
+			return false;
+		}
+		if(this.context == null || this.context.getAppSessionUser() == null) {
+			log.info("Operation context or AppSessionUser is null, cannot check operation allowed for user");
+			return false;
+		}
+		try {
+			return this.authorizationService.isOperationAllowedForUser( operationEntity, this.context.getAppSessionUser() );
+		} catch (AccessDeniedException e) {
+			return false;
+		}
+	}
+
 	
 	public abstract void doValidate(Request opRequest) throws OperationException;
 	public abstract Response doExecute(Request opRequest) throws OperationException;

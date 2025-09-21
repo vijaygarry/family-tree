@@ -11,9 +11,13 @@ public class EmailValidator {
             Pattern.CASE_INSENSITIVE
     );
 
-    public static void validateEmail(String email) {
+    public static void validateEmail(String email, boolean isMandatory) {
         if (email == null || email.isBlank()) {
-            throw new ValidationException("Email cannot be empty");
+            if (isMandatory) {
+                throw new ValidationException("Email cannot be empty");
+            } else {
+                return; // Optional and not provided, so valid
+            }
         }
 
         // 1. Max length check (commonly 254 chars for full email)

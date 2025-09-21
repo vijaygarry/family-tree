@@ -47,7 +47,8 @@ public class ResetForgotPasswordOperation extends AbstractOperation<ResetForgotP
         checkValuePresent(opRequest.getOtp(), "One time password (OTP)");
         checkValuePresent(opRequest.getRequestId(), "Request Id");
         checkValuePresent(opRequest.getNewPassword(), "New password");
-        EmailValidator.validateEmail(opRequest.getEmailId());
+        boolean isMandatory = true;
+        EmailValidator.validateEmail(opRequest.getEmailId(), isMandatory);
     }
 
     @Override

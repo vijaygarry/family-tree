@@ -46,7 +46,8 @@ public class RequestForgotPasswordOTPOperation extends AbstractOperation<Request
             throw new ValidationException("Invalid request provided.");
         }
         checkValuePresent(opRequest.getEmailId(), "Email Id");
-        EmailValidator.validateEmail(opRequest.getEmailId());
+        boolean isMandatory = true;
+        EmailValidator.validateEmail(opRequest.getEmailId(), isMandatory);
     }
 
     @Override
