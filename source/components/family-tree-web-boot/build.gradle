@@ -17,24 +17,35 @@ dependencies {
 
 apply plugin: 'eclipse-wtp'
 
-def uxDir = "$rootDir/components/family-tree-ux"
+// Define frontend path (absolute path preferred)
+// Override uxDir path as 
+// ./gradlew build -PfrontendPath=/Users/vijay/projects/family-tree-ux
+def uxDir = project.findProperty("frontendPath") ?: "/Users/vijaygarothaya/work/product/chippaSamaj/family-tree-ux"
+def uxBuildDir = "${uxDir}/build"
+
+// Explicitly Build UX component using following command
+// ./gradlew build -PbuildReactApp
+def buildUxComponent = project.hasProperty("buildReactApp")
+
 def resourcesDir = "$projectDir/src/main/resources"
 
 task buildUx(type: Exec) {
+    onlyIf { buildUxComponent }
     workingDir uxDir
-    commandLine 'npm', 'run', 'build'
+    commandLine 'npm', 'run', 'rebuild'
     doFirst {
         println "Building UX files $uxDir :build"
     }
 }
 
 task copyUxFilesToBoot (type: Copy) {
+    onlyIf { buildUxComponent }
     dependsOn buildUx
-    from("$uxDir/build")                     // React build output
+    from("$uxBuildDir")                     // React build output
     into("$resourcesDir/static")        // Spring Boot static resources
 
     doFirst {
-        println "🔍 Copying UX files from: $uxDir/build"
+        println "🔍 Copying UX files from: $uxBuildDir"
         println "📂 Destination: $resourcesDir/static"
         def destDir = file("$resourcesDir/static")
         if (destDir.exists()) {
@@ -43,13 +54,13 @@ task copyUxFilesToBoot (type: Copy) {
         }
     }
 
-     doLast {
+    doLast {
         println "✅ Copy complete. Files in static folder:"
         println fileTree("$resourcesDir/static").files
     }
 }
 
-jar.dependsOn copyUxFilesToBoot
+processResources.dependsOn copyUxFilesToBoot
 
 task runApp(type: JavaExec) {
     group = 'application'
@@ -81,6 +92,7 @@ eclipse {
 }
 
 // Task to copy app jar + dependency jars
+// ./gradlew clean buildDist -PbuildReactApp
 tasks.register('buildDist', Copy) {
     dependsOn jar // ensure app jar is built
     from(jar) {
