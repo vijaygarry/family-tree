@@ -84,7 +84,7 @@ public class ResetForgotPasswordOperation extends AbstractOperation<ResetForgotP
             throw new ValidationException("OTP expired, Please request a new OTP.");
         }
 
-        if(OTPUtil.isOTPValid(otp, otpInformation) ){
+        if(!OTPUtil.isOTPValid(otp, otpInformation) ){
             // TODO: Update attempts and last attempt date in OTP table
             // TODO: As we are throwing exception if OTP does not match, DB transaction will roll back, so create new transaction for this update
             throw new ValidationException("Invalid OTP provided, please check the OTP and try again.");

@@ -64,6 +64,7 @@ import java.util.Random;
 @RequestMapping(value = "/api/family", method = RequestMethod.POST)
 public class FamilyController {
 
+	//TODO: Read this config from AppProperties class
 	@Value("${app.upload.dir}")
 	private String uploadDir;
 

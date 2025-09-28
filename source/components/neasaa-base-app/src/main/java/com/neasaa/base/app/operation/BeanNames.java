@@ -9,6 +9,8 @@ public interface BeanNames {
 	String JDBC_TEMPLATE_BEAN = "JDBC_TEMPLATE";
 	
 	String CACHE_MANAGER_BEAN = "CACHE_MANAGER";
-	
+	String EMAIL_SENDER_TEMPLATE_BEAN = "EMAIL_SENDER_TEMPLATE";
+	String APP_EMAIL_SENDER = "APP_EMAIL_SENDER";
+
 	String TRANSACTION_MANAGER = "transactionManager";
 }

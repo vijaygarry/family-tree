@@ -76,7 +76,7 @@ public class SignUpOperation extends AbstractOperation<SignUpRequest, EmptyOpera
 
         // Check if the email is already registered
         if(appUserDao.isEmailRegistered(emailId)) {
-            throw new ValidationException("Email ID is already registered. Please use a different email.");
+            throw new ValidationException("Email ID is already registered. Please use 'Forgot Password' option to reset the password.");
         }
 
         AppUser userByLogonName = appUserDao.getUserByLogonName(logonName);
@@ -111,7 +111,7 @@ public class SignUpOperation extends AbstractOperation<SignUpRequest, EmptyOpera
         }
 
         // This will throw exception if OTP does not match
-        if(OTPUtil.isOTPValid(otp, otpInformation) ){
+        if(!OTPUtil.isOTPValid(otp, otpInformation) ){
             // TODO: Update attempts and last attempt date in OTP table
             // TODO: As we are throwing exception if OTP does not match, DB transaction will roll back, so create new transaction for this update
             throw new ValidationException("Invalid OTP provided, please check the OTP and try again.");

@@ -10,16 +10,20 @@ import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.base.app.operation.session.model.RequestForgotPasswordOTPRequest;
 import com.neasaa.base.app.operation.session.model.RequestForgotPasswordOTPResponse;
+import com.neasaa.base.app.utils.AppProperties;
 import com.neasaa.base.app.utils.EmailValidator;
 import com.neasaa.base.app.utils.OTPUtil;
 import com.neasaa.base.app.utils.PasswordUtil;
+import com.neasaa.base.app.utils.email.EmailSender;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
+import static com.neasaa.base.app.operation.BeanNames.APP_EMAIL_SENDER;
 import static com.neasaa.base.app.operation.OperationNames.FORGOT_PASSWORD_REQUEST_OTP;
 import static com.neasaa.base.app.utils.OTPUtil.OTP_EXPIRY_DURATION;
 import static com.neasaa.base.app.utils.ValidationUtils.checkValuePresent;
@@ -34,6 +38,13 @@ public class RequestForgotPasswordOTPOperation extends AbstractOperation<Request
 
     @Autowired
     private OtpVerificationDao otpVerificationDao;
+
+    @Autowired
+    private AppProperties appProperties;
+
+    @Autowired
+    @Qualifier(APP_EMAIL_SENDER)
+    private EmailSender emailSender;
 
     @Override
     public String getOperationName() {
@@ -93,14 +104,12 @@ public class RequestForgotPasswordOTPOperation extends AbstractOperation<Request
                 .build();
 
         otpVerificationDao.insertOtpVerification(otpVerificationInfo);
-        sendOtpEmail(emailId, newOtp, OTPType.SIGN_UP);
+        OTPUtil.sendOtpEmail(emailId, newOtp, OTPType.FORGOT_PASSWORD, appProperties, emailSender);
         RequestForgotPasswordOTPResponse response = new RequestForgotPasswordOTPResponse();
         response.setEmailId(emailId);
         response.setRequestId(requestId); // Simulated request ID for OTP
         return response;
     }
 
-    private void sendOtpEmail(String emailId, String otpCode, OTPType otpType) {
-        log.info("Simulating sending OTP email to {} with OTP: {} for OTP Type: {}", emailId, otpCode, otpType);
-    }
+
 }

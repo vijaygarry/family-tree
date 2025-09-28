@@ -65,6 +65,7 @@ ext.libraries = [
 	springCore: "org.springframework:spring-core:${springFrameworkVersion}@jar",
 	springBeans: "org.springframework:spring-beans:${springFrameworkVersion}@jar",
 	springContext: "org.springframework:spring-context:${springFrameworkVersion}@jar",
+	springContextSupport: "org.springframework:spring-context-support:${springFrameworkVersion}@jar",
 	springAop: "org.springframework:spring-aop:${springFrameworkVersion}@jar",
 	springExpression: "org.springframework:spring-expression:${springFrameworkVersion}@jar",
 	springTx: "org.springframework:spring-tx:${springFrameworkVersion}@jar",
@@ -130,7 +131,13 @@ ext.libraries = [
 	// Required for some JUnit 5 internals
     opentest4j: "org.opentest4j:opentest4j:1.2.0",
 	hamcrest: "org.hamcrest:hamcrest:2.2@jar",
-
+	jakartaMailApi: "jakarta.mail:jakarta.mail-api:2.1.2@jar",
+	//jakartaMailImpl: "com.sun.mail:jakarta.mail:2.0.2@jar",
+	// For sending email using jakarta mail api
+	//jakartaActivation: "jakarta.activation:jakarta.activation-api:2.1.2@jar",
+	jakartaActivationImpl: "com.sun.activation:jakarta.activation:2.0.1@jar",
+	angusMail: "org.eclipse.angus:angus-mail:2.0.3@jar",
+	// implementation 'org.eclipse.angus:angus-mail:2.0.3'
 ]
 
 libraries << [
@@ -159,6 +166,7 @@ libraries << [
 		libraries.springCore,
 		libraries.springBeans,
 		libraries.springContext,
+		libraries.springContextSupport,
 		libraries.springAop,
 		libraries.springExpression,
 		libraries.springTx,
@@ -200,7 +208,14 @@ libraries << [
 	excel: [
         "org.apache.poi:poi:5.2.4",
         "org.apache.poi:poi-ooxml:5.2.4"
-    ]
+    ],
+	email: [
+		libraries.jakartaMailApi,
+		// libraries.jakartaMailImpl,
+		// libraries.jakartaActivation,
+		libraries.jakartaActivationImpl,
+		libraries.angusMail,
+	]
 ]
 
 

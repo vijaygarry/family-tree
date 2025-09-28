@@ -9,6 +9,7 @@ dependencies {
     implementation libraries.neasaaUtils
     implementation libraries.bouncycastleProvider
     api libraries.jackson
+    api libraries.email
     implementation libraries.jdbcLibs
     implementation libraries.jasypt
 }

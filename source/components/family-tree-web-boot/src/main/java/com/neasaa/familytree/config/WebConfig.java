@@ -11,6 +11,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @PropertySource("classpath:rajput.properties")
 public class WebConfig implements WebMvcConfigurer {
 
+    //TODO: Read this config from AppProperties class
     @Value("${app.upload.dir}")
     private String uploadDir;
 

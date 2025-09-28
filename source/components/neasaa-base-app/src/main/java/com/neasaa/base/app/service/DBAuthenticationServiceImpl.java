@@ -43,7 +43,7 @@ public class DBAuthenticationServiceImpl implements AuthenticationService {
 				log.info("User {} not found.", logonName);
 				throw new UnauthorizedException("Invalid user or password.");
 			}
-			log.info("User " + logonName + " found in DB with status as " + appUser.getStatus());
+            log.info("User {} found in DB with status as {}", logonName, appUser.getStatus());
 			UserStatusEnum userStatus = UserStatusEnum.getUserStatusByCode(appUser.getStatus());
 			if (userStatus != UserStatusEnum.ACTIVE) {
 				log.info("User {} is not active", logonName);

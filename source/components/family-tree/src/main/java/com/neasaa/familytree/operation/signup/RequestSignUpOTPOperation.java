@@ -8,19 +8,23 @@ import com.neasaa.base.app.enums.OTPType;
 import com.neasaa.base.app.operation.AbstractOperation;
 import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
+import com.neasaa.base.app.utils.AppProperties;
 import com.neasaa.base.app.utils.EmailValidator;
 import com.neasaa.base.app.utils.OTPUtil;
 import com.neasaa.base.app.utils.PasswordUtil;
+import com.neasaa.base.app.utils.email.EmailSender;
 import com.neasaa.familytree.dao.pg.FamilyMemberDao;
 import com.neasaa.familytree.operation.signup.model.RequestSignUpOTPRequest;
 import com.neasaa.familytree.operation.signup.model.RequestSignUpOTPResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
+import static com.neasaa.base.app.operation.BeanNames.APP_EMAIL_SENDER;
 import static com.neasaa.base.app.operation.OperationNames.SIGN_UP_REQUEST_OTP;
 import static com.neasaa.base.app.utils.OTPUtil.OTP_EXPIRY_DURATION;
 import static com.neasaa.base.app.utils.ValidationUtils.checkValuePresent;
@@ -38,6 +42,13 @@ public class RequestSignUpOTPOperation extends AbstractOperation<RequestSignUpOT
 
     @Autowired
     private OtpVerificationDao otpVerificationDao;
+
+    @Autowired
+    private AppProperties appProperties;
+
+    @Autowired
+    @Qualifier(APP_EMAIL_SENDER)
+    private EmailSender emailSender;
 
     @Override
     public String getOperationName() {
@@ -95,7 +106,7 @@ public class RequestSignUpOTPOperation extends AbstractOperation<RequestSignUpOT
                 .emailId(emailId)
                 .otpType(OTPType.SIGN_UP)
                 .requestId(requestId)
-                .hashOtpCode(PasswordUtil.hashPassword(newOtp)) // In real application, hash the OTP before storing
+                .hashOtpCode(PasswordUtil.hashPassword(newOtp)) // Store hashed OTP
                 .status(OTPStatus.Pending)
                 .expiryDate(new Date(currentDate.getTime() + OTP_EXPIRY_DURATION)) // OTP valid for 15 minutes
                 .attempts(0)
@@ -104,7 +115,7 @@ public class RequestSignUpOTPOperation extends AbstractOperation<RequestSignUpOT
                 .build();
 
         otpVerificationDao.insertOtpVerification(otpVerificationInfo);
-        sendOtpEmail(emailId, newOtp, OTPType.SIGN_UP);
+        OTPUtil.sendOtpEmail(emailId, newOtp, OTPType.SIGN_UP, appProperties, emailSender);
         RequestSignUpOTPResponse response = new RequestSignUpOTPResponse();
         response.setEmailId(emailId);
         response.setRequestId(requestId); // Simulated request ID for OTP
@@ -112,7 +123,4 @@ public class RequestSignUpOTPOperation extends AbstractOperation<RequestSignUpOT
         return response;
     }
 
-    private void sendOtpEmail(String emailId, String otpCode, OTPType otpType) {
-        log.info("Simulating sending OTP email to {} with OTP: {} for OTP Type: {}", emailId, otpCode, otpType);
-    }
 }

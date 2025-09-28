@@ -66,6 +66,7 @@ task runApp(type: JavaExec) {
     group = 'application'
     description = 'Start Springboot Application'
     environment 'DB_PASSWORD_ENCRYPTION_SALT_KEY', 'secret-key'
+    environment 'app.properties.file.name', 'rajput.properties'
     classpath = sourceSets.main.runtimeClasspath +
                 files('src/main/config/')
     mainClass = 'com.neasaa.familytree.FamilyTreeApplication'
