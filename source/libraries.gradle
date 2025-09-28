@@ -124,6 +124,12 @@ ext.libraries = [
 // org.slf4j/slf4j-api/2.0.17/d9e58ac9c7779ba3bf8142aff6c830617a7fe60f/slf4j-api-2.0.17.jar
 // org.apache.logging.log4j/log4j-api/2.24.3/b02c125db8b6d295adf72ae6e71af5d83bce2370/log4j-api-2.24.3.jar
 
+	// JavaMail API to send email
+	jakartaMailApi: "jakarta.mail:jakarta.mail-api:2.1.2@jar",
+	jakartaActivationImpl: "com.sun.activation:jakarta.activation:2.0.1@jar",
+	angusMail: "org.eclipse.angus:angus-mail:2.0.3@jar",
+
+
 	restAssured: "io.rest-assured:rest-assured:5.4.0",
     junitApi: "org.junit.jupiter:junit-jupiter-api:5.10.0",
     junitEngine: "org.junit.jupiter:junit-jupiter-engine:5.10.0",
@@ -131,13 +137,8 @@ ext.libraries = [
 	// Required for some JUnit 5 internals
     opentest4j: "org.opentest4j:opentest4j:1.2.0",
 	hamcrest: "org.hamcrest:hamcrest:2.2@jar",
-	jakartaMailApi: "jakarta.mail:jakarta.mail-api:2.1.2@jar",
-	//jakartaMailImpl: "com.sun.mail:jakarta.mail:2.0.2@jar",
-	// For sending email using jakarta mail api
-	//jakartaActivation: "jakarta.activation:jakarta.activation-api:2.1.2@jar",
-	jakartaActivationImpl: "com.sun.activation:jakarta.activation:2.0.1@jar",
-	angusMail: "org.eclipse.angus:angus-mail:2.0.3@jar",
-	// implementation 'org.eclipse.angus:angus-mail:2.0.3'
+
+	
 ]
 
 libraries << [
@@ -211,8 +212,6 @@ libraries << [
     ],
 	email: [
 		libraries.jakartaMailApi,
-		// libraries.jakartaMailImpl,
-		// libraries.jakartaActivation,
 		libraries.jakartaActivationImpl,
 		libraries.angusMail,
 	]

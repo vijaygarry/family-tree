@@ -4,7 +4,9 @@ public enum ChannelEnum {
 	/** Web browser from Desktop, MacBook etc. */
 	WEB_BROWSER,
 	/** Native mobile app */
-	MOBILE_APP, 
+	MOBILE_APP,
+	/** Tablet browser */
+	TABLET_BROWSER,
 	/** Mobile browser */
 	MOBILE_BROWSER, 
 	/** Command line */

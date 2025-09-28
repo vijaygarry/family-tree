@@ -27,27 +27,34 @@ public class WebUtils {
 	        // In case of multiple IPs, the first one is the original client
 	        ip = ip.split(",")[0].trim();
 	    }
-	    return "Client IP: " + ip;
+	    return ip;
 	}
 	
 	public static ClientInformation getClientInformation (HttpServletRequest httpRequest) {
 		
 		UserAgent agent = userAgentAnalyzer.parse(httpRequest.getHeader("User-Agent"));
-		ChannelEnum channel = ChannelEnum.WEB_BROWSER;
+		ChannelEnum channel = null;
 		String browserName = agent.getValue("AgentName");
 		String browserVersion = agent.getValue("AgentVersion");
 		String operatingSystem = agent.getValue("OperatingSystemNameVersion");
-		String deviceType = agent.getValue("DeviceName");
-		if(deviceType != null) {
-			switch(deviceType.toLowerCase()) {
-			case "mobile": 
-			case "tablet": channel = ChannelEnum.MOBILE_BROWSER; break;
-			case "desktop": channel = ChannelEnum.WEB_BROWSER; break;
-			default:
-				log.info("Unknown device type, defaulting to web browesr");
-				channel = ChannelEnum.WEB_BROWSER;
+		String deviceType = agent.getValue("DeviceClass");
+		String deviceName = agent.getValue("DeviceName");
+		if (deviceType != null) {
+			switch (deviceType.toLowerCase()) {
+				case "mobile":
+				case "phone":
+					channel = ChannelEnum.MOBILE_BROWSER;
+					break;
+				case "tablet":
+					channel = ChannelEnum.TABLET_BROWSER;
+					break;
+				case "desktop":
+					channel = ChannelEnum.WEB_BROWSER;
+					break;
+				default:
+					log.info("Unknown device type, defaulting to web browser");
+					channel = ChannelEnum.WEB_BROWSER;
 			}
-			
 		}
 		return ClientInformation.builder()
 			.clientUserIpAddr(getClientIp(httpRequest))
@@ -55,7 +62,7 @@ public class WebUtils {
 			.browserName(browserName)
 			.browserVersion(browserVersion)
 			.operatingSystem(operatingSystem)
-			.deviceType(deviceType)
+			.deviceType(deviceType + " (" + deviceName + ")")
 			.build();
 	}
 }
