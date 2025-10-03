@@ -7,12 +7,14 @@ import com.neasaa.familytree.enums.MaritalStatus;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.io.Serial;
 import java.util.Date;
 import java.util.List;
 
 @Getter
 @Builder
 public class GetMemberProfileResponse extends OperationResponse {
+    @Serial
     private static final long serialVersionUID = -3478291045823901842L;
 
     private MemberProfile memberProfile;
@@ -21,9 +23,6 @@ public class GetMemberProfileResponse extends OperationResponse {
     private MemberSummaryDto spouse;
     private List<MemberSummaryDto> children;
     private List<MemberSummaryDto> siblings;
-
-    private List<MemberSummaryDto> memberList;
-    private FamilyTreeNode familyRoot;
 
     @Getter
     @Builder
