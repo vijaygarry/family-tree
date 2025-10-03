@@ -16,6 +16,12 @@ public class GetMemberProfileResponse extends OperationResponse {
     private static final long serialVersionUID = -3478291045823901842L;
 
     private MemberProfile memberProfile;
+
+    private List<MemberSummaryDto> parents;
+    private MemberSummaryDto spouse;
+    private List<MemberSummaryDto> children;
+    private List<MemberSummaryDto> siblings;
+
     private List<MemberSummaryDto> memberList;
     private FamilyTreeNode familyRoot;
 
