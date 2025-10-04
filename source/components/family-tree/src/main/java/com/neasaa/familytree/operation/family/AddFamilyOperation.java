@@ -48,8 +48,8 @@ public class AddFamilyOperation extends AbstractOperation<AddFamilyRequest, AddF
 		}
 		checkValuePresent(opRequest.getFamilyName(), "family name");
 		checkValuePresent(opRequest.getGotra(), "gotra");
-		checkObjectPresent(opRequest.getAddress(), "address");
-		FamilytreeValidationUtils.validateAddress(opRequest.getAddress());
+		checkObjectPresent(opRequest.getFamilyAddress(), "address");
+		FamilytreeValidationUtils.validateAddress(opRequest.getFamilyAddress());
 		
 	}
 
@@ -69,7 +69,7 @@ public class AddFamilyOperation extends AbstractOperation<AddFamilyRequest, AddF
 	}
 	
 	private AddressEntity getAddressFromRequest (AddFamilyRequest opRequest) {
-		AddressDto inputAddress = opRequest.getAddress();
+		AddressDto inputAddress = opRequest.getFamilyAddress();
 		AuditInfo auditInfo = getAuditInfo();
 		return AddressEntity.builder()
 				.addressLine1(inputAddress.getAddressLine1())

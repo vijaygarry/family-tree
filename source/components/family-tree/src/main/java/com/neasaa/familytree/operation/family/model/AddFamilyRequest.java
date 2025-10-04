@@ -17,6 +17,6 @@ public class AddFamilyRequest extends OperationRequest {
 	private String phone;
 	private boolean isPhoneWhatsappRegistered;
 	private String email;
-	private AddressDto address;
+	private AddressDto familyAddress;
 	
 }
