@@ -2,6 +2,7 @@ package com.neasaa.familytree.operation.family;
 
 import com.neasaa.base.app.operation.AbstractOperation;
 import com.neasaa.base.app.operation.AuditInfo;
+import com.neasaa.base.app.operation.exception.AccessDeniedException;
 import com.neasaa.base.app.operation.exception.InternalServerException;
 import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
@@ -83,8 +84,11 @@ public class UpdateFamilyDetailsOperation extends AbstractOperation<UpdateFamily
     @Override
     public UpdateFamilyDetailsResponse doExecute(UpdateFamilyDetailsRequest opRequest) throws OperationException {
         int familyId = opRequest.getFamilyId();
+
         // Check if this user is allowed to update family details
-        isFamilyUpdateAllowedForUser(familyId);
+        if(!isFamilyUpdateAllowedForUser(familyId) ) {
+            throw new AccessDeniedException("You are not allowed to update details of this family.");
+        }
 
 
         AddressEntity newFamilyAddress = getAddressFromRequest(opRequest);

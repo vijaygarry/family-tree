@@ -141,6 +141,12 @@ INSERT INTO shared_schema.lkpoperation(
 	VALUES ('UPDATE_MY_FAMILY_MEMBER', 'Update my member details', 'updateFamilyMemberDetails', true, true, 'ROLE_BASE', 
     true, 1, now(), 1, now());
 
+INSERT INTO shared_schema.lkpoperation(
+	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype, 
+    active, createdby, createddate, lastupdatedby, lastupdateddate)
+	VALUES ('UPDATE_MY_FAMILY_MEMBER_IMAGE', 'Update my member image', 'updateFamilyMemberImage', true, true, 'ROLE_BASE', 
+    true, 1, now(), 1, now());
+
 -- Get Family stats
 -- Total number of families, total number of members.
 -- Registered users

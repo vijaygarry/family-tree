@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import com.neasaa.base.app.operation.AuditInfo;
 import com.neasaa.base.app.operation.exception.InternalServerException;
 import com.neasaa.familytree.entity.FamilyMemberEntity;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -89,6 +90,10 @@ public class FamilyMemberDao extends AbstractDao {
 			"IMAGELASTUPDATED = ? , LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  " +
 			"where MEMBERID = ?";
 
+	private static final String UPDATE_FAMILY_MEMBER_IMAGE_STATEMENT = "UPDATE "  + BASE_SCHEMA_NAME + "FAMILYMEMBER " +
+			"SET PROFILEIMAGE = ?, PROFILEIMAGETHUMBNAIL = ? , IMAGELASTUPDATED = ? ,  LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  " +
+			"where MEMBERID = ?";
+
 
 	public List<FamilyMemberEntity> allMembersForFamily(int familyId) {
 		return getJdbcTemplate().query(SELECT_ALL_MEMBERS_FOR_FAMILY, new FamilyMemberRowMapper(), familyId);
@@ -166,6 +171,11 @@ public class FamilyMemberDao extends AbstractDao {
 		} catch (Exception e) {
 			throw new InternalServerException("Internal error while processing your request, please try again.", e);
 		}
+	}
+
+	public void updateMemberImagePath (int memberId, String memberImagePath, AuditInfo auditInfo) {
+		getJdbcTemplate().update(UPDATE_FAMILY_MEMBER_IMAGE_STATEMENT, memberImagePath, memberImagePath, auditInfo.getLastUpdatedDate(), auditInfo.getLastUpdatedBy(), auditInfo.getLastUpdatedDate(), memberId);
+		log.info("Member image path is updated for member id: {}", memberId);
 	}
 
 	public FamilyMemberEntity addFamilyMember(FamilyMemberEntity aFamilyMember) {

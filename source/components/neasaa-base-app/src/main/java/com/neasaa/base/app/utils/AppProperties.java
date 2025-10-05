@@ -36,7 +36,8 @@ public class AppProperties {
     @Value("${email.sender.displayname}")
     private String emailSenderDisplayName;
 
-
+    @Value("${app.upload.dir}")
+    private String appUploadDir;
 
 
 }

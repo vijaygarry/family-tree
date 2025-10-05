@@ -1,14 +1,17 @@
 package com.neasaa.familytree.operation.family;
 
 import com.neasaa.base.app.operation.AbstractOperation;
+import com.neasaa.base.app.operation.exception.AccessDeniedException;
 import com.neasaa.base.app.operation.exception.InternalServerException;
 import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.familytree.constants.ImageConstants;
 import com.neasaa.familytree.dao.pg.FamilyDao;
+import com.neasaa.familytree.entity.FamilyMemberEntity;
 import com.neasaa.familytree.operation.family.model.UpdateImageRequest;
 import com.neasaa.familytree.operation.family.model.UpdateImageResponse;
 import com.neasaa.familytree.utils.FileUtils;
+import com.neasaa.familytree.utils.SessionUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -18,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
+import static com.neasaa.familytree.operation.OperationNames.UPDATE_MY_FAMILY_DETAILS;
 import static com.neasaa.familytree.operation.OperationNames.UPDATE_MY_FAMILY_IMAGE;
 
 @Log4j2
@@ -53,7 +57,15 @@ public class UpdateFamilyImageOperation extends AbstractOperation<UpdateImageReq
 
     @Override
     public UpdateImageResponse doExecute(UpdateImageRequest opRequest) throws OperationException {
+
         int familyId = opRequest.getFamilyId();
+
+        // Check if this user is allowed to update family details
+        if(!isFamilyUpdateAllowedForUser(familyId) ) {
+            throw new AccessDeniedException("You are not allowed to update image for this family.");
+        }
+
+
         Path tmpUploadedFilePath = opRequest.getTmpUploadedFilePath();
         Path tmpDirectory = tmpUploadedFilePath.getParent();
         Path uploadDirectory = tmpDirectory.getParent();
@@ -90,6 +102,22 @@ public class UpdateFamilyImageOperation extends AbstractOperation<UpdateImageReq
         return ImageConstants.BASE_IMAGE_DIRECTORY + "/" + ImageConstants.FAMILY_IMAGE_DIRECTORY_NAME + "/" + familyImagePath.getFileName().toString();
     }
 
-
+    //TODO: This method is duplicate in several operations, move to a common utility class
+    private boolean isFamilyUpdateAllowedForUser(int familyId) {
+        if(getContext() == null || getContext().getAppSessionUser() == null) {
+            log.info("Operation context or AppSessionUser is null, cannot check if family edit allowed for user");
+            return false;
+        }
+        FamilyMemberEntity memberEntity = SessionUtils.getFamilyMemberFromSession( getContext().getAppSessionUser());
+        if(memberEntity == null) {
+            log.info("Family member not found in session, cannot check if family edit allowed for user");
+            return false;
+        }
+        if(memberEntity.getFamilyId() != familyId) {
+            // Only allowed to edit own family details.
+            return false;
+        }
+        return isOperationAllowedForUser(UPDATE_MY_FAMILY_DETAILS);
+    }
 
 }
