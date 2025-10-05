@@ -9,5 +9,4 @@ import lombok.Setter;
 public class RequestSignUpOTPResponse extends OperationResponse {
     private String emailId;
     private String requestId;
-    private String logonName;
 }

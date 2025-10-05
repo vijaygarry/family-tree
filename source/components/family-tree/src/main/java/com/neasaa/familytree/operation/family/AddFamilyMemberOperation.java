@@ -206,7 +206,7 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 	private FamilyMemberEntity getFamilyMemberFromRequest (AddFamilyMemberRequest opRequest, FamilyEntity family, int addressId) {
 		AuditInfo auditInfo = getAuditInfo();
 		String phoneNumber = DataFormatter.formatPhoneNumber(opRequest.getPhone());
-
+		String emailId = opRequest.getEmail() != null ? opRequest.getEmail().toLowerCase().trim() : null;
 		return FamilyMemberEntity.builder()
 				.familyId(family.getFamilyId())
 				.headOfFamily(opRequest.isHeadOfFamily())
@@ -220,7 +220,7 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 				.memberAddressId(addressId)
 				.phone(phoneNumber)
 				.isPhoneWhatsappRegistered(opRequest.isPhoneWhatsappRegistered())
-				.email(opRequest.getEmail())
+				.email(emailId)
 				.gender(Gender.getGenderByString(opRequest.getGender()))
 				.birthDay(opRequest.getBirthDay())
 				.birthMonth(Month.fromName(opRequest.getBirthMonth()))

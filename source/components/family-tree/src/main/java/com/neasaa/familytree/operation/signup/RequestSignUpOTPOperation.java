@@ -92,7 +92,6 @@ public class RequestSignUpOTPOperation extends AbstractOperation<RequestSignUpOT
                 RequestSignUpOTPResponse response = new RequestSignUpOTPResponse();
                 response.setEmailId(emailId);
                 response.setRequestId(otpInformation.getRequestId());
-                response.setLogonName(OTPUtil.getLogonNameSuggestion(emailId));
                 return response;
             }
         }
@@ -119,7 +118,6 @@ public class RequestSignUpOTPOperation extends AbstractOperation<RequestSignUpOT
         RequestSignUpOTPResponse response = new RequestSignUpOTPResponse();
         response.setEmailId(emailId);
         response.setRequestId(requestId); // Simulated request ID for OTP
-        response.setLogonName(OTPUtil.getLogonNameSuggestion(emailId));
         return response;
     }
 

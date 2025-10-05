@@ -58,7 +58,6 @@ public class SignUpOperation extends AbstractOperation<SignUpRequest, EmptyOpera
             throw new ValidationException("Invalid request provided.");
         }
         checkValuePresent(opRequest.getEmailId(), "Email Id");
-        checkValuePresent(opRequest.getLogonName(), "Logon Name");
         checkValuePresent(opRequest.getOtp(), "One time password (OTP)");
         checkValuePresent(opRequest.getRequestId(), "Request Id");
         checkValuePresent(opRequest.getPassword(), "Password");
@@ -70,7 +69,6 @@ public class SignUpOperation extends AbstractOperation<SignUpRequest, EmptyOpera
     public EmptyOperationResponse doExecute(SignUpRequest opRequest) throws OperationException {
 
         String emailId = opRequest.getEmailId().toLowerCase().trim();
-        String logonName = opRequest.getLogonName().toLowerCase().trim();
         String password = opRequest.getPassword().trim();
         String otp = opRequest.getOtp().trim();
 
@@ -79,9 +77,9 @@ public class SignUpOperation extends AbstractOperation<SignUpRequest, EmptyOpera
             throw new ValidationException("Email ID is already registered. Please use 'Forgot Password' option to reset the password.");
         }
 
-        AppUser userByLogonName = appUserDao.getUserByLogonName(logonName);
+        AppUser userByLogonName = appUserDao.getUserByLogonName(emailId);
         if(userByLogonName != null) {
-            throw new ValidationException("Logon name " + logonName + " is already taken, please choose a different logon name.");
+            throw new ValidationException("Email ID " + emailId + " is already registered. Please use 'Forgot Password' option to reset the password.");
         }
 
         // Make sure member exists in family member table with this email
@@ -124,7 +122,7 @@ public class SignUpOperation extends AbstractOperation<SignUpRequest, EmptyOpera
 
         // Get first name, last name from member details
         AppUser user = AppUser.builder()
-                .logonName(logonName)
+                .logonName(emailId)
                 .hashPassword(PasswordUtil.hashPassword(password))
                 .firstName(memberByEmail.getFirstName())
                 .lastName(memberByEmail.getLastName())
@@ -142,7 +140,7 @@ public class SignUpOperation extends AbstractOperation<SignUpRequest, EmptyOpera
         int newUerId = appUserDao.registerAppUser(user);
 
         // Update logon name in family member table
-        familyMemberDao.updateMemberLogonName(logonName, newUerId, currentDate, memberByEmail.getMemberId());
+        familyMemberDao.updateMemberLogonName(emailId, newUerId, currentDate, memberByEmail.getMemberId());
 
         // Add default roles to user in user role table
         UserRoleMap userRoleMap = UserRoleMap.builder()
