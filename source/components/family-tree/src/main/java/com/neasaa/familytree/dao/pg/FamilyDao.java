@@ -42,8 +42,8 @@ public class FamilyDao extends AbstractDao {
 			"f.region, f.phone, f.isphonewhatsappregistered, f.familyimage, " +
 			"m.FIRSTNAME, m. FIRSTNAMEINHINDI " +
 			"FROM " + BASE_SCHEMA_NAME + "FAMILY f " +
-			"LEFT JOIN " + BASE_SCHEMA_NAME + "FAMILYMEMBER m on f.familyid = m.familyid " +
-			"WHERE m.HEADOFFAMILY = true and f.familysearchtext ilike ? and f.active = true";
+			"LEFT JOIN " + BASE_SCHEMA_NAME + "FAMILYMEMBER m on f.familyid = m.familyid and m.HEADOFFAMILY = true " +
+			"WHERE f.active = true and f.familysearchtext ilike ? ";
 
 	private static final String UPDATE_FAMILY_DISPLAY_NAME = "UPDATE " + BASE_SCHEMA_NAME + "FAMILY " +
 			"SET region = ?, familysearchtext = ?, LASTUPDATEDBY = ?, lastupdateddate = ? WHERE FAMILYID = ?";

@@ -21,7 +21,11 @@ public class SearchFamilyRowMapper implements RowMapper<SearchFamilyEntity> {
         family.setPhone(DataFormatter.formatPhoneNumber(phone));
         family.setPhoneWhatsappRegistered(aRs.getBoolean("ISPHONEWHATSAPPREGISTERED"));
         family.setFamilyImage(aRs.getString("FAMILYIMAGE"));
-        family.setHeadOfFamilyFirstName(aRs.getString("FIRSTNAME"));
+        String firstName = aRs.getString("FIRSTNAME");
+        if(firstName == null || firstName.trim().isEmpty()) {
+            firstName = "No Head Of Family";
+        }
+        family.setHeadOfFamilyFirstName(firstName);
         family.setHeadOfFamilyFirstNameInHindi(aRs.getString("FIRSTNAMEINHINDI"));
         return family;
     }

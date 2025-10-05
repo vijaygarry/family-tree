@@ -61,8 +61,9 @@ public class AddFamilyOperation extends AbstractOperation<AddFamilyRequest, AddF
 		familyAddress.setAddressId(addressId);
 
 		FamilyEntity familyFromRequest = getFamilyFromRequest(opRequest, familyAddress);
-		familyFromRequest.setFamilysearchtext(DataFormatter.getFamilySearchString(familyFromRequest, null, familyAddress));
-		int familyId = familyDao.addFamily(getFamilyFromRequest(opRequest, familyAddress));
+		String familySearchString = DataFormatter.getFamilySearchString(familyFromRequest, null, familyAddress);
+		familyFromRequest.setFamilysearchtext(familySearchString);
+		int familyId = familyDao.addFamily(familyFromRequest);
 		AddFamilyResponse response = AddFamilyResponse.builder().familyName(opRequest.getFamilyName()).familyId(familyId).build();
 		response.setOperationMessage(String.format("%s family added successfully !!!", opRequest.getFamilyName()));
 		return response;
