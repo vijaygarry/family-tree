@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.io.Serial;
+import java.time.LocalDate;
 import java.util.Date;
 
 import com.neasaa.base.app.entity.BaseEntity;
@@ -43,8 +44,8 @@ public class FamilyMemberEntity extends BaseEntity {
 	private Month birthMonth;
 	private Short birthYear;
 	private MaritalStatus maritalStatus;
-	private Date weddingDate;
-	private Date dateOfDeath;
+	private LocalDate weddingDate;
+	private LocalDate dateOfDeath;
 	private String phone;
 	private boolean isPhoneWhatsappRegistered;
 	private String email;

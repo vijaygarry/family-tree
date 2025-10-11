@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS shared_schema.familymember
 (
     memberid serial NOT NULL,
     familyid integer NOT NULL,
-    logonname character varying(150),
+    logonname character varying(150) COLLATE pg_catalog."default",
     headoffamily boolean NOT NULL DEFAULT false,
     firstname character varying(100) COLLATE pg_catalog."default" NOT NULL,
     firstnameinhindi character varying(100) COLLATE pg_catalog."default",
@@ -18,9 +18,9 @@ CREATE TABLE IF NOT EXISTS shared_schema.familymember
     birthday smallint,
     birthmonth smallint NOT NULL,
     birthyear smallint NOT NULL,
-    maritalstatus character varying(20) NOT NULL,
-    weddingdate timestamp with time zone,
-    dateofdeath timestamp with time zone,
+    maritalstatus character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    weddingdate date,
+    dateofdeath date,
     phone character varying(20) COLLATE pg_catalog."default",
     isphonewhatsappregistered boolean NOT NULL DEFAULT false,
     email character varying(100) COLLATE pg_catalog."default",
@@ -30,8 +30,8 @@ CREATE TABLE IF NOT EXISTS shared_schema.familymember
     occupation character varying(255) COLLATE pg_catalog."default",
     hobby character varying(255) COLLATE pg_catalog."default",
     membersearchtext character varying(500) COLLATE pg_catalog."default",
-    profileimage character varying(255) NOT NULL,
-    profileimagethumbnail character varying(255) NOT NULL,
+    profileimage character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    profileimagethumbnail character varying(255) COLLATE pg_catalog."default" NOT NULL,
     imagelastupdated timestamp with time zone,
     createdby integer NOT NULL,
     createddate timestamp with time zone NOT NULL,
@@ -40,20 +40,20 @@ CREATE TABLE IF NOT EXISTS shared_schema.familymember
     CONSTRAINT familymember_pkey PRIMARY KEY (memberid),
     CONSTRAINT familymember_email_key UNIQUE (email),
     CONSTRAINT familymember_logonname_key UNIQUE (logonname),
+    CONSTRAINT familymember_createdby_fkey FOREIGN KEY (createdby)
+        REFERENCES shared_schema.appuser (userid) MATCH SIMPLE
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT,
     CONSTRAINT familymember_familyid_fkey FOREIGN KEY (familyid)
         REFERENCES shared_schema.family (familyid) MATCH SIMPLE
         ON UPDATE RESTRICT
         ON DELETE RESTRICT,
+    CONSTRAINT familymember_lastupdatedby_fkey FOREIGN KEY (lastupdatedby)
+        REFERENCES shared_schema.appuser (userid) MATCH SIMPLE
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT,
     CONSTRAINT familymember_memberaddressid_fkey FOREIGN KEY (memberaddressid)
         REFERENCES shared_schema.address (addressid) MATCH SIMPLE
-        ON UPDATE RESTRICT
-        ON DELETE RESTRICT,
-    FOREIGN KEY (createdby)
-        REFERENCES shared_schema.appuser (userid) MATCH SIMPLE
-        ON UPDATE RESTRICT
-        ON DELETE RESTRICT,
-    FOREIGN KEY (lastupdatedby)
-        REFERENCES shared_schema.appuser (userid) MATCH SIMPLE
         ON UPDATE RESTRICT
         ON DELETE RESTRICT
 )
@@ -92,6 +92,7 @@ COMMENT ON COLUMN shared_schema.familymember.nickname
 
 COMMENT ON COLUMN shared_schema.familymember.nicknameinhindi
     IS 'An informal or commonly used alternate name in hindi';
+
 COMMENT ON COLUMN shared_schema.familymember.gender
     IS 'Family member gender with possible value Male or Female';
 
@@ -106,6 +107,7 @@ COMMENT ON COLUMN shared_schema.familymember.birthyear
 
 COMMENT ON COLUMN shared_schema.familymember.maritalstatus
     IS 'Member marital status with possible values Single, Married, Divorced, Widowed, Separated, Engaged';
+
 COMMENT ON COLUMN shared_schema.familymember.weddingdate
     IS 'Wedding date if married. Optional field';
 
@@ -116,6 +118,7 @@ COMMENT ON COLUMN shared_schema.familymember.phone
     IS 'Phone number in following:
       +91-912 345 6789
       +1-123 456 7890';
+
 COMMENT ON COLUMN shared_schema.familymember.isphonewhatsappregistered
     IS 'True indicate, phone number is registered whatsapp number';
 
@@ -127,7 +130,7 @@ COMMENT ON COLUMN shared_schema.familymember.addresssameasfamily
 
 COMMENT ON COLUMN shared_schema.familymember.memberaddressid
     IS 'The specific address of the member.  Address id = 0 indicate member address is same as family address';
-    
+
 COMMENT ON COLUMN shared_schema.familymember.educationdetails
     IS 'Education details. A list of academic qualifications E.g HSC; Engineering in CS; MBA';
 

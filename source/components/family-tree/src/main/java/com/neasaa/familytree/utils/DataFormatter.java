@@ -11,7 +11,9 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Locale;
 
 public class DataFormatter {
 
@@ -179,13 +181,11 @@ public class DataFormatter {
 		return String.format("%s-%s-%s", day, month.getShortMonthName(), year);
 	}
 
-	public static int getYearFromDate (Date date) {
-		if(date == null) {
+	public static int getYearFromDate (LocalDate localDate) {
+		if(localDate == null) {
 			return 0;
 		}
-		return date.toInstant()
-				.atZone(ZoneId.systemDefault())
-				.getYear();
+		return localDate.getYear();
 	}
 
 	public static String getFormattedMemberAge (FamilyMemberEntity familyMemberEntity) {
@@ -195,14 +195,20 @@ public class DataFormatter {
 		return "(" + getMemberAgeInYears(familyMemberEntity.getBirthDay(), familyMemberEntity.getBirthMonth(), familyMemberEntity.getBirthYear()) + " years)";
 	}
 
-	public static String getFormattedWeddingDate (FamilyMemberEntity familyMemberEntity) {
-		if(familyMemberEntity.getMaritalStatus() == MaritalStatus.Single) {
+	public static String getISOFormatDate (LocalDate localDate) {
+		if(localDate == null) {
 			return null;
 		}
-		if(familyMemberEntity.getWeddingDate() == null) {
+		DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+		return localDate.format(formatter);
+	}
+
+	public static LocalDate parseISODateToLocalDate (String inputDate) {
+		if(inputDate == null || inputDate.isEmpty()) {
 			return null;
 		}
-		return new SimpleDateFormat(WEDDING_DATE_FORMAT).format(familyMemberEntity.getWeddingDate());
+		DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+		return LocalDate.parse(inputDate, formatter);
 	}
 
 	public static int getMemberAgeInYears (short day, Month month, short year) {

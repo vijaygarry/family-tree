@@ -248,8 +248,8 @@ public class FamilyMemberDao extends AbstractDao {
 		setSmallIntInStatement(prepareStatement, columnIndex++, aFamilyMember.getBirthMonth().getMonthNumber());
 		setSmallIntInStatement(prepareStatement, columnIndex++, aFamilyMember.getBirthYear());
 		setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getMaritalStatus().name());
-		setTimestampInStatement(prepareStatement, columnIndex++, aFamilyMember.getWeddingDate());
-		setTimestampInStatement(prepareStatement, columnIndex++, aFamilyMember.getDateOfDeath());
+		setLocalDateInStatement(prepareStatement, columnIndex++, aFamilyMember.getWeddingDate());
+		setLocalDateInStatement(prepareStatement, columnIndex++, aFamilyMember.getDateOfDeath());
 
 		setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getPhone());
 		setBooleanInStatement(prepareStatement, columnIndex++, aFamilyMember.isPhoneWhatsappRegistered());
@@ -316,8 +316,8 @@ public class FamilyMemberDao extends AbstractDao {
 		setSmallIntInStatement(prepareStatement, columnIndex++, aFamilyMember.getBirthMonth().getMonthNumber());
 		setSmallIntInStatement(prepareStatement, columnIndex++, aFamilyMember.getBirthYear());
 		setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getMaritalStatus().name());
-		setTimestampInStatement(prepareStatement, columnIndex++, aFamilyMember.getWeddingDate());
-		setTimestampInStatement(prepareStatement, columnIndex++, aFamilyMember.getDateOfDeath());
+		setLocalDateInStatement(prepareStatement, columnIndex++, aFamilyMember.getWeddingDate());
+		setLocalDateInStatement(prepareStatement, columnIndex++, aFamilyMember.getDateOfDeath());
 
 		setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getPhone());
 		setBooleanInStatement(prepareStatement, columnIndex++, aFamilyMember.isPhoneWhatsappRegistered());

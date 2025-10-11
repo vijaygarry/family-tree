@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.time.LocalDate;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,15 @@ public class AbstractDao {
 		} else {
 			aPreparedStatement.setTimestamp(aIndex, DateUtils.dateToSqlTimestamp(aDateValue),
 					DateUtils.getUtcCalendarInstance());
+		}
+	}
+
+	public final static void setLocalDateInStatement(PreparedStatement aPreparedStatement, int aIndex, LocalDate aLocalDateValue)
+			throws SQLException {
+		if (aLocalDateValue == null) {
+			aPreparedStatement.setNull(aIndex, Types.DATE);
+		} else {
+			aPreparedStatement.setObject(aIndex, aLocalDateValue);
 		}
 	}
 	
@@ -200,7 +210,20 @@ public class AbstractDao {
 	 * @return
 	 * @throws SQLException
 	 */
-	public final static Date getTimestampFromResultSet(ResultSet aResultSet, String aColumnName) throws SQLException {
+	public static Date getTimestampFromResultSet(ResultSet aResultSet, String aColumnName) throws SQLException {
 		return aResultSet.getTimestamp(aColumnName, DateUtils.getUtcCalendarInstance());
+	}
+
+	/**
+	 * This method fetches the date from ResultSet for specified column name.
+	 * As date does not include time zone information, so date is same for all time zones.
+	 *
+	 * @param aResultSet
+	 * @param aColumnName
+	 * @return
+	 * @throws SQLException
+	 */
+	public static LocalDate getLocalDateFromResultSet(ResultSet aResultSet, String aColumnName) throws SQLException {
+		return aResultSet.getObject(aColumnName, LocalDate.class);
 	}
 }

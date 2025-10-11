@@ -8,11 +8,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-
 import static com.neasaa.familytree.utils.DataFormatter.formatBirthDate;
 import static com.neasaa.familytree.utils.DataFormatter.getFormattedMemberAge;
-import static com.neasaa.familytree.utils.DataFormatter.getFormattedWeddingDate;
+import static com.neasaa.familytree.utils.DataFormatter.getISOFormatDate;
 
 
 @Getter
@@ -38,7 +36,7 @@ public class MemberSummaryDto {
     private String phone;
     private boolean isPhoneWhatsappRegistered;
     private MaritalStatus maritalStatus;
-    private String weddingDate; // Format: dd-MMM-yyyy or MMM-yyyy
+    private String weddingDate; // Date is in ISO format i.e. yyyy-MM-dd
     private String educationDetails;
     private String occupation;
     private String profileImageThumbnail;
@@ -63,7 +61,7 @@ public class MemberSummaryDto {
                 .phone(familyMemberEntity.getPhone())
                 .isPhoneWhatsappRegistered(familyMemberEntity.isPhoneWhatsappRegistered())
                 .maritalStatus(familyMemberEntity.getMaritalStatus())
-                .weddingDate(getFormattedWeddingDate(familyMemberEntity))
+                .weddingDate(getISOFormatDate(familyMemberEntity.getWeddingDate()))
                 .educationDetails(familyMemberEntity.getEducationDetails())
                 .occupation(familyMemberEntity.getOccupation())
                 .profileImageThumbnail(familyMemberEntity.getProfileImageThumbnail())

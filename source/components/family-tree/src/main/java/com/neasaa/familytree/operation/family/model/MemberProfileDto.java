@@ -8,6 +8,8 @@ import lombok.Getter;
 
 import java.util.Date;
 
+import static com.neasaa.familytree.utils.DataFormatter.getISOFormatDate;
+
 @Getter
 @Builder
 public class MemberProfileDto {
@@ -30,9 +32,9 @@ public class MemberProfileDto {
     private Short birthDay;
     private String birthMonth;
     private short birthYear;
-    private Date dateOfDeath;
+    private String dateOfDeath;
     private MaritalStatus maritalStatus;
-    private Date weddingDate;
+    private String weddingDate;
     private String educationDetails;
     private String occupation;
     private String workingAt;
@@ -71,9 +73,9 @@ public class MemberProfileDto {
                 .birthDay(birthDay)
                 .birthMonth(familyMember.getBirthMonth().getShortMonthName())
                 .birthYear(familyMember.getBirthYear())
-                .dateOfDeath(familyMember.getDateOfDeath())
+                .dateOfDeath(getISOFormatDate(familyMember.getDateOfDeath()))
                 .maritalStatus(familyMember.getMaritalStatus())
-                .weddingDate(familyMember.getWeddingDate())
+                .weddingDate(getISOFormatDate(familyMember.getWeddingDate()))
                 .educationDetails(familyMember.getEducationDetails())
                 .occupation(familyMember.getOccupation())
                 .hobby(familyMember.getHobby())

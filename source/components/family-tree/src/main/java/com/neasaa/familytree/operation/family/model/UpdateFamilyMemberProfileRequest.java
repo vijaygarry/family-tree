@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serial;
-import java.util.Date;
 
 @Getter
 @Setter
@@ -28,11 +27,11 @@ public class UpdateFamilyMemberProfileRequest extends OperationRequest {
     private String email;
     private String gender;
     private String maritalStatus;
-    private Date weddingDate;
+    private String weddingDate;
     private Short birthDay;
     private String birthMonth;
     private Short birthYear;
-    private Date dateOfDeath;
+    private String dateOfDeath;
 
     private String educationDetails;
     private String occupation;

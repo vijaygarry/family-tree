@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serial;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -33,9 +33,9 @@ public class AddFamilyMemberRequest extends OperationRequest {
 	private Short birthDay;
 	private String birthMonth;
 	private Short birthYear;
-	private Date dateOfDeath;
+	private LocalDate dateOfDeath;
 	private String maritalStatus;
-	private Date weddingDate;
+	private LocalDate weddingDate;
 	private String educationDetails;
 	private String occupation;
 	private String workingAt;

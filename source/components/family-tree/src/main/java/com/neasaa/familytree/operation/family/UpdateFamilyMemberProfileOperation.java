@@ -15,7 +15,6 @@ import com.neasaa.familytree.entity.FamilyMemberEntity;
 import com.neasaa.familytree.enums.Gender;
 import com.neasaa.familytree.enums.MaritalStatus;
 import com.neasaa.familytree.enums.Month;
-import com.neasaa.familytree.operation.family.model.AddFamilyMemberRequest;
 import com.neasaa.familytree.operation.family.model.AddressDto;
 import com.neasaa.familytree.operation.family.model.MemberProfileDto;
 import com.neasaa.familytree.operation.family.model.UpdateFamilyMemberProfileRequest;
@@ -35,6 +34,7 @@ import static com.neasaa.base.app.utils.ValidationUtils.checkValueRange;
 import static com.neasaa.familytree.operation.OperationNames.UPDATE_MY_FAMILY_MEMBER;
 import static com.neasaa.familytree.utils.Constants.MISSING_BIRTH_DATE_VALUE;
 import static com.neasaa.familytree.utils.DataFormatter.getFamilyMemberSearchString;
+import static com.neasaa.familytree.utils.DataFormatter.parseISODateToLocalDate;
 import static com.neasaa.familytree.utils.FamilytreeValidationUtils.validateBirthDate;
 import static com.neasaa.familytree.utils.FamilytreeValidationUtils.validateStringLength;
 
@@ -222,7 +222,7 @@ public class UpdateFamilyMemberProfileOperation extends AbstractOperation<Update
         newMemberEntity.setPhoneWhatsappRegistered(opRequest.isPhoneWhatsappRegistered());
         newMemberEntity.setGender(Gender.getGenderByString(opRequest.getGender()));
         newMemberEntity.setMaritalStatus(MaritalStatus.getMaritalStatus(opRequest.getMaritalStatus()));
-        newMemberEntity.setWeddingDate(opRequest.getWeddingDate());
+        newMemberEntity.setWeddingDate(parseISODateToLocalDate(opRequest.getWeddingDate()));
         short birthDay = MISSING_BIRTH_DATE_VALUE;
         if(opRequest.getBirthDay() != null) {;
             birthDay = opRequest.getBirthDay();
