@@ -22,6 +22,8 @@ import com.neasaa.base.app.dao.pg.AbstractDao;
 
 import lombok.extern.log4j.Log4j2;
 
+import static com.neasaa.base.app.constant.AppConstants.UPDATE_OPERATION;
+
 @Log4j2
 @Repository
 public class FamilyMemberDao extends AbstractDao {
@@ -94,6 +96,21 @@ public class FamilyMemberDao extends AbstractDao {
 			"SET PROFILEIMAGE = ?, PROFILEIMAGETHUMBNAIL = ? , IMAGELASTUPDATED = ? ,  LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  " +
 			"where MEMBERID = ?";
 
+	private static final String FAMILY_MEMBER_HISTORY_INSERT_STATEMENT =
+			"INSERT INTO " + BASE_SCHEMA_NAME + "familymemberhistory " +
+					"(operation, memberid, familyid, logonname, headoffamily, firstname, firstnameinhindi, " +
+					"lastname, maidenlastname, nickname, nicknameinhindi, gender, birthday, birthmonth, birthyear, " +
+					"maritalstatus, weddingdate, dateofdeath, phone, isphonewhatsappregistered, email, " +
+					"addresssameasfamily, memberaddressid, educationdetails, occupation, hobby, membersearchtext, " +
+					"profileimage, profileimagethumbnail, imagelastupdated, createdby, createddate, " +
+					"lastupdatedby, lastupdateddate) " +
+					"SELECT ?, memberid, familyid, logonname, headoffamily, firstname, firstnameinhindi, " +
+					"lastname, maidenlastname, nickname, nicknameinhindi, gender, birthday, birthmonth, birthyear, " +
+					"maritalstatus, weddingdate, dateofdeath, phone, isphonewhatsappregistered, email, " +
+					"addresssameasfamily, memberaddressid, educationdetails, occupation, hobby, membersearchtext, " +
+					"profileimage, profileimagethumbnail, imagelastupdated, createdby, createddate, " +
+					"lastupdatedby, lastupdateddate " +
+					"FROM " + BASE_SCHEMA_NAME + "familymember WHERE memberid = ?";
 
 	public List<FamilyMemberEntity> allMembersForFamily(int familyId) {
 		return getJdbcTemplate().query(SELECT_ALL_MEMBERS_FOR_FAMILY, new FamilyMemberRowMapper(), familyId);
@@ -196,6 +213,21 @@ public class FamilyMemberDao extends AbstractDao {
 		return getMemberById(memberId);
 	}
 
+	private void addFamilyMemberHistoryRecord(int memberId, String operation) {
+
+		getJdbcTemplate().update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {
+				PreparedStatement prepareStatement = aCon.prepareStatement(FAMILY_MEMBER_HISTORY_INSERT_STATEMENT);
+				int columnIndex = 1;
+				setStringInStatement(prepareStatement, 1, operation);
+				setIntInStatement(prepareStatement, 2, memberId);
+				return prepareStatement;
+			}
+		});
+        log.info("New family member history record added for member id {} for operation {}", memberId, operation);
+	}
+
 	private PreparedStatement buildInsertStatement(Connection aConection, FamilyMemberEntity aFamilyMember) throws SQLException {
 
 		PreparedStatement prepareStatement = aConection.prepareStatement(INSERT_FAMILY_STATEMENT, new String[]{"memberid"});
@@ -211,12 +243,8 @@ public class FamilyMemberDao extends AbstractDao {
 		setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getNickNameInHindi());
 
 		setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getGender().name());
-		if(aFamilyMember.getBirthDay() == null) {
-			setSmallIntInStatement(prepareStatement, columnIndex++, (short)-1);
-		} else {
-			// If birth day is not set, we set it to -1
-			setSmallIntInStatement(prepareStatement, columnIndex++, aFamilyMember.getBirthDay());
-		}
+		setSmallIntInStatement(prepareStatement, columnIndex++, aFamilyMember.getBirthDay());
+
 		setSmallIntInStatement(prepareStatement, columnIndex++, aFamilyMember.getBirthMonth().getMonthNumber());
 		setSmallIntInStatement(prepareStatement, columnIndex++, aFamilyMember.getBirthYear());
 		setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getMaritalStatus().name());
@@ -237,7 +265,7 @@ public class FamilyMemberDao extends AbstractDao {
 		setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getEducationDetails());
 		setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getOccupation());
 		setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getHobby());
-		setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getMembersearchtext());
+		setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getMemberSearchText());
 		setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getProfileImage());
 		setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getProfileImageThumbnail());
 		setTimestampInStatement(prepareStatement, columnIndex++, aFamilyMember.getImageLastUpdated());
@@ -263,7 +291,7 @@ public class FamilyMemberDao extends AbstractDao {
 
 	}
 
-	private PreparedStatement buildUpdateStatement(Connection aConection, FamilyMemberEntity aFamilyMember) throws SQLException {
+	private PreparedStatement buildUpdateStatement(Connection aConection, FamilyMemberEntity aFamilyMember, AuditInfo auditInfo) throws SQLException {
 
 		PreparedStatement prepareStatement = aConection.prepareStatement(UPDATE_FAMILY_MEMBER_STATEMENT);
 
@@ -305,24 +333,29 @@ public class FamilyMemberDao extends AbstractDao {
 		setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getEducationDetails());
 		setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getOccupation());
 		setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getHobby());
-		setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getMembersearchtext());
+		setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getMemberSearchText());
 		setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getProfileImage());
 		setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getProfileImageThumbnail());
 		setTimestampInStatement(prepareStatement, columnIndex++, aFamilyMember.getImageLastUpdated());
-		setIntInStatement(prepareStatement, columnIndex++, aFamilyMember.getLastUpdatedBy());
-		setTimestampInStatement(prepareStatement, columnIndex++, aFamilyMember.getLastUpdatedDate());
+		setIntInStatement(prepareStatement, columnIndex++, auditInfo.getLastUpdatedBy());
+		setTimestampInStatement(prepareStatement, columnIndex++, auditInfo.getLastUpdatedDate());
 		setIntInStatement(prepareStatement, columnIndex++, aFamilyMember.getMemberId());
 		return prepareStatement;
 	}
 
-	public int updateFamilyMember(FamilyMemberEntity aFamilyMember) throws SQLException {
-		return getJdbcTemplate().update(new PreparedStatementCreator() {
-			@Override
-			public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {
-				return buildUpdateStatement(aCon, aFamilyMember);
-			}
-		});
-
+	public int updateFamilyMember(FamilyMemberEntity aFamilyMember, AuditInfo auditInfo) {
+		try {
+			addFamilyMemberHistoryRecord(aFamilyMember.getMemberId(), UPDATE_OPERATION);
+			return getJdbcTemplate().update(new PreparedStatementCreator() {
+				@Override
+				public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {
+					return buildUpdateStatement(aCon, aFamilyMember, auditInfo);
+				}
+			});
+		} catch (Exception e) {
+			log.error("Error while updating family member for member id: {}", aFamilyMember.getMemberId(), e);
+			throw new InternalServerException("Error while updating member profile. Please try again later");
+		}
 	}
 
 

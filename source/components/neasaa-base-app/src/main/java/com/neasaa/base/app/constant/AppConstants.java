@@ -6,4 +6,11 @@ public class AppConstants {
 
     // This is used as placeholder for user id during signup
     public static final int SYSTEM_USER_ID = 0;
+
+    // DB Operation constants
+    // Operation type in history table when main table record is updated
+    public static final String UPDATE_OPERATION = "UPDATE";
+
+    // Operation type in history table when main table record is deleted
+    public static final String DELETE_OPERATION = "DELETE";
 }

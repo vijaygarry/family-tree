@@ -1,13 +1,19 @@
 package com.neasaa.familytree.utils;
 
+import static com.neasaa.base.app.utils.ValidationUtils.checkObjectPresent;
 import static com.neasaa.base.app.utils.ValidationUtils.checkValuePresent;
+import static com.neasaa.base.app.utils.ValidationUtils.checkValueRange;
 
+import java.time.Year;
 import java.util.regex.Pattern;
 
 import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.base.app.utils.EmailValidator;
+import com.neasaa.familytree.enums.Month;
 import com.neasaa.familytree.operation.family.model.AddressDto;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class FamilytreeValidationUtils {
 	
 	private static final String PHONE_REGEX = "^(\\+)?[0-9 \\-]{10,15}$";
@@ -78,8 +84,30 @@ public class FamilytreeValidationUtils {
 		}
 	}
 
-	public static void validateEmail (String email) {
-		boolean isMandatory = false; // Email is optional for family details
-		EmailValidator.validateEmail(email, isMandatory);
+	public static void validateBirthDate (Short day, String month, Short year) {
+
+		log.info("Input birth date: {}/{}/{}", day, month, year);
+		if(day != null) {
+			checkValueRange(day.intValue(), 1, 31, "birth day");
+		}
+
+		checkObjectPresent(month, "birth month");
+		//Check if month is valid
+		Month monthEnum = Month.fromName(month);
+		if(monthEnum == null) {
+			throw new ValidationException ("Invalid value for field birth month");
+		}
+
+		checkObjectPresent(year, "birth year");
+		int currentYear = Year.now().getValue();
+		checkValueRange(year.intValue(), 1900, currentYear, "birth year");
+		if(day != null) {
+			// Check if day is valid for the given month and year
+			boolean isLeapYear = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+			int maxDays = monthEnum.getMaxDaysInMonth(isLeapYear);
+			if(day > maxDays) {
+				throw new ValidationException ("Invalid value for field birth day");
+			}
+		}
 	}
 }

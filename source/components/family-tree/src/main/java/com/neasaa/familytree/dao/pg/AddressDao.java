@@ -34,6 +34,8 @@ public class AddressDao extends AbstractDao {
 			" SET ADDRESSLINE1 = ? , ADDRESSLINE2 = ? , ADDRESSLINE3 = ? , CITY = ? , DISTRICT = ? , STATE = ? , " +
 			" POSTALCODE = ? , COUNTRY = ? , LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  where ADDRESSID = ?";
 
+	private static String DELETE_ADDRESS_BY_ADDRESS_ID = "DELETE FROM " + BASE_SCHEMA_NAME + "ADDRESS WHERE ADDRESSID = ?";
+
 	public int addAddress (AddressEntity address) {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		getJdbcTemplate().update(new PreparedStatementCreator() {
@@ -80,17 +82,21 @@ public class AddressDao extends AbstractDao {
 	}
 
 
-	public int deleteAddress(AddressEntity aAddress) throws SQLException {
-		return getJdbcTemplate().update(new PreparedStatementCreator() {
-			@Override
-			public PreparedStatement createPreparedStatement(Connection aConection) throws SQLException {
-				String deleteSqlQuery = "DELETE FROM ADDRESS WHERE ADDRESSID = ?";
-				PreparedStatement prepareStatement = aConection.prepareStatement(deleteSqlQuery);
-				setIntInStatement(prepareStatement, 1, aAddress.getAddressId());
-				return prepareStatement;
-			}
-		});
-
+	public int deleteAddress(int addressId) {
+		//TODO: Create a history record before deleting the address
+		try {
+			return getJdbcTemplate().update(new PreparedStatementCreator() {
+				@Override
+				public PreparedStatement createPreparedStatement(Connection aConection) throws SQLException {
+					PreparedStatement prepareStatement = aConection.prepareStatement(DELETE_ADDRESS_BY_ADDRESS_ID);
+					setIntInStatement(prepareStatement, 1, addressId);
+					return prepareStatement;
+				}
+			});
+		} catch (Exception e) {
+			log.error("Failed to delete the existing address with id {}", addressId, e);
+			throw new InternalServerException("Failed to update address, please try again later");
+		}
 	}
 
 	public PreparedStatement buildUpdateStatement(Connection aConection, AddressEntity aAddress) throws SQLException {
@@ -111,6 +117,7 @@ public class AddressDao extends AbstractDao {
 
 	public int updateAddress(AddressEntity aAddress) {
 		try {
+			// TODO: Create a history record with audit details
 			return getJdbcTemplate().update(new PreparedStatementCreator() {
 				@Override
 				public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {

@@ -3,6 +3,8 @@ package com.neasaa.familytree.operation.family;
 import static com.neasaa.base.app.utils.ValidationUtils.checkObjectPresent;
 import static com.neasaa.base.app.utils.ValidationUtils.checkValuePresent;
 import static com.neasaa.base.app.utils.ValidationUtils.checkValueRange;
+import static com.neasaa.familytree.utils.Constants.MISSING_BIRTH_DATE_VALUE;
+import static com.neasaa.familytree.utils.FamilytreeValidationUtils.validateBirthDate;
 
 import java.time.Year;
 import java.util.List;
@@ -72,24 +74,9 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 		if(Gender.getGenderByString(opRequest.getGender()) == null) {
 			throw new ValidationException ("Invalid value for field gender");
 		}
-		log.info("Input birth date: " + opRequest.getBirthDay() + "/" + opRequest.getBirthMonth() + "/" + opRequest.getBirthYear());
-		if(opRequest.getBirthDay() != null) {
-			checkValueRange(opRequest.getBirthDay().intValue(), 1, 31, "birth day");
-		}
-		
-		checkObjectPresent(opRequest.getBirthMonth(), "birth month");
-		if(opRequest.getBirthMonth() == null || opRequest.getBirthMonth().isEmpty()) {
-			throw new ValidationException ("Invalid value for field birth month");
-		}
-		//Check if month is valid
-		if(Month.fromName(opRequest.getBirthMonth()) == null) {
-			throw new ValidationException ("Invalid value for field birth month");
-		}
-		
-		checkObjectPresent(opRequest.getBirthYear(), "birth year");
-		int currentYear = Year.now().getValue();
-		checkValueRange(opRequest.getBirthYear().intValue(), 1900, currentYear, "birth year");
-		
+
+		validateBirthDate(opRequest.getBirthDay(), opRequest.getBirthMonth(), opRequest.getBirthYear());
+
 		checkValuePresent(opRequest.getMaritalStatus(), "marital status");
 		if(MaritalStatus.getMaritalStatus(opRequest.getMaritalStatus()) == null) {
 			throw new ValidationException ("Invalid value for field marital status");
@@ -207,6 +194,11 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 		AuditInfo auditInfo = getAuditInfo();
 		String phoneNumber = DataFormatter.formatPhoneNumber(opRequest.getPhone());
 		String emailId = opRequest.getEmail() != null ? opRequest.getEmail().toLowerCase().trim() : null;
+		short birthDay = MISSING_BIRTH_DATE_VALUE;
+		if(opRequest.getBirthDay() != null) {;
+			birthDay = opRequest.getBirthDay();
+		}
+
 		return FamilyMemberEntity.builder()
 				.familyId(family.getFamilyId())
 				.headOfFamily(opRequest.isHeadOfFamily())
@@ -222,7 +214,7 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 				.isPhoneWhatsappRegistered(opRequest.isPhoneWhatsappRegistered())
 				.email(emailId)
 				.gender(Gender.getGenderByString(opRequest.getGender()))
-				.birthDay(opRequest.getBirthDay())
+				.birthDay(birthDay)
 				.birthMonth(Month.fromName(opRequest.getBirthMonth()))
 				.birthYear(opRequest.getBirthYear())
 				.dateOfDeath(opRequest.getDateOfDeath())

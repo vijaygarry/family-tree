@@ -45,4 +45,12 @@ public enum Month {
         return null;
     }
 
+    public int getMaxDaysInMonth (boolean isLeapYear) {
+        return switch (this) {
+            case JANUARY, MARCH, MAY, JULY, AUGUST, OCTOBER, DECEMBER -> 31;
+            case APRIL, JUNE, SEPTEMBER, NOVEMBER -> 30;
+            case FEBRUARY -> isLeapYear ? 29 : 28;
+        };
+    }
+
 }

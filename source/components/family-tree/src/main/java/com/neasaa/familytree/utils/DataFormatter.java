@@ -110,6 +110,51 @@ public class DataFormatter {
 		return sb.toString();
 	}
 
+	public static String getFamilyMemberSearchString (FamilyMemberEntity familyMemberEntity, AddressEntity address) {
+		if (familyMemberEntity == null) {
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append(familyMemberEntity.getFirstName()).append(" ");
+		if (familyMemberEntity.getFirstNameInHindi() != null && !familyMemberEntity.getFirstNameInHindi().isEmpty()) {
+			sb.append(familyMemberEntity.getFirstNameInHindi()).append(" ");
+		}
+
+		if (familyMemberEntity.getLastName() != null && !familyMemberEntity.getLastName().isEmpty()) {
+			sb.append(familyMemberEntity.getLastName()).append(" ");
+		}
+
+		if (familyMemberEntity.getMaidenLastName() != null && !familyMemberEntity.getMaidenLastName().isEmpty()) {
+			sb.append(familyMemberEntity.getMaidenLastName()).append(" ");
+		}
+
+		if (familyMemberEntity.getNickName() != null && !familyMemberEntity.getNickName().isEmpty()) {
+			sb.append(familyMemberEntity.getNickName()).append(" ");
+		}
+
+		if (familyMemberEntity.getPhone() != null && !familyMemberEntity.getPhone().isEmpty()) {
+			sb.append(familyMemberEntity.getPhone()).append(" ");
+		}
+
+		if (familyMemberEntity.getEmail() != null && !familyMemberEntity.getEmail().isEmpty()) {
+			sb.append(familyMemberEntity.getEmail()).append(" ");
+		}
+
+		if(address != null) {
+			if(address.getCity() != null) {
+				sb.append(address.getCity()).append(" ");
+			}
+			if(address.getState() != null) {
+				sb.append(address.getState()).append(" ");
+			}
+			if(address.getCountry() != null) {
+				sb.append(address.getCountry()).append(" ");
+			}
+		}
+
+		return sb.toString();
+	}
+
 //	/**
 //	 * Automatically derived by the app as:
 //  	`[Head of Family Name] + [Region]`

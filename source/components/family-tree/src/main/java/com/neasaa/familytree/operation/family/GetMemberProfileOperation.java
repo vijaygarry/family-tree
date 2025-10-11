@@ -15,6 +15,7 @@ import com.neasaa.familytree.operation.OperationNames;
 import com.neasaa.familytree.operation.family.model.AddressDto;
 import com.neasaa.familytree.operation.family.model.GetMemberProfileRequest;
 import com.neasaa.familytree.operation.family.model.GetMemberProfileResponse;
+import com.neasaa.familytree.operation.family.model.MemberProfileDto;
 import com.neasaa.familytree.operation.family.model.MemberSummaryDto;
 import com.neasaa.familytree.utils.SessionUtils;
 import lombok.extern.log4j.Log4j2;
@@ -35,6 +36,7 @@ import static com.neasaa.familytree.operation.family.GetFamilyDetailsOperation.S
 import static com.neasaa.familytree.operation.family.GetFamilyDetailsOperation.SON_OF_MEMBER;
 import static com.neasaa.familytree.operation.family.GetFamilyDetailsOperation.UNKNOWN_RELATIONSHIP;
 import static com.neasaa.familytree.operation.family.GetFamilyDetailsOperation.WIFE_OF_MEMBER;
+import static com.neasaa.familytree.utils.Constants.MEMBER_ADDRESS_SAME_AS_FAMILY_ADDRESS;
 
 @Log4j2
 @Component("GetMemberProfileOperation")
@@ -83,7 +85,7 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
         List<MemberSummaryDto> children = getChildrenForMember(memberEntity, spouse);
         List<MemberSummaryDto> siblings = getSiblings(memberEntity, parents);
         boolean familyMemberUpdateAllowedForUser = isFamilyMemberUpdateAllowedForUser(memberEntity.getFamilyId());
-        GetMemberProfileResponse.MemberProfile memberProfile = GetMemberProfileResponse.MemberProfile.fromFamilyMemberDBEntity(memberEntity, getAddress(memberEntity), familyMemberUpdateAllowedForUser);
+        MemberProfileDto memberProfile = MemberProfileDto.fromFamilyMemberDBEntity(memberEntity, getAddress(memberEntity), familyMemberUpdateAllowedForUser);
 
         return GetMemberProfileResponse.builder()
                 .memberProfile(memberProfile)
@@ -267,7 +269,7 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
         if (member.isAddressSameAsFamily()) {
             address = addressDao.getAddressByFamilyId(member.getFamilyId());
         } else {
-            if (member.getMemberAddressId() > 0) {
+            if (member.getMemberAddressId() != MEMBER_ADDRESS_SAME_AS_FAMILY_ADDRESS) {
                 address = addressDao.getAddressById(member.getMemberAddressId());
             }
         }

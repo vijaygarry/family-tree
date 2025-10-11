@@ -8,4 +8,6 @@ public interface Constants {
 
 	int MAX_IMAGE_SIZE_ALLOWED_IN_KB = 5120; // 5 MB
 
+	int MISSING_BIRTH_DATE_VALUE = -1;
+
 }

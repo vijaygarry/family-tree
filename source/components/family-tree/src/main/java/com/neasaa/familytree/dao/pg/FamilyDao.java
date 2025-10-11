@@ -24,11 +24,11 @@ import com.neasaa.base.app.dao.pg.AbstractDao;
 
 import lombok.extern.log4j.Log4j2;
 
+import static com.neasaa.base.app.constant.AppConstants.UPDATE_OPERATION;
+
 @Log4j2
 @Repository
 public class FamilyDao extends AbstractDao {
-
-	private static final String UPDATE_OPERATION = "UPDATE";
 
 	private static final String SELECT_FAMILY_BY_FAMILYID = "SELECT f.familyid, f.familyname, f.familynameinhindi, f.gotra, f.addressid, " +
 			"f.region, f.phone, f.isphonewhatsappregistered, f.email, f.familysearchtext, " +

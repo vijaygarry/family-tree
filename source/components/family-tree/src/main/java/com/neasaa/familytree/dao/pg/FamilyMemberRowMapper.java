@@ -50,10 +50,10 @@ public class FamilyMemberRowMapper implements RowMapper<FamilyMemberEntity> {
 		familyMember.setEducationDetails(aRs.getString("EDUCATIONDETAILS"));
 		familyMember.setOccupation(aRs.getString("OCCUPATION"));
 		familyMember.setHobby(aRs.getString("HOBBY"));
-		familyMember.setMembersearchtext(aRs.getString("MEMBERSEARCHTEXT"));
+		familyMember.setMemberSearchText(aRs.getString("MEMBERSEARCHTEXT"));
 		familyMember.setProfileImage(aRs.getString("PROFILEIMAGE"));
 		familyMember.setProfileImageThumbnail(aRs.getString("PROFILEIMAGETHUMBNAIL"));
-//		familyMember.setImageLastUpdated(AbstractDao.getTimestampFromResultSet(aRs, "IMAGELASTUPDATED"));
+		familyMember.setImageLastUpdated(AbstractDao.getTimestampFromResultSet(aRs, "IMAGELASTUPDATED"));
 //		familyMember.setCreatedBy(aRs.getInt("CREATEDBY"));
 //		familyMember.setCreatedDate(AbstractDao.getTimestampFromResultSet(aRs, "CREATEDDATE"));
 //		familyMember.setLastUpdatedBy(aRs.getInt("LASTUPDATEDBY"));
