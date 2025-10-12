@@ -174,12 +174,12 @@ public class UpdateFamilyMemberProfileOperation extends AbstractOperation<Update
             familyDao.updateFamilyDisplayName(familyEntity, newFamilyMemberEntity, getAuditInfo());
         }
 
-        AddressDto addressDto = null;
+        AddressDto memberAddressDto = null;
         if(newAddressEntity != null) {
-            addressDto = AddressDto.getAddressDtoFromEntity(newAddressEntity);
+            memberAddressDto = AddressDto.getAddressDtoFromEntity(newAddressEntity);
         }
 
-        MemberProfileDto memberProfile = MemberProfileDto.fromFamilyMemberDBEntity(newFamilyMemberEntity, addressDto, true);
+        MemberProfileDto memberProfile = MemberProfileDto.fromFamilyMemberDBEntity(newFamilyMemberEntity, memberAddressDto, null, true);
 
         UpdateFamilyMemberProfileResponse response = UpdateFamilyMemberProfileResponse.builder()
                 .memberProfile(memberProfile)

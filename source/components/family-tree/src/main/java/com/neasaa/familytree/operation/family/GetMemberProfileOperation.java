@@ -85,7 +85,12 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
         List<MemberSummaryDto> children = getChildrenForMember(memberEntity, spouse);
         List<MemberSummaryDto> siblings = getSiblings(memberEntity, parents);
         boolean familyMemberUpdateAllowedForUser = isFamilyMemberUpdateAllowedForUser(memberEntity.getFamilyId());
-        MemberProfileDto memberProfile = MemberProfileDto.fromFamilyMemberDBEntity(memberEntity, getAddress(memberEntity), familyMemberUpdateAllowedForUser);
+        AddressDto familyAddress = getFamilyAddress(memberEntity);
+        AddressDto memberAddress = null;
+        if(!memberEntity.isAddressSameAsFamily()) {
+            memberAddress = getMemberAddress(memberEntity);
+        }
+        MemberProfileDto memberProfile = MemberProfileDto.fromFamilyMemberDBEntity(memberEntity, memberAddress, familyAddress, familyMemberUpdateAllowedForUser);
 
         return GetMemberProfileResponse.builder()
                 .memberProfile(memberProfile)
@@ -264,15 +269,13 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
         return MemberSummaryDto.getMemberSummaryDto(memberFromDb, UNKNOWN_RELATIONSHIP);
     }
 
-    private AddressDto getAddress(FamilyMemberEntity member){
-        AddressEntity address = null;
-        if (member.isAddressSameAsFamily()) {
-            address = addressDao.getAddressByFamilyId(member.getFamilyId());
-        } else {
-            if (member.getMemberAddressId() != MEMBER_ADDRESS_SAME_AS_FAMILY_ADDRESS) {
-                address = addressDao.getAddressById(member.getMemberAddressId());
-            }
-        }
+    private AddressDto getMemberAddress(FamilyMemberEntity member){
+        AddressEntity address = addressDao.getAddressById(member.getMemberAddressId());
+        return AddressDto.getAddressDtoFromEntity(address);
+    }
+
+    private AddressDto getFamilyAddress(FamilyMemberEntity member){
+        AddressEntity address = addressDao.getAddressByFamilyId(member.getFamilyId());
         return AddressDto.getAddressDtoFromEntity(address);
     }
 

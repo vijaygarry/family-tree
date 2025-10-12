@@ -70,12 +70,12 @@ public class RequestSignUpOTPOperation extends AbstractOperation<RequestSignUpOT
         String emailId = opRequest.getEmailId().toLowerCase().trim();
         // Check if the email is already registered
         if(appUserDao.isEmailRegistered(emailId)) {
-            throw new ValidationException("Email ID is already registered. Please use a different email.");
+            throw new ValidationException("Email Id is already registered. Please use a different email.");
         }
 
         // Make sure member exists in family member table with this email
         if(!familyMemberDao.isMemberExistsForEmail(emailId)) {
-            throw new ValidationException("Email ID " + emailId + " is not allowed to signup, please contact administrator.");
+            throw new ValidationException("Email Id " + emailId + " is not allowed to signup, please contact administrator.");
         }
 
         // Fetch the existing OTP information if any

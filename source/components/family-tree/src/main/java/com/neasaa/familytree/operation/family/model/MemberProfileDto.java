@@ -24,6 +24,7 @@ public class MemberProfileDto {
     private String nickNameInHindi;
     private boolean addressSameAsFamily;
     private AddressDto memberAddress;
+    private AddressDto familyAddress;
     private String phone;
     private boolean isPhoneWhatsappRegistered;
     private String email;
@@ -46,7 +47,7 @@ public class MemberProfileDto {
     private boolean canUpdateMember;
 
 
-    public static MemberProfileDto fromFamilyMemberDBEntity(FamilyMemberEntity familyMember, AddressDto address, boolean canUpdateMember) {
+    public static MemberProfileDto fromFamilyMemberDBEntity(FamilyMemberEntity familyMember, AddressDto memberAddress, AddressDto familyAddress, boolean canUpdateMember) {
         Short birthDay;
         if(familyMember.getBirthDay() != null && familyMember.getBirthDay() > 0) {;
             birthDay = familyMember.getBirthDay();
@@ -65,7 +66,8 @@ public class MemberProfileDto {
                 .nickName(familyMember.getNickName())
                 .nickNameInHindi(familyMember.getNickNameInHindi())
                 .addressSameAsFamily(familyMember.isAddressSameAsFamily())
-                .memberAddress(address)
+                .memberAddress(memberAddress)
+                .familyAddress(familyAddress)
                 .phone(familyMember.getPhone())
                 .isPhoneWhatsappRegistered(familyMember.isPhoneWhatsappRegistered())
                 .email(familyMember.getEmail())
