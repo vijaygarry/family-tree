@@ -94,11 +94,11 @@ public class UpdateFamilyDetailsOperation extends AbstractOperation<UpdateFamily
         AddressEntity newFamilyAddress = getAddressFromRequest(opRequest);
 
         // Check if family exists
-        FamilyEntity familyEntity = familyDao.getFamilyByFamilyId(familyId);
-        if(familyEntity == null) {
+        FamilyEntity familyEntityFromDb = familyDao.getFamilyByFamilyId(familyId);
+        if(familyEntityFromDb == null) {
             throw new ValidationException("Family with Id " + familyId + " not found.");
         }
-        AddressEntity existingAddress = addressDao.getAddressById(familyEntity.getAddressId());
+        AddressEntity existingAddress = addressDao.getAddressById(familyEntityFromDb.getAddressId());
         if(existingAddress == null) {
             log.info("Address not found for family with Id {}", familyId);
             throw new InternalServerException("Internal exception occurred, please contact administrator.");
@@ -113,7 +113,8 @@ public class UpdateFamilyDetailsOperation extends AbstractOperation<UpdateFamily
         FamilyMemberEntity headOfFamily = familyMemberDao.getHeadOfFamilyByFamilyId(familyId);
         // Create history record with audit details
         FamilyEntity newFamilyEntity = getFamilyFromRequest(opRequest, headOfFamily, newFamilyAddress);
-
+        // TODO: Apply logic like copy of existing family and update new fields. For the time being update family image here.
+        newFamilyEntity.setFamilyImage(familyEntityFromDb.getFamilyImage());
         familyDao.updateFamily(newFamilyEntity, getAuditInfo());
         newFamilyEntity.setAddress(newFamilyAddress);
         UpdateFamilyDetailsResponse response = UpdateFamilyDetailsResponse.builder()

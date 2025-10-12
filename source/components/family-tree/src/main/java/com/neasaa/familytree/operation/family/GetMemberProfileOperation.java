@@ -183,9 +183,9 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
             log.info("Member {} is not married, so no children.", selectedMemberEntity.getFirstName());
             return null;
         }
-
+        int spouseMemberId = selectedMemberSpouseDto == null ? -1 : selectedMemberSpouseDto.getMemberId();
         List<MemberSummaryDto> children = new ArrayList<>();
-        List<MemberRelationshipEntity> childrenForMember = memberRelationshipDao.getChildrenForMemberById(selectedMemberEntity.getMemberId(), selectedMemberSpouseDto.getMemberId());
+        List<MemberRelationshipEntity> childrenForMember = memberRelationshipDao.getChildrenForMemberById(selectedMemberEntity.getMemberId(), spouseMemberId);
         if (childrenForMember != null) {
             for (MemberRelationshipEntity childRelation : childrenForMember) {
                 MemberSummaryDto child = getMemberSummaryDtoFromDB(childRelation.getRelatedMemberId());
