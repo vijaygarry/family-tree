@@ -6,7 +6,6 @@ import static com.neasaa.base.app.utils.ValidationUtils.checkValueRange;
 import static com.neasaa.familytree.utils.Constants.MISSING_BIRTH_DATE_VALUE;
 import static com.neasaa.familytree.utils.FamilytreeValidationUtils.validateBirthDate;
 
-import java.time.Year;
 import java.util.List;
 
 import com.neasaa.familytree.constants.ImageConstants;
@@ -60,7 +59,7 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 	
 	@Override
 	public String getOperationName() {
-		return OperationNames.ADD_FAMILY_MEMBER;
+		return OperationNames.ADD_MEMBER_TO_MY_FAMILY;
 	}
 
 	@Override

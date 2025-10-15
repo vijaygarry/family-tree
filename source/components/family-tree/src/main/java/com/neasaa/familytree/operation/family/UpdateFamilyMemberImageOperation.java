@@ -1,19 +1,15 @@
 package com.neasaa.familytree.operation.family;
 
-import com.neasaa.base.app.operation.AbstractOperation;
 import com.neasaa.base.app.operation.exception.AccessDeniedException;
 import com.neasaa.base.app.operation.exception.InternalServerException;
 import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.familytree.constants.ImageConstants;
-import com.neasaa.familytree.dao.pg.FamilyMemberDao;
 import com.neasaa.familytree.entity.FamilyMemberEntity;
 import com.neasaa.familytree.operation.family.model.UpdateImageRequest;
 import com.neasaa.familytree.operation.family.model.UpdateImageResponse;
 import com.neasaa.familytree.utils.FileUtils;
-import com.neasaa.familytree.utils.SessionUtils;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -21,16 +17,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
-import static com.neasaa.familytree.operation.OperationNames.UPDATE_MY_FAMILY_MEMBER;
 import static com.neasaa.familytree.operation.OperationNames.UPDATE_MY_FAMILY_MEMBER_IMAGE;
 
 @Log4j2
 @Component("UpdateFamilyMemberImageOperation")
 @Scope("prototype")
-public class UpdateFamilyMemberImageOperation extends AbstractOperation<UpdateImageRequest, UpdateImageResponse> {
+public class UpdateFamilyMemberImageOperation extends FamilyAbstractOperation<UpdateImageRequest, UpdateImageResponse> {
 
-    @Autowired
-    private FamilyMemberDao familyMemberDao;
 
     @Override
     public String getOperationName() {
@@ -64,7 +57,7 @@ public class UpdateFamilyMemberImageOperation extends AbstractOperation<UpdateIm
             throw new ValidationException("Family member not found ");
         }
 
-        if(!isMemberUpdateAllowedForUser(memberEntity)) {
+        if(!canLoggedInUserUpdateMember(memberEntity.getFamilyId())) {
             log.info("User is not allowed to update the member details for member id: {}", memberId);
             throw new AccessDeniedException("You are not allowed to update the member image.");
         }
@@ -103,25 +96,6 @@ public class UpdateFamilyMemberImageOperation extends AbstractOperation<UpdateIm
 
     private String buildMemberImageRelativePath(Path familyImagePath) {
         return ImageConstants.BASE_IMAGE_DIRECTORY + "/" + ImageConstants.MEMBER_IMAGE_DIRECTORY_NAME + "/" + familyImagePath.getFileName().toString();
-    }
-
-    //TODO: This method is duplicate in several operations, move to a common utility class
-    private boolean isMemberUpdateAllowedForUser(FamilyMemberEntity memberEntity) {
-        if(getContext() == null || getContext().getAppSessionUser() == null) {
-            log.info("Operation context or AppSessionUser is null, cannot check if family edit allowed for user");
-            return false;
-        }
-        FamilyMemberEntity sessionMemberEntity = SessionUtils.getFamilyMemberFromSession( getContext().getAppSessionUser());
-        if(sessionMemberEntity == null) {
-            log.info("Family member not found in session, cannot check if family edit allowed for user");
-            return false;
-        }
-        if(sessionMemberEntity.getFamilyId() != memberEntity.getFamilyId()) {
-            log.info("Member does not belongs to logged in member, so member update not allowed.");
-            // Only allowed to edit own family details.
-            return false;
-        }
-        return isOperationAllowedForUser(UPDATE_MY_FAMILY_MEMBER);
     }
 
 }

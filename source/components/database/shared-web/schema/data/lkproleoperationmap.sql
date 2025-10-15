@@ -202,10 +202,6 @@ VALUES ('SUPER_ADMIN_ROLE', 'ADD_FAMILY', 1, now(), 1, now());
 
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
-VALUES ('SUPER_ADMIN_ROLE', 'ADD_FAMILY_MEMBER', 1, now(), 1, now());
-
-INSERT INTO shared_schema.lkproleoperationmap(
-	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('SUPER_ADMIN_ROLE', 'MANAGE_RELATIONSHIP', 1, now(), 1, now());
 
 
@@ -223,8 +219,37 @@ VALUES ('SUPER_ADMIN_ROLE', 'UPDATE_MY_FAMILY_DETAILS', 1, now(), 1, now());
 
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
+VALUES ('SUPER_ADMIN_ROLE', 'UPDATE_ANY_FAMILY_DETAILS', 1, now(), 1, now());
+
+INSERT INTO shared_schema.lkproleoperationmap(
+	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('SUPER_ADMIN_ROLE', 'UPDATE_MY_FAMILY_MEMBER', 1, now(), 1, now());
 
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('SUPER_ADMIN_ROLE', 'UPDATE_MY_FAMILY_MEMBER_IMAGE', 1, now(), 1, now());
+
+INSERT INTO shared_schema.lkproleoperationmap(
+	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
+VALUES ('SUPER_ADMIN_ROLE', 'ADD_MEMBER_TO_ANY_FAMILY', 1, now(), 1, now());
+
+INSERT INTO shared_schema.lkproleoperationmap(
+	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
+VALUES ('SUPER_ADMIN_ROLE', 'UPDATE_ANY_FAMILY_MEMBER', 1, now(), 1, now());
+
+
+DO
+$$
+DECLARE
+    operationNames TEXT;
+    operationNames TEXT[] := ARRAY['Alpha', 'Beta', 'Gamma', 'Delta'];
+BEGIN
+    FOREACH operation IN ARRAY operationNames
+    LOOP
+        INSERT INTO shared_schema.lkproleoperationmap(
+	    roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
+        VALUES ('INDIVIDUAL_ROLE', operation, 1, now(), 1, now());
+        ON CONFLICT (value_text) DO NOTHING;  -- skip if record already exists
+    END LOOP;
+END
+$$;

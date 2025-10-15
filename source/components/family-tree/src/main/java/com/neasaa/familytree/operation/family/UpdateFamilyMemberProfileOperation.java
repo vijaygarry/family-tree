@@ -1,14 +1,10 @@
 package com.neasaa.familytree.operation.family;
 
-import com.neasaa.base.app.operation.AbstractOperation;
 import com.neasaa.base.app.operation.AuditInfo;
 import com.neasaa.base.app.operation.exception.AccessDeniedException;
 import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.base.app.utils.EmailValidator;
-import com.neasaa.familytree.dao.pg.AddressDao;
-import com.neasaa.familytree.dao.pg.FamilyDao;
-import com.neasaa.familytree.dao.pg.FamilyMemberDao;
 import com.neasaa.familytree.entity.AddressEntity;
 import com.neasaa.familytree.entity.FamilyEntity;
 import com.neasaa.familytree.entity.FamilyMemberEntity;
@@ -22,9 +18,7 @@ import com.neasaa.familytree.operation.family.model.UpdateFamilyMemberProfileRes
 import com.neasaa.familytree.utils.Constants;
 import com.neasaa.familytree.utils.DataFormatter;
 import com.neasaa.familytree.utils.FamilytreeValidationUtils;
-import com.neasaa.familytree.utils.SessionUtils;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -41,16 +35,7 @@ import static com.neasaa.familytree.utils.FamilytreeValidationUtils.validateStri
 @Log4j2
 @Component("UpdateFamilyMemberProfileOperation")
 @Scope("prototype")
-public class UpdateFamilyMemberProfileOperation extends AbstractOperation<UpdateFamilyMemberProfileRequest, UpdateFamilyMemberProfileResponse> {
-
-    @Autowired
-    private FamilyMemberDao familyMemberDao;
-
-    @Autowired
-    private AddressDao addressDao;
-
-    @Autowired
-    private FamilyDao familyDao;
+public class UpdateFamilyMemberProfileOperation extends FamilyAbstractOperation<UpdateFamilyMemberProfileRequest, UpdateFamilyMemberProfileResponse> {
 
     @Override
     public String getOperationName() {
@@ -129,7 +114,7 @@ public class UpdateFamilyMemberProfileOperation extends AbstractOperation<Update
         }
 
         // Check if this user is allowed to update family member details
-        if(!isMemberUpdateAllowedForUser(memberEntityFromDb)) {
+        if(!canLoggedInUserUpdateMember(memberEntityFromDb.getFamilyId())) {
             log.info("User is not allowed to update the member details for member id: {}", opRequest.getMemberId());
             throw new AccessDeniedException("You are not allowed to update the member details.");
         }
@@ -272,22 +257,4 @@ public class UpdateFamilyMemberProfileOperation extends AbstractOperation<Update
                 .build();
     }
 
-    //TODO: This method is duplicate in several operations, move to a common utility class
-    private boolean isMemberUpdateAllowedForUser(FamilyMemberEntity memberEntity) {
-        if(getContext() == null || getContext().getAppSessionUser() == null) {
-            log.info("Operation context or AppSessionUser is null, cannot check if family edit allowed for user");
-            return false;
-        }
-        FamilyMemberEntity sessionMemberEntity = SessionUtils.getFamilyMemberFromSession( getContext().getAppSessionUser());
-        if(sessionMemberEntity == null) {
-            log.info("Family member not found in session, cannot check if family edit allowed for user");
-            return false;
-        }
-        if(sessionMemberEntity.getFamilyId() != memberEntity.getFamilyId()) {
-            log.info("Member does not belongs to logged in member, so member update not allowed.");
-            // Only allowed to edit own family details.
-            return false;
-        }
-        return isOperationAllowedForUser(UPDATE_MY_FAMILY_MEMBER);
-    }
 }

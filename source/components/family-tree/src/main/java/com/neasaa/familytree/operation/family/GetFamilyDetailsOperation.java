@@ -1,12 +1,7 @@
 package com.neasaa.familytree.operation.family;
 
-import com.neasaa.base.app.operation.AbstractOperation;
 import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
-import com.neasaa.familytree.dao.pg.AddressDao;
-import com.neasaa.familytree.dao.pg.FamilyDao;
-import com.neasaa.familytree.dao.pg.FamilyMemberDao;
-import com.neasaa.familytree.dao.pg.MemberRelationshipDao;
 import com.neasaa.familytree.entity.FamilyEntity;
 import com.neasaa.familytree.entity.FamilyMemberEntity;
 import com.neasaa.familytree.entity.MemberRelationshipEntity;
@@ -20,7 +15,6 @@ import com.neasaa.familytree.operation.family.model.GetFamilyDetailsResponse;
 import com.neasaa.familytree.operation.family.model.MemberSummaryDto;
 import com.neasaa.familytree.utils.SessionUtils;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -28,36 +22,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.neasaa.familytree.operation.OperationNames.UPDATE_MY_FAMILY_DETAILS;
 import static java.util.stream.Collectors.toMap;
 
 @Log4j2
 @Component("GetFamilyDetailsOperation")
 @Scope("prototype")
-public class GetFamilyDetailsOperation extends AbstractOperation<GetFamilyDetailsRequest, GetFamilyDetailsResponse> {
-    public static final String HEAD_OF_FAMILY = "Head of Family";
-    public static final String WIFE_OF_MEMBER = "Wife of %s";
-    public static final String HUSBAND_OF_MEMBER = "Husband of %s";
-    public static final String SON_OF_MEMBER = "Son of %s";
-    public static final String DAUGHTER_OF_MEMBER = "Daughter of %s";
-    public static final String FATHER_OF_MEMBER = "Father of %s";
-    public static final String MOTHER_OF_MEMBER = "Mother of %s";
-    public static final String UNKNOWN_RELATIONSHIP = "Relationship unknown";
-    public static final String SELF_RELATIONSHIP = "Self";
-    public static final String BROTHER_OF_MEMBER = "Brother of %s";
-    public static final String SISTER_OF_MEMBER = "Sister of %s";
-
-    @Autowired
-    private AddressDao addressDao;
-
-    @Autowired
-    private FamilyDao familyDao;
-
-    @Autowired
-    private FamilyMemberDao familyMemberDao;
-
-    @Autowired
-    private MemberRelationshipDao memberRelationshipDao;
+public class GetFamilyDetailsOperation extends FamilyAbstractOperation<GetFamilyDetailsRequest, GetFamilyDetailsResponse> {
 
     @Override
     public String getOperationName() {
@@ -105,13 +75,14 @@ public class GetFamilyDetailsOperation extends AbstractOperation<GetFamilyDetail
         MemberSummaryDto headOfFamily = getHeadOfFamily(memberSummaryDtoList);
 
         FamilyDetailsDto familyDetails = null;
-        boolean isFamilyUpdateAllowed = isFamilyUpdateAllowedForUser(familyId);
+        boolean canLoggedInUserUpdateFamily = canLoggedInUserUpdateFamily(familyId);
+        boolean canLoggedInUserAddNewMember = canLoggedInUserAddNewMember(familyId);
         if(headOfFamily == null) {
             log.error("Head of family not found in family members list.");
-            familyDetails = FamilyDetailsDto.fromFamilyDBEntity(familyDetailsFromDB, "Head of Family not defined", isFamilyUpdateAllowed);
+            familyDetails = FamilyDetailsDto.fromFamilyDBEntity(familyDetailsFromDB, "Head of Family not defined", canLoggedInUserUpdateFamily, canLoggedInUserAddNewMember);
         } else {
             log.info("Head of family found: {}", headOfFamily.getFirstName());
-            familyDetails = FamilyDetailsDto.fromFamilyDBEntity(familyDetailsFromDB, headOfFamily.getFirstName() + " " + headOfFamily.getLastName(), isFamilyUpdateAllowed);
+            familyDetails = FamilyDetailsDto.fromFamilyDBEntity(familyDetailsFromDB, headOfFamily.getFirstName() + " " + headOfFamily.getLastName(), canLoggedInUserUpdateFamily, canLoggedInUserAddNewMember);
         }
 
         // Create a map of memberId to MemberSummaryDto for easy lookup
@@ -136,22 +107,7 @@ public class GetFamilyDetailsOperation extends AbstractOperation<GetFamilyDetail
                 .build();
     }
 
-    private boolean isFamilyUpdateAllowedForUser(int familyId) {
-        if(getContext() == null || getContext().getAppSessionUser() == null) {
-            log.info("Operation context or AppSessionUser is null, cannot check if family edit allowed for user");
-            return false;
-        }
-        FamilyMemberEntity memberEntity = SessionUtils.getFamilyMemberFromSession( getContext().getAppSessionUser());
-        if(memberEntity == null) {
-            log.info("Family member not found in session, cannot check if family edit allowed for user");
-            return false;
-        }
-        if(memberEntity.getFamilyId() != familyId) {
-            // Only allowed to edit own family details.
-            return false;
-        }
-        return isOperationAllowedForUser(UPDATE_MY_FAMILY_DETAILS);
-    }
+
 
     private FamilyTreeNode buildFamilyTree(MemberSummaryDto headOfFamily, Map<Integer, MemberSummaryDto> familyMemberMap) {
         if(headOfFamily == null) {

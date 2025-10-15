@@ -57,7 +57,13 @@ INSERT INTO shared_schema.lkpoperation(
 INSERT INTO shared_schema.lkpoperation(
 	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype, 
     active, createdby, createddate, lastupdatedby, lastupdateddate)
-	VALUES ('ADD_FAMILY_MEMBER', 'Add Family Member', 'AddFamilyMemberBean', true, true, 'ROLE_BASE', 
+	VALUES ('ADD_MEMBER_TO_MY_FAMILY', 'Add Family Member', 'AddFamilyMemberBean', true, true, 'ROLE_BASE', 
+    true, 1, now(), 1, now());
+
+INSERT INTO shared_schema.lkpoperation(
+	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype, 
+    active, createdby, createddate, lastupdatedby, lastupdateddate)
+	VALUES ('ADD_MEMBER_TO_ANY_FAMILY', 'Add Family Member', 'AddFamilyMemberBean', true, true, 'ROLE_BASE', 
     true, 1, now(), 1, now());
 
 INSERT INTO shared_schema.lkpoperation(
@@ -138,7 +144,19 @@ INSERT INTO shared_schema.lkpoperation(
 INSERT INTO shared_schema.lkpoperation(
 	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype, 
     active, createdby, createddate, lastupdatedby, lastupdateddate)
+	VALUES ('UPDATE_ANY_FAMILY_DETAILS', 'Update any family details', 'updateFamilyDetails', true, true, 'ROLE_BASE', 
+    true, 1, now(), 1, now());
+
+INSERT INTO shared_schema.lkpoperation(
+	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype, 
+    active, createdby, createddate, lastupdatedby, lastupdateddate)
 	VALUES ('UPDATE_MY_FAMILY_MEMBER', 'Update my member details', 'updateFamilyMemberDetails', true, true, 'ROLE_BASE', 
+    true, 1, now(), 1, now());
+
+INSERT INTO shared_schema.lkpoperation(
+	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype, 
+    active, createdby, createddate, lastupdatedby, lastupdateddate)
+	VALUES ('UPDATE_ANY_FAMILY_MEMBER', 'Update any member details', 'updateFamilyMemberDetails', true, true, 'ROLE_BASE', 
     true, 1, now(), 1, now());
 
 INSERT INTO shared_schema.lkpoperation(

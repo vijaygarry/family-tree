@@ -1,11 +1,7 @@
 package com.neasaa.familytree.operation.family;
 
-import com.neasaa.base.app.operation.AbstractOperation;
 import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
-import com.neasaa.familytree.dao.pg.AddressDao;
-import com.neasaa.familytree.dao.pg.FamilyMemberDao;
-import com.neasaa.familytree.dao.pg.MemberRelationshipDao;
 import com.neasaa.familytree.entity.AddressEntity;
 import com.neasaa.familytree.entity.FamilyMemberEntity;
 import com.neasaa.familytree.entity.MemberRelationshipEntity;
@@ -17,40 +13,18 @@ import com.neasaa.familytree.operation.family.model.GetMemberProfileRequest;
 import com.neasaa.familytree.operation.family.model.GetMemberProfileResponse;
 import com.neasaa.familytree.operation.family.model.MemberProfileDto;
 import com.neasaa.familytree.operation.family.model.MemberSummaryDto;
-import com.neasaa.familytree.utils.SessionUtils;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.neasaa.familytree.operation.OperationNames.UPDATE_MY_FAMILY_MEMBER;
-import static com.neasaa.familytree.operation.family.GetFamilyDetailsOperation.BROTHER_OF_MEMBER;
-import static com.neasaa.familytree.operation.family.GetFamilyDetailsOperation.DAUGHTER_OF_MEMBER;
-import static com.neasaa.familytree.operation.family.GetFamilyDetailsOperation.FATHER_OF_MEMBER;
-import static com.neasaa.familytree.operation.family.GetFamilyDetailsOperation.HUSBAND_OF_MEMBER;
-import static com.neasaa.familytree.operation.family.GetFamilyDetailsOperation.MOTHER_OF_MEMBER;
-import static com.neasaa.familytree.operation.family.GetFamilyDetailsOperation.SISTER_OF_MEMBER;
-import static com.neasaa.familytree.operation.family.GetFamilyDetailsOperation.SON_OF_MEMBER;
-import static com.neasaa.familytree.operation.family.GetFamilyDetailsOperation.UNKNOWN_RELATIONSHIP;
-import static com.neasaa.familytree.operation.family.GetFamilyDetailsOperation.WIFE_OF_MEMBER;
-import static com.neasaa.familytree.utils.Constants.MEMBER_ADDRESS_SAME_AS_FAMILY_ADDRESS;
 
 @Log4j2
 @Component("GetMemberProfileOperation")
 @Scope("prototype")
-public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfileRequest, GetMemberProfileResponse> {
-
-    @Autowired
-    private FamilyMemberDao familyMemberDao;
-
-    @Autowired
-    private AddressDao addressDao;
-
-    @Autowired
-    private MemberRelationshipDao memberRelationshipDao;
+public class GetMemberProfileOperation extends FamilyAbstractOperation <GetMemberProfileRequest, GetMemberProfileResponse> {
 
     @Override
     public String getOperationName() {
@@ -84,13 +58,13 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
         MemberSummaryDto spouse = getSpouse(memberEntity);
         List<MemberSummaryDto> children = getChildrenForMember(memberEntity, spouse);
         List<MemberSummaryDto> siblings = getSiblings(memberEntity, parents);
-        boolean familyMemberUpdateAllowedForUser = isFamilyMemberUpdateAllowedForUser(memberEntity.getFamilyId());
+        boolean canLoggedInUserUpdateMember = canLoggedInUserUpdateMember(memberEntity.getFamilyId());
         AddressDto familyAddress = getFamilyAddress(memberEntity);
         AddressDto memberAddress = null;
         if(!memberEntity.isAddressSameAsFamily()) {
             memberAddress = getMemberAddress(memberEntity);
         }
-        MemberProfileDto memberProfile = MemberProfileDto.fromFamilyMemberDBEntity(memberEntity, memberAddress, familyAddress, familyMemberUpdateAllowedForUser);
+        MemberProfileDto memberProfile = MemberProfileDto.fromFamilyMemberDBEntity(memberEntity, memberAddress, familyAddress, canLoggedInUserUpdateMember);
 
         return GetMemberProfileResponse.builder()
                 .memberProfile(memberProfile)
@@ -99,23 +73,6 @@ public class GetMemberProfileOperation extends AbstractOperation <GetMemberProfi
                 .children(children)
                 .siblings(siblings)
                 .build();
-    }
-
-    private boolean isFamilyMemberUpdateAllowedForUser(int familyId) {
-        if(getContext() == null || getContext().getAppSessionUser() == null) {
-            log.info("Operation context or AppSessionUser is null, cannot check if family member update allowed for user");
-            return false;
-        }
-        FamilyMemberEntity memberEntity = SessionUtils.getFamilyMemberFromSession( getContext().getAppSessionUser());
-        if(memberEntity == null) {
-            log.info("Family member not found in session, cannot check if family member update allowed for user");
-            return false;
-        }
-        if(memberEntity.getFamilyId() != familyId) {
-            // Only allowed to edit own family members.
-            return false;
-        }
-        return isOperationAllowedForUser(UPDATE_MY_FAMILY_MEMBER);
     }
 
 
