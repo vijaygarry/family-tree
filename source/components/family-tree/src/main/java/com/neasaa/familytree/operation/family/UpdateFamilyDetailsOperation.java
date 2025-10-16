@@ -114,7 +114,21 @@ public class UpdateFamilyDetailsOperation extends AbstractOperation<UpdateFamily
         // Create history record with audit details
         FamilyEntity newFamilyEntity = getFamilyFromRequest(opRequest, headOfFamily, newFamilyAddress);
 
-        familyDao.updateFamily(newFamilyEntity, getAuditInfo());
+        String newFamilyName = newFamilyEntity.getFamilyName();
+        // Check if family name exists
+        String existingFamilyName = familyEntity.getFamilyName();
+        if(existingFamilyName == null) {
+            log.info("Family Name not found for family with Id {}", familyId);
+            throw new InternalServerException("Internal exception occurred, please contact administrator.");
+        }
+        boolean isfamilyNameUpdated = !(existingFamilyName.equals(newFamilyName));
+
+        int isfamilyUpdated = familyDao.updateFamily(newFamilyEntity, getAuditInfo(), isfamilyNameUpdated);
+        if(isfamilyUpdated>0)
+            log.info("Family Details updated for family with Id {}", familyId);
+        else
+            log.info("No Family Details is updated for family with Id {}", familyId);
+
         newFamilyEntity.setAddress(newFamilyAddress);
         UpdateFamilyDetailsResponse response = UpdateFamilyDetailsResponse.builder()
                 .familyDetails(FamilyDetailsDto.fromFamilyDBEntity(newFamilyEntity, headOfFamily == null ? "" :headOfFamily.getFirstName(), true))

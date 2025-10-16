@@ -73,6 +73,9 @@ public class FamilyDao extends AbstractDao {
 					" createdby, createddate, lastupdatedby, lastupdateddate" +
 					" FROM " + BASE_SCHEMA_NAME + "family WHERE familyid = ?";
 
+	private static final String UPDATE_FAMILY_MEMBERS_LAST_NAME_BY_FAMILYID = "UPDATE "  + BASE_SCHEMA_NAME + "FAMILYMEMBER " +
+			"SET LASTNAME = ? where FAMILYID = ?";
+
 	private static final String DELETE_FAMILY_BY_ID_STATEMENT = "DELETE FROM " + BASE_SCHEMA_NAME + "FAMILY WHERE FAMILYID = ?";
 
 	public FamilyEntity getFamilyByFamilyId(int familyId) {
@@ -96,7 +99,7 @@ public class FamilyDao extends AbstractDao {
 		String searchString = DataFormatter.getFamilySearchString(family, headOfFamily, family.getAddress());
 		log.info("Updating family search text to '{}' and region to '{}' for family id: {}", searchString, familyRegion, family.getFamilyId());
 		getJdbcTemplate().update(UPDATE_FAMILY_DISPLAY_NAME, familyRegion, searchString, auditInfo.getLastUpdatedBy(), auditInfo.getLastUpdatedDate(), family.getFamilyId());
-        log.info("Family region and search text is updated for family id: {}", family.getFamilyId());
+		log.info("Family region and search text is updated for family id: {}", family.getFamilyId());
 	}
 
 	public void updateFamilyImagePath (int familyId, String familyImagePath, AuditInfo auditInfo) {
@@ -143,15 +146,21 @@ public class FamilyDao extends AbstractDao {
 		return prepareStatement;
 	}
 
-	public int updateFamily(FamilyEntity aFamily, AuditInfo auditInfo) {
+	public int updateFamily(FamilyEntity aFamily, AuditInfo auditInfo, boolean isfamilyNameUpdated) {
 		try {
 			getJdbcTemplate().update(FAMILY_HISTORY_INSERT_STATEMENT, UPDATE_OPERATION, aFamily.getFamilyId());
-			return getJdbcTemplate().update(new PreparedStatementCreator() {
+			int rowsUpdated = getJdbcTemplate().update(new PreparedStatementCreator() {
 				@Override
 				public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {
 					return buildUpdateStatement(aCon, aFamily, auditInfo);
 				}
 			});
+
+			//Update LastName in family members table
+			if(isfamilyNameUpdated) {
+				getJdbcTemplate().update(UPDATE_FAMILY_MEMBERS_LAST_NAME_BY_FAMILYID, aFamily.getFamilyName(), aFamily.getFamilyId());
+			}
+			return rowsUpdated;
 		} catch (Exception e) {
 			log.error("Error while updating family details for family id: {}", aFamily.getFamilyId(), e);
 			throw new InternalServerException("Error while updating family details. Please try again later");
