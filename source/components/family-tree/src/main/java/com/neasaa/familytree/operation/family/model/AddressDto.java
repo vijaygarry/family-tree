@@ -10,56 +10,56 @@ import lombok.*;
 @AllArgsConstructor
 public class AddressDto {
 
-	private int addressId;
-	private String addressLine1;
-	private String addressLine2;
-	private String addressLine3;
-	private String city;
-	private String district;
-	private String state;
-	private String postalCode;
-	private String country;
+  private int addressId;
+  private String addressLine1;
+  private String addressLine2;
+  private String addressLine3;
+  private String city;
+  private String district;
+  private String state;
+  private String postalCode;
+  private String country;
 
-	public static AddressDto getAddressDtoFromEntity(AddressEntity address) {
-		if (address == null) {
-			return null;
-		}
-		return AddressDto.builder()
-				.addressLine1(address.getAddressLine1())
-				.addressLine2(address.getAddressLine2())
-				.addressLine3(address.getAddressLine3())
-				.city(address.getCity())
-				.district(address.getDistrict())
-				.state(address.getState())
-				.postalCode(address.getPostalCode())
-				.country(address.getCountry())
-				.build();
-	}
+  public static AddressDto getAddressDtoFromEntity(AddressEntity address) {
+    if (address == null) {
+      return null;
+    }
+    return AddressDto.builder()
+        .addressLine1(address.getAddressLine1())
+        .addressLine2(address.getAddressLine2())
+        .addressLine3(address.getAddressLine3())
+        .city(address.getCity())
+        .district(address.getDistrict())
+        .state(address.getState())
+        .postalCode(address.getPostalCode())
+        .country(address.getCountry())
+        .build();
+  }
 
-	public void trimFields() {
-		if (addressLine1 != null) {
-			addressLine1 = addressLine1.trim();
-		}
-		if (addressLine2 != null) {
-			addressLine2 = addressLine2.trim();
-		}
-		if (addressLine3 != null) {
-			addressLine3 = addressLine3.trim();
-		}
-		if (city != null) {
-			city = city.trim();
-		}
-		if (district != null) {
-			district = district.trim();
-		}
-		if (state != null) {
-			state = state.trim();
-		}
-		if (postalCode != null) {
-			postalCode = postalCode.trim();
-		}
-		if (country != null) {
-			country = country.trim();
-		}
-	}
+  public void trimFields() {
+    if (addressLine1 != null) {
+      addressLine1 = addressLine1.trim();
+    }
+    if (addressLine2 != null) {
+      addressLine2 = addressLine2.trim();
+    }
+    if (addressLine3 != null) {
+      addressLine3 = addressLine3.trim();
+    }
+    if (city != null) {
+      city = city.trim();
+    }
+    if (district != null) {
+      district = district.trim();
+    }
+    if (state != null) {
+      state = state.trim();
+    }
+    if (postalCode != null) {
+      postalCode = postalCode.trim();
+    }
+    if (country != null) {
+      country = country.trim();
+    }
+  }
 }

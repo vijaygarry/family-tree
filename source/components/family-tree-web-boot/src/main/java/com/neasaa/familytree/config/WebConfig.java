@@ -11,28 +11,28 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @PropertySource("classpath:rajput.properties")
 public class WebConfig implements WebMvcConfigurer {
 
-    //TODO: Read this config from AppProperties class
-    @Value("${app.upload.dir}")
-    private String uploadDir;
+  // TODO: Read this config from AppProperties class
+  @Value("${app.upload.dir}")
+  private String uploadDir;
 
-    @Value("${cors.enabled:false}")
-    private boolean corsEnabled;
+  @Value("${cors.enabled:false}")
+  private boolean corsEnabled;
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Serve uploaded profile images
-        registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:" + uploadDir + "/");
+  @Override
+  public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    // Serve uploaded profile images
+    registry.addResourceHandler("/uploads/**").addResourceLocations("file:" + uploadDir + "/");
+  }
+
+  @Override
+  public void addCorsMappings(CorsRegistry registry) {
+    if (corsEnabled) {
+      registry
+          .addMapping("/**")
+          .allowedOriginPatterns("*")
+          .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+          .allowedHeaders("*")
+          .allowCredentials(true);
     }
-
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        if (corsEnabled) {
-            registry.addMapping("/**")
-                    .allowedOriginPatterns("*")
-                    .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                    .allowedHeaders("*")
-                    .allowCredentials(true);
-        }
-    }
+  }
 }

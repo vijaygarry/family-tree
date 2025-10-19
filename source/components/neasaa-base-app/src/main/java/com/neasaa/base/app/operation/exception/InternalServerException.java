@@ -2,19 +2,18 @@ package com.neasaa.base.app.operation.exception;
 
 public class InternalServerException extends OperationException {
 
-	private static final long serialVersionUID = 8875501915639256061L;
+  private static final long serialVersionUID = 8875501915639256061L;
 
-	public InternalServerException(String aMessage) {
-		super(aMessage);
-	}
+  public InternalServerException(String aMessage) {
+    super(aMessage);
+  }
 
-	public InternalServerException(String aMessage, Throwable th) {
-		super(aMessage, th);
-	}
+  public InternalServerException(String aMessage, Throwable th) {
+    super(aMessage, th);
+  }
 
-	@Override
-	public int getHttpResponseCode() {
-		return BaseErrorCodes.INTERNAL_ERROR;
-	}
-
+  @Override
+  public int getHttpResponseCode() {
+    return BaseErrorCodes.INTERNAL_ERROR;
+  }
 }

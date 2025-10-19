@@ -4,6 +4,7 @@ import com.neasaa.base.app.operation.exception.InternalServerException;
 import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.base.app.operation.model.EmptyOperationRequest;
 import com.neasaa.base.app.operation.model.OperationResponse;
+import com.neasaa.familytree.WebRequestHandler;
 import com.neasaa.familytree.operation.OperationNames;
 import com.neasaa.familytree.operation.account.GetAccountListOperation;
 import com.neasaa.familytree.operation.account.GetAccountStatementOperation;
@@ -13,6 +14,8 @@ import com.neasaa.familytree.operation.account.model.GetAccountStatementResponse
 import com.neasaa.familytree.operation.events.GetEventsOperation;
 import com.neasaa.familytree.operation.events.model.GetEventsRequest;
 import com.neasaa.familytree.operation.events.model.GetEventsResponse;
+import com.neasaa.familytree.operation.family.AddFamilyMemberOperation;
+import com.neasaa.familytree.operation.family.AddFamilyOperation;
 import com.neasaa.familytree.operation.family.GetFamilyDetailsOperation;
 import com.neasaa.familytree.operation.family.GetMemberProfileOperation;
 import com.neasaa.familytree.operation.family.ManageRelationshipOperation;
@@ -40,6 +43,11 @@ import com.neasaa.familytree.operation.family.model.UpdateFamilyMemberProfileRes
 import com.neasaa.familytree.operation.family.model.UpdateImageRequest;
 import com.neasaa.familytree.utils.Constants;
 import com.neasaa.familytree.utils.FileUtils;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Random;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -50,184 +58,185 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.neasaa.familytree.WebRequestHandler;
-import com.neasaa.familytree.operation.family.AddFamilyMemberOperation;
-import com.neasaa.familytree.operation.family.AddFamilyOperation;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Random;
-
 
 @Log4j2
 @RestController
 @RequestMapping(value = "/api/family", method = RequestMethod.POST)
 public class FamilyController {
 
-	//TODO: Read this config from AppProperties class
-	@Value("${app.upload.dir}")
-	private String uploadDir;
+  // TODO: Read this config from AppProperties class
+  @Value("${app.upload.dir}")
+  private String uploadDir;
 
-	@RequestMapping(value = "/addfamily")
-	@ResponseBody
-	public ResponseEntity<AddFamilyResponse> addFamily (@RequestBody AddFamilyRequest addFamilyRequest) throws Exception {
-		return WebRequestHandler.processRequest(AddFamilyOperation.class, addFamilyRequest);
-	}
-	
-	@RequestMapping(value = "/getfamilydetails")
-	@ResponseBody
-	public ResponseEntity<GetFamilyDetailsResponse> getFamilyDetails (@RequestBody GetFamilyDetailsRequest getFamilyDetailsRequest) throws Exception {
-		return WebRequestHandler.processRequest(GetFamilyDetailsOperation.class, getFamilyDetailsRequest);
-	}
+  @RequestMapping(value = "/addfamily")
+  @ResponseBody
+  public ResponseEntity<AddFamilyResponse> addFamily(@RequestBody AddFamilyRequest addFamilyRequest)
+      throws Exception {
+    return WebRequestHandler.processRequest(AddFamilyOperation.class, addFamilyRequest);
+  }
 
-	@RequestMapping(value = "/searchfamily")
-	@ResponseBody
-	public ResponseEntity<SearchFamilyResponse> searchFamily (@RequestBody SearchFamilyRequest searchFamilyRequest) throws Exception {
-		return WebRequestHandler.processRequest(SearchFamilyOperation.class, searchFamilyRequest);
-	}
+  @RequestMapping(value = "/getfamilydetails")
+  @ResponseBody
+  public ResponseEntity<GetFamilyDetailsResponse> getFamilyDetails(
+      @RequestBody GetFamilyDetailsRequest getFamilyDetailsRequest) throws Exception {
+    return WebRequestHandler.processRequest(
+        GetFamilyDetailsOperation.class, getFamilyDetailsRequest);
+  }
 
-	@PostMapping(value = "/updateFamilyDetails")
-	@ResponseBody
-	public ResponseEntity<UpdateFamilyDetailsResponse> updateFamilyDetails (@RequestBody UpdateFamilyDetailsRequest request) throws Exception {
-		return WebRequestHandler.processRequest(UpdateFamilyDetailsOperation.class, request);
-	}
+  @RequestMapping(value = "/searchfamily")
+  @ResponseBody
+  public ResponseEntity<SearchFamilyResponse> searchFamily(
+      @RequestBody SearchFamilyRequest searchFamilyRequest) throws Exception {
+    return WebRequestHandler.processRequest(SearchFamilyOperation.class, searchFamilyRequest);
+  }
 
+  @PostMapping(value = "/updateFamilyDetails")
+  @ResponseBody
+  public ResponseEntity<UpdateFamilyDetailsResponse> updateFamilyDetails(
+      @RequestBody UpdateFamilyDetailsRequest request) throws Exception {
+    return WebRequestHandler.processRequest(UpdateFamilyDetailsOperation.class, request);
+  }
 
-	@PostMapping("/updateFamilyImage")
-	public ResponseEntity<?> updateFamilyImage (
-			@RequestParam("familyId") Integer familyId,
-			@RequestParam("image") MultipartFile imageFile) {
-		log.info("Updating family image");
-		Path path = null;
-		try {
-			path = saveFileToTempDir(imageFile, uploadDir);
-		} catch (ValidationException | InternalServerException e) {
-			return WebRequestHandler.buildResponse(e, e.getHttpResponseCode());
-		}
+  @PostMapping("/updateFamilyImage")
+  public ResponseEntity<?> updateFamilyImage(
+      @RequestParam("familyId") Integer familyId, @RequestParam("image") MultipartFile imageFile) {
+    log.info("Updating family image");
+    Path path = null;
+    try {
+      path = saveFileToTempDir(imageFile, uploadDir);
+    } catch (ValidationException | InternalServerException e) {
+      return WebRequestHandler.buildResponse(e, e.getHttpResponseCode());
+    }
 
-		UpdateImageRequest updateImageRequest = new UpdateImageRequest();
-		updateImageRequest.setFamilyId(familyId);
-		updateImageRequest.setTmpUploadedFilePath(path);
-		updateImageRequest.setOperationName(OperationNames.UPDATE_MY_FAMILY_IMAGE);
-		return WebRequestHandler.processRequest(UpdateFamilyImageOperation.class, updateImageRequest);
-	}
+    UpdateImageRequest updateImageRequest = new UpdateImageRequest();
+    updateImageRequest.setFamilyId(familyId);
+    updateImageRequest.setTmpUploadedFilePath(path);
+    updateImageRequest.setOperationName(OperationNames.UPDATE_MY_FAMILY_IMAGE);
+    return WebRequestHandler.processRequest(UpdateFamilyImageOperation.class, updateImageRequest);
+  }
 
-	@RequestMapping(value = "/addFamilyMember")
-	@ResponseBody
-	public ResponseEntity<AddFamilyMemberResponse> addFamilyMember (@RequestBody AddFamilyMemberRequest addFamilyMemberRequest) throws Exception {
-		return WebRequestHandler.processRequest(AddFamilyMemberOperation.class, addFamilyMemberRequest);
-	}
+  @RequestMapping(value = "/addFamilyMember")
+  @ResponseBody
+  public ResponseEntity<AddFamilyMemberResponse> addFamilyMember(
+      @RequestBody AddFamilyMemberRequest addFamilyMemberRequest) throws Exception {
+    return WebRequestHandler.processRequest(AddFamilyMemberOperation.class, addFamilyMemberRequest);
+  }
 
-	@RequestMapping(value = "/manageRelationship")
-	@ResponseBody
-	public ResponseEntity<ManageRelationshipResponse> addFamilyMember (@RequestBody ManageRelationshipRequest manageRelationshipRequest) throws Exception {
-		return WebRequestHandler.processRequest(ManageRelationshipOperation.class, manageRelationshipRequest);
-	}
+  @RequestMapping(value = "/manageRelationship")
+  @ResponseBody
+  public ResponseEntity<ManageRelationshipResponse> addFamilyMember(
+      @RequestBody ManageRelationshipRequest manageRelationshipRequest) throws Exception {
+    return WebRequestHandler.processRequest(
+        ManageRelationshipOperation.class, manageRelationshipRequest);
+  }
 
+  @RequestMapping(value = "/getmemberprofile")
+  @ResponseBody
+  public ResponseEntity<GetMemberProfileResponse> getMemberProfile(
+      @RequestBody GetMemberProfileRequest getMemberProfileRequest) throws Exception {
+    return WebRequestHandler.processRequest(
+        GetMemberProfileOperation.class, getMemberProfileRequest);
+  }
 
-	@RequestMapping(value = "/getmemberprofile")
-	@ResponseBody
-	public ResponseEntity<GetMemberProfileResponse> getMemberProfile (@RequestBody GetMemberProfileRequest getMemberProfileRequest) throws Exception {
-		return WebRequestHandler.processRequest(GetMemberProfileOperation.class, getMemberProfileRequest);
-	}
+  @PostMapping(value = "/updateMemberProfile")
+  @ResponseBody
+  public ResponseEntity<UpdateFamilyMemberProfileResponse> updateMemberProfile(
+      @RequestBody UpdateFamilyMemberProfileRequest request) throws Exception {
+    return WebRequestHandler.processRequest(UpdateFamilyMemberProfileOperation.class, request);
+  }
 
-	@PostMapping(value = "/updateMemberProfile")
-	@ResponseBody
-	public ResponseEntity<UpdateFamilyMemberProfileResponse> updateMemberProfile (@RequestBody UpdateFamilyMemberProfileRequest request) throws Exception {
-		return WebRequestHandler.processRequest(UpdateFamilyMemberProfileOperation.class, request);
-	}
+  @PostMapping("/updateMemberImage")
+  public ResponseEntity<?> updateMemberImage(
+      @RequestParam("memberId") Integer memberId, @RequestParam("image") MultipartFile imageFile) {
+    log.info("Updating Member image");
+    Path path = null;
+    try {
+      path = saveFileToTempDir(imageFile, uploadDir);
+    } catch (ValidationException | InternalServerException e) {
+      return WebRequestHandler.buildResponse(e, e.getHttpResponseCode());
+    }
 
-	@PostMapping("/updateMemberImage")
-	public ResponseEntity<?> updateMemberImage (
-			@RequestParam("memberId") Integer memberId,
-			@RequestParam("image") MultipartFile imageFile) {
-		log.info("Updating Member image");
-		Path path = null;
-		try {
-			path = saveFileToTempDir(imageFile, uploadDir);
-		} catch (ValidationException | InternalServerException e) {
-			return WebRequestHandler.buildResponse(e, e.getHttpResponseCode());
-		}
+    UpdateImageRequest updateImageRequest = new UpdateImageRequest();
+    updateImageRequest.setMemberId(memberId);
+    updateImageRequest.setTmpUploadedFilePath(path);
+    updateImageRequest.setOperationName(OperationNames.UPDATE_MY_FAMILY_MEMBER_IMAGE);
+    return WebRequestHandler.processRequest(
+        UpdateFamilyMemberImageOperation.class, updateImageRequest);
+  }
 
-		UpdateImageRequest updateImageRequest = new UpdateImageRequest();
-		updateImageRequest.setMemberId(memberId);
-		updateImageRequest.setTmpUploadedFilePath(path);
-		updateImageRequest.setOperationName(OperationNames.UPDATE_MY_FAMILY_MEMBER_IMAGE);
-		return WebRequestHandler.processRequest(UpdateFamilyMemberImageOperation.class, updateImageRequest);
-	}
+  @RequestMapping(value = "/getEvents")
+  @ResponseBody
+  public ResponseEntity<GetEventsResponse> getEvents(@RequestBody GetEventsRequest request)
+      throws Exception {
+    return WebRequestHandler.processRequest(GetEventsOperation.class, request);
+  }
 
-	@RequestMapping(value = "/getEvents")
-	@ResponseBody
-	public ResponseEntity<GetEventsResponse> getEvents (@RequestBody GetEventsRequest request) throws Exception {
-		return WebRequestHandler.processRequest(GetEventsOperation.class, request);
-	}
+  @RequestMapping(value = "/getAccountList")
+  @ResponseBody
+  public ResponseEntity<GetAccountListResponse> getAccountList() throws Exception {
+    return WebRequestHandler.processRequest(
+        GetAccountListOperation.class, new EmptyOperationRequest());
+  }
 
-	@RequestMapping(value = "/getAccountList")
-	@ResponseBody
-	public ResponseEntity<GetAccountListResponse> getAccountList () throws Exception {
-		return WebRequestHandler.processRequest(GetAccountListOperation.class, new EmptyOperationRequest());
-	}
+  @RequestMapping(value = "/getAccountStatement")
+  @ResponseBody
+  public ResponseEntity<GetAccountStatementResponse> getAccountStatement(
+      @RequestBody GetAccountStatementRequest request) throws Exception {
+    return WebRequestHandler.processRequest(GetAccountStatementOperation.class, request);
+  }
 
-	@RequestMapping(value = "/getAccountStatement")
-	@ResponseBody
-	public ResponseEntity<GetAccountStatementResponse> getAccountStatement (@RequestBody GetAccountStatementRequest request) throws Exception {
-		return WebRequestHandler.processRequest(GetAccountStatementOperation.class, request);
-	}
+  private static Path saveFileToTempDir(MultipartFile imageFile, String uploadDir) {
+    log.info("Uploading file to tmp directory");
 
+    if (imageFile.isEmpty()) {
+      throw new ValidationException("No image file provided.");
+    }
 
-	private static Path saveFileToTempDir (MultipartFile imageFile, String uploadDir) {
-		log.info("Uploading file to tmp directory");
+    String contentType = imageFile.getContentType();
+    String originalFilename = imageFile.getOriginalFilename();
+    log.info("Uploading {} image", originalFilename);
+    if (contentType == null || !contentType.startsWith("image/")) {
+      throw new ValidationException("File is not an image.");
+    }
 
-		if (imageFile.isEmpty()) {
-			throw new ValidationException("No image file provided.");
-		}
+    if (originalFilename == null
+        || !(originalFilename.endsWith(".jpg")
+            || originalFilename.endsWith(".jpeg")
+            || originalFilename.endsWith(".png"))) {
+      throw new ValidationException("Image type is not supported.");
+    }
 
-		String contentType = imageFile.getContentType();
-		String originalFilename = imageFile.getOriginalFilename();
-		log.info("Uploading {} image", originalFilename);
-		if (contentType == null || !contentType.startsWith("image/")) {
-			throw new ValidationException ("File is not an image.");
-		}
+    try {
+      log.info("File size from image : {}", imageFile.getSize());
+      long fileSizeInKB = imageFile.getSize() / 1024;
+      if (fileSizeInKB > Constants.MAX_IMAGE_SIZE_ALLOWED_IN_KB) { // 5 MB limit
+        throw new ValidationException("Image file size exceeds the maximum limit of 5 MB.");
+      }
 
-		if (originalFilename == null ||
-				!(originalFilename.endsWith(".jpg") || originalFilename.endsWith(".jpeg") || originalFilename.endsWith(".png"))) {
-			throw new ValidationException ("Image type is not supported.");
-		}
+      Random rand = new Random(); // pseudorandom generator
 
-		try {
-			log.info("File size from image : {}", imageFile.getSize());
-			long fileSizeInKB = imageFile.getSize() / 1024;
-			if(fileSizeInKB > Constants.MAX_IMAGE_SIZE_ALLOWED_IN_KB) { // 5 MB limit
-				throw new ValidationException("Image file size exceeds the maximum limit of 5 MB.");
-			}
+      int n = rand.nextInt(100);
 
-			Random rand = new Random(); // pseudorandom generator
+      // Save file with a unique name (timestamp + random number)
+      String filename =
+          System.currentTimeMillis() + "-" + n + "." + FileUtils.getFileExtension(originalFilename);
+      log.info("Saving image file to tmp directory with filename: {}", filename);
+      Path filePath = Paths.get(uploadDir + "/tmp", filename);
+      Files.write(filePath, imageFile.getBytes());
 
-			int n = rand.nextInt(100);
+      // Return temp file path
+      return filePath;
 
-			// Save file with a unique name (timestamp + random number)
-			String filename = System.currentTimeMillis() + "-" + n + "." + FileUtils.getFileExtension(originalFilename);
-			log.info("Saving image file to tmp directory with filename: {}", filename);
-			Path filePath = Paths.get(uploadDir + "/tmp", filename);
-			Files.write(filePath, imageFile.getBytes());
+    } catch (IOException e) {
+      log.info("Failed to upload image to tmp directory", e);
+      throw new InternalServerException("Failed to save image.");
+    }
+  }
 
-			// Return temp file path
-			return filePath;
-
-		} catch (IOException e) {
-			log.info("Failed to upload image to tmp directory", e);
-			throw new InternalServerException("Failed to save image.");
-		}
-	}
-
-	private static ResponseEntity<? extends OperationResponse> buildValidationExceptionResponse (String responseMessage ) {
-		ValidationException ve = new ValidationException(responseMessage);
-		return WebRequestHandler.buildResponse(ve, ve.getHttpResponseCode());
-	}
-
-
+  private static ResponseEntity<? extends OperationResponse> buildValidationExceptionResponse(
+      String responseMessage) {
+    ValidationException ve = new ValidationException(responseMessage);
+    return WebRequestHandler.buildResponse(ve, ve.getHttpResponseCode());
+  }
 }

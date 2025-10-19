@@ -3,113 +3,114 @@ package com.neasaa.familytree.operation.family;
 import static com.neasaa.base.app.utils.ValidationUtils.checkObjectPresent;
 import static com.neasaa.base.app.utils.ValidationUtils.checkValuePresent;
 
-import com.neasaa.familytree.constants.ImageConstants;
-import com.neasaa.familytree.entity.AddressEntity;
-import com.neasaa.familytree.entity.FamilyEntity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 import com.neasaa.base.app.operation.AbstractOperation;
 import com.neasaa.base.app.operation.AuditInfo;
 import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
+import com.neasaa.familytree.constants.ImageConstants;
 import com.neasaa.familytree.dao.pg.AddressDao;
 import com.neasaa.familytree.dao.pg.FamilyDao;
+import com.neasaa.familytree.entity.AddressEntity;
+import com.neasaa.familytree.entity.FamilyEntity;
 import com.neasaa.familytree.operation.OperationNames;
 import com.neasaa.familytree.operation.family.model.AddFamilyRequest;
 import com.neasaa.familytree.operation.family.model.AddFamilyResponse;
 import com.neasaa.familytree.operation.family.model.AddressDto;
 import com.neasaa.familytree.utils.DataFormatter;
 import com.neasaa.familytree.utils.FamilytreeValidationUtils;
-
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 @Log4j2
-@Component ("AddFamilyOperation")
+@Component("AddFamilyOperation")
 @Scope("prototype")
-public class AddFamilyOperation extends AbstractOperation<AddFamilyRequest, AddFamilyResponse>{
+public class AddFamilyOperation extends AbstractOperation<AddFamilyRequest, AddFamilyResponse> {
 
-	@Autowired
-	private AddressDao addressDao;
-	
-	@Autowired
-	private FamilyDao familyDao;
-	
-	@Override
-	public String getOperationName() {
-		return OperationNames.ADD_FAMILY;
-	}
+  @Autowired private AddressDao addressDao;
 
-	@Override
-	public void doValidate(AddFamilyRequest opRequest) throws OperationException {
-		if (opRequest == null) {
-			throw new ValidationException("Invalid request provided.");
-		}
-		checkValuePresent(opRequest.getFamilyName(), "family name");
-		checkValuePresent(opRequest.getGotra(), "gotra");
-		checkObjectPresent(opRequest.getFamilyAddress(), "address");
-		FamilytreeValidationUtils.validateAddress(opRequest.getFamilyAddress());
-		
-	}
+  @Autowired private FamilyDao familyDao;
 
-	@Override
-	public AddFamilyResponse doExecute(AddFamilyRequest opRequest) throws OperationException {
-		log.info("Adding family");
-		AddressEntity familyAddress = getAddressFromRequest(opRequest);
-		int addressId = addressDao.addAddress(familyAddress);
-		familyAddress.setAddressId(addressId);
+  @Override
+  public String getOperationName() {
+    return OperationNames.ADD_FAMILY;
+  }
 
-		FamilyEntity familyFromRequest = getFamilyFromRequest(opRequest, familyAddress);
-		String familySearchString = DataFormatter.getFamilySearchString(familyFromRequest, null, familyAddress);
-		familyFromRequest.setFamilysearchtext(familySearchString);
-		int familyId = familyDao.addFamily(familyFromRequest);
-		AddFamilyResponse response = AddFamilyResponse.builder().familyName(opRequest.getFamilyName()).familyId(familyId).build();
-		response.setOperationMessage(String.format("%s family added successfully !!!", opRequest.getFamilyName()));
-		return response;
-	}
-	
-	private AddressEntity getAddressFromRequest (AddFamilyRequest opRequest) {
-		AddressDto inputAddress = opRequest.getFamilyAddress();
-		AuditInfo auditInfo = getAuditInfo();
-		return AddressEntity.builder()
-				.addressLine1(inputAddress.getAddressLine1())
-				.addressLine2(inputAddress.getAddressLine2())
-				.addressLine3(inputAddress.getAddressLine3())
-				.city(inputAddress.getCity())
-				.district(inputAddress.getDistrict())
-				.state(inputAddress.getState())
-				.postalCode(inputAddress.getPostalCode())
-				.country(inputAddress.getCountry())
-				.createdBy(auditInfo.getCreatedBy())
-				.createdDate(auditInfo.getCreatedDate())
-				.lastUpdatedBy(auditInfo.getLastUpdatedBy())
-				.lastUpdatedDate(auditInfo.getLastUpdatedDate())
-				.build();
-	}
-	
-	private FamilyEntity getFamilyFromRequest (AddFamilyRequest opRequest, AddressEntity familyAddress) {
-		AuditInfo auditInfo = getAuditInfo();
-		String phoneNumber = DataFormatter.formatPhoneNumber(opRequest.getPhone());
-		String familyRegion = DataFormatter.getRegion(familyAddress);
+  @Override
+  public void doValidate(AddFamilyRequest opRequest) throws OperationException {
+    if (opRequest == null) {
+      throw new ValidationException("Invalid request provided.");
+    }
+    checkValuePresent(opRequest.getFamilyName(), "family name");
+    checkValuePresent(opRequest.getGotra(), "gotra");
+    checkObjectPresent(opRequest.getFamilyAddress(), "address");
+    FamilytreeValidationUtils.validateAddress(opRequest.getFamilyAddress());
+  }
 
-		return FamilyEntity.builder()
-				.familyName(opRequest.getFamilyName())
-				.familyNameInHindi(opRequest.getFamilyNameInHindi())
-				.gotra(opRequest.getGotra())
-				.addressId(familyAddress.getAddressId())
-				.region(familyRegion)
-				.phone(phoneNumber)
-				.isPhoneWhatsappRegistered(opRequest.isPhoneWhatsappRegistered())
-				.email(opRequest.getEmail())
-				.active(true)
-				.familyImage(ImageConstants.DEFAULT_FAMILY_IMAGE)
-				.imageLastUpdated(auditInfo.getCreatedDate())
-				.createdBy(auditInfo.getCreatedBy())
-				.createdDate(auditInfo.getCreatedDate())
-				.lastUpdatedBy(auditInfo.getLastUpdatedBy())
-				.lastUpdatedDate(auditInfo.getLastUpdatedDate())
-				.build();
-	}
+  @Override
+  public AddFamilyResponse doExecute(AddFamilyRequest opRequest) throws OperationException {
+    log.info("Adding family");
+    AddressEntity familyAddress = getAddressFromRequest(opRequest);
+    int addressId = addressDao.addAddress(familyAddress);
+    familyAddress.setAddressId(addressId);
 
+    FamilyEntity familyFromRequest = getFamilyFromRequest(opRequest, familyAddress);
+    String familySearchString =
+        DataFormatter.getFamilySearchString(familyFromRequest, null, familyAddress);
+    familyFromRequest.setFamilysearchtext(familySearchString);
+    int familyId = familyDao.addFamily(familyFromRequest);
+    AddFamilyResponse response =
+        AddFamilyResponse.builder()
+            .familyName(opRequest.getFamilyName())
+            .familyId(familyId)
+            .build();
+    response.setOperationMessage(
+        String.format("%s family added successfully !!!", opRequest.getFamilyName()));
+    return response;
+  }
+
+  private AddressEntity getAddressFromRequest(AddFamilyRequest opRequest) {
+    AddressDto inputAddress = opRequest.getFamilyAddress();
+    AuditInfo auditInfo = getAuditInfo();
+    return AddressEntity.builder()
+        .addressLine1(inputAddress.getAddressLine1())
+        .addressLine2(inputAddress.getAddressLine2())
+        .addressLine3(inputAddress.getAddressLine3())
+        .city(inputAddress.getCity())
+        .district(inputAddress.getDistrict())
+        .state(inputAddress.getState())
+        .postalCode(inputAddress.getPostalCode())
+        .country(inputAddress.getCountry())
+        .createdBy(auditInfo.getCreatedBy())
+        .createdDate(auditInfo.getCreatedDate())
+        .lastUpdatedBy(auditInfo.getLastUpdatedBy())
+        .lastUpdatedDate(auditInfo.getLastUpdatedDate())
+        .build();
+  }
+
+  private FamilyEntity getFamilyFromRequest(
+      AddFamilyRequest opRequest, AddressEntity familyAddress) {
+    AuditInfo auditInfo = getAuditInfo();
+    String phoneNumber = DataFormatter.formatPhoneNumber(opRequest.getPhone());
+    String familyRegion = DataFormatter.getRegion(familyAddress);
+
+    return FamilyEntity.builder()
+        .familyName(opRequest.getFamilyName())
+        .familyNameInHindi(opRequest.getFamilyNameInHindi())
+        .gotra(opRequest.getGotra())
+        .addressId(familyAddress.getAddressId())
+        .region(familyRegion)
+        .phone(phoneNumber)
+        .isPhoneWhatsappRegistered(opRequest.isPhoneWhatsappRegistered())
+        .email(opRequest.getEmail())
+        .active(true)
+        .familyImage(ImageConstants.DEFAULT_FAMILY_IMAGE)
+        .imageLastUpdated(auditInfo.getCreatedDate())
+        .createdBy(auditInfo.getCreatedBy())
+        .createdDate(auditInfo.getCreatedDate())
+        .lastUpdatedBy(auditInfo.getLastUpdatedBy())
+        .lastUpdatedDate(auditInfo.getLastUpdatedDate())
+        .build();
+  }
 }

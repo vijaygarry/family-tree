@@ -8,10 +8,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SignUpRequest extends OperationRequest {
-    private String emailId;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String otp;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String password;
-    private String requestId;
+  private String emailId;
+
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+  private String otp;
+
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+  private String password;
+
+  private String requestId;
 }

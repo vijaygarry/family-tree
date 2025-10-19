@@ -1,19 +1,17 @@
 /*
-* Copyright (c) 2018- 2021
-*/
+ * Copyright (c) 2018- 2021
+ */
 
 package com.neasaa.familytree.entity;
 
-import lombok.Setter;
+import com.neasaa.base.app.entity.BaseEntity;
+import java.io.Serial;
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.io.Serial;
-import java.util.Date;
-
-import com.neasaa.base.app.entity.BaseEntity;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -22,27 +20,25 @@ import com.neasaa.base.app.entity.BaseEntity;
 @AllArgsConstructor
 public class FamilyEntity extends BaseEntity {
 
-	@Serial
-    private static final long serialVersionUID = 1748919840051L;
+  @Serial private static final long serialVersionUID = 1748919840051L;
 
-	private int familyId;
-	private String familyName;
-	private String familyNameInHindi;
-	private String gotra;
-	private int addressId;
-	private String region;
-	private String phone;
-	private boolean isPhoneWhatsappRegistered;
-	private String email;
-	private String familysearchtext;
-	private boolean active;
-	private String familyImage;
-	private Date imageLastUpdated;
-	// Address details
-	private AddressEntity address;
-	private int createdBy;
-	private Date createdDate;
-	private int lastUpdatedBy;
-	private Date lastUpdatedDate;
-
+  private int familyId;
+  private String familyName;
+  private String familyNameInHindi;
+  private String gotra;
+  private int addressId;
+  private String region;
+  private String phone;
+  private boolean isPhoneWhatsappRegistered;
+  private String email;
+  private String familysearchtext;
+  private boolean active;
+  private String familyImage;
+  private Date imageLastUpdated;
+  // Address details
+  private AddressEntity address;
+  private int createdBy;
+  private Date createdDate;
+  private int lastUpdatedBy;
+  private Date lastUpdatedDate;
 }

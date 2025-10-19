@@ -8,12 +8,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ResetForgotPasswordRequest extends OperationRequest {
-    private String emailId;
+  private String emailId;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String otp;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String newPassword;
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+  private String otp;
 
-    private String requestId;
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+  private String newPassword;
+
+  private String requestId;
 }

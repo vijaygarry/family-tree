@@ -7,5 +7,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SearchFamilyRequest extends OperationRequest {
-    private String searchString;
+  private String searchString;
 }

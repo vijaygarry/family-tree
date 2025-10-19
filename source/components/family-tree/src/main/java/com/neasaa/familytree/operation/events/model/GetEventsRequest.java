@@ -7,6 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GetEventsRequest extends OperationRequest {
-    private String eventType;
-    private boolean pastEvents;
+  private String eventType;
+  private boolean pastEvents;
 }

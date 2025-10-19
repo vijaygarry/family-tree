@@ -7,5 +7,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RequestSignUpOTPRequest extends OperationRequest {
-    private String emailId;
+  private String emailId;
 }

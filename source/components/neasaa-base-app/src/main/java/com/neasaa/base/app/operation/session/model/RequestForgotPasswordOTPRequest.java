@@ -7,5 +7,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RequestForgotPasswordOTPRequest extends OperationRequest {
-    private String emailId;
+  private String emailId;
 }

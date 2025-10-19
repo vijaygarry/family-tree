@@ -7,6 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RequestSignUpOTPResponse extends OperationResponse {
-    private String emailId;
-    private String requestId;
+  private String emailId;
+  private String requestId;
 }

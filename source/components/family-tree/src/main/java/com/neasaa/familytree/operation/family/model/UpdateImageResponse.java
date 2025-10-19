@@ -7,5 +7,5 @@ import lombok.Setter;
 @Setter
 @Getter
 public class UpdateImageResponse extends OperationResponse {
-    String uploadedImagePath;
+  String uploadedImagePath;
 }

@@ -9,5 +9,5 @@ import lombok.Setter;
 @Getter
 @Builder
 public class UpdateFamilyDetailsResponse extends OperationResponse {
-    private FamilyDetailsDto familyDetails;
+  private FamilyDetailsDto familyDetails;
 }
