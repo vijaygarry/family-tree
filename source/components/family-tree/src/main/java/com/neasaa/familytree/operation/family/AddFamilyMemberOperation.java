@@ -4,16 +4,20 @@ import static com.neasaa.base.app.utils.ValidationUtils.checkObjectPresent;
 import static com.neasaa.base.app.utils.ValidationUtils.checkValuePresent;
 import static com.neasaa.base.app.utils.ValidationUtils.checkValueRange;
 import static com.neasaa.familytree.utils.Constants.MISSING_BIRTH_DATE_VALUE;
+import static com.neasaa.familytree.utils.DataFormatter.parseISODateToLocalDate;
 import static com.neasaa.familytree.utils.FamilytreeValidationUtils.validateBirthDate;
+import static com.neasaa.familytree.utils.FamilytreeValidationUtils.validateStringLength;
 
 import java.util.List;
 
+import com.neasaa.base.app.utils.EmailValidator;
 import com.neasaa.familytree.constants.ImageConstants;
 import com.neasaa.familytree.entity.AddressEntity;
 import com.neasaa.familytree.entity.FamilyEntity;
 import com.neasaa.familytree.entity.FamilyMemberEntity;
 import com.neasaa.familytree.entity.MemberRelationshipEntity;
 import com.neasaa.familytree.enums.Month;
+import com.neasaa.familytree.operation.family.model.RelationshipDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -67,8 +71,31 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 		if (opRequest == null) {
 			throw new ValidationException("Invalid request provided.");
 		}
+		opRequest.trimFields();
+		checkObjectPresent(opRequest.getFamilyId(), "family Id");
 		checkValueRange(opRequest.getFamilyId(), 1, Integer.MAX_VALUE, "family id");
+
 		checkValuePresent(opRequest.getFirstName(), "first name");
+		validateStringLength(opRequest.getFirstName(), "first name", 50);
+		if(opRequest.getFirstNameInHindi() != null) {
+			validateStringLength(opRequest.getFirstNameInHindi(), "first name in hindi", 50);
+		}
+
+		if(opRequest.getMaidenLastName() != null) {
+			validateStringLength(opRequest.getMaidenLastName(), "maiden last name", 50);
+		}
+		if(opRequest.getNickName() != null) {
+			validateStringLength(opRequest.getNickName(), "nick name", 50);
+		}
+		if(opRequest.getNickNameInHindi() != null) {
+			validateStringLength(opRequest.getNickNameInHindi(), "nick name in hindi", 50);
+		}
+
+		EmailValidator.validateEmail(opRequest.getEmail(), false);
+		if(opRequest.getPhone() != null) {
+			FamilytreeValidationUtils.validatePhoneNumber(opRequest.getPhone());
+		}
+
 		checkValuePresent(opRequest.getGender(), "gender");
 		if(Gender.getGenderByString(opRequest.getGender()) == null) {
 			throw new ValidationException ("Invalid value for field gender");
@@ -80,26 +107,35 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 		if(MaritalStatus.getMaritalStatus(opRequest.getMaritalStatus()) == null) {
 			throw new ValidationException ("Invalid value for field marital status");
 		}
-		
-		if(opRequest.getMemberAddress() != null) {
+
+		if(opRequest.getEducationDetails() != null) {
+			validateStringLength(opRequest.getEducationDetails(), "education details", 200);
+		}
+
+		if(opRequest.getOccupation() != null) {
+			validateStringLength(opRequest.getOccupation(), "occupation", 100);
+		}
+
+		if(!opRequest.isAddressSameAsFamily() ) {
+			checkObjectPresent(opRequest.getMemberAddress(), "member address");
 			FamilytreeValidationUtils.validateAddress(opRequest.getMemberAddress());
 		}
 		
-		if(opRequest.getMemberAddress() != null && opRequest.isAddressSameAsFamily()) {
-			throw new ValidationException ("Either select address same as family address or specify member address");
-		}
-		
-		if(opRequest.getPhone() != null) {
-			FamilytreeValidationUtils.validatePhoneNumber(opRequest.getPhone());
-		}
-		
-		if(opRequest.getRelashinship() != null) {
-			RelationshipType relationshipType = RelationshipType.getRelationshipType(opRequest.getRelashinship().getRelationshipType());
+		if(!opRequest.isHeadOfFamily()) {
+			if(opRequest.getRelationship() == null) {
+				throw new ValidationException ("Relationship is required this family member");
+			}
+			RelationshipType relationshipType = RelationshipType.getRelationshipType(opRequest.getRelationship().getRelationshipType());
 			if(relationshipType == null) {
 				throw new ValidationException ("Invalid relationship type provided");
 			}
+			checkObjectPresent(opRequest.getRelationship().getMemberId(), "member Id");
+			checkValueRange(opRequest.getRelationship().getMemberId(), 1, Integer.MAX_VALUE, "member id");
+			checkObjectPresent(opRequest.getRelationship().getMemberName(), "member name");
 		}
-		
+
+
+
 	}
 
 	@Override
@@ -110,61 +146,59 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 			log.info("Family not found for family id {}", opRequest.getFamilyId());
 			throw new ValidationException ("Family not found");
 		}
-		
-		FamilyMemberEntity relatedMember = null;
-		
+
 		//Fetch list of family members
+		//TODO: Do we need all the members or only HOF should be sufficient.
 		List<FamilyMemberEntity> familyMembers = familyMemberDao.allMembersForFamily(opRequest.getFamilyId());
-		if(familyMembers == null || familyMembers.isEmpty()) {
-			// No member in family. So this member should be the head of family.
-			if(!opRequest.isHeadOfFamily()) {
-				throw new ValidationException ("First member should be the head of family");
-			}
-		} else {
-			// There are already at least one member in family, so this new member can not be the head of family.
-			if(opRequest.isHeadOfFamily()) {
-				throw new ValidationException ("Other member is already a head of family");
-			}
-			// TODO: Uncomment this when relationship is implemented
-			checkObjectPresent(opRequest.getRelashinship(), "relationship");
+		validateHeadOfFamilyValue(opRequest, familyMembers);
 
-			relatedMember = familyMemberDao.getMemberById(opRequest.getRelashinship().getRelatedMemberId());
-			if(relatedMember == null) {
-				throw new ValidationException ("Related member does not exists");
+		AddressEntity newAddressEntity = null;
+		int memberNewAddressId = Constants.MEMBER_ADDRESS_SAME_AS_FAMILY_ADDRESS;
+		if(!opRequest.isAddressSameAsFamily()) {
+			newAddressEntity = getAddressFromRequest(opRequest);
+			if(newAddressEntity != null) {
+				memberNewAddressId = addressDao.addAddress(newAddressEntity);
+				newAddressEntity.setAddressId(memberNewAddressId);
 			}
-			log.info("Input Relationship {}'s {} is {} ({})", opRequest.getFirstName() , opRequest.getRelashinship().getRelationshipType(), opRequest.getRelashinship().getRelatedMemberName(), opRequest.getRelashinship().getRelatedMemberId());
 		}
 
-		AddressEntity memberAddress = getAddressFromRequest(opRequest);
-		int addressId = Constants.MEMBER_ADDRESS_SAME_AS_FAMILY_ADDRESS;
-		if(memberAddress != null) {
-			addressId = addressDao.addAddress(memberAddress);
-		}
-
-		FamilyMemberEntity newMemberFromDb = familyMemberDao.addFamilyMember(getFamilyMemberFromRequest(opRequest, family, addressId));
+		FamilyMemberEntity newMemberFromDb = familyMemberDao.addFamilyMember(getFamilyMemberFromRequest(opRequest, family, memberNewAddressId));
 		if(newMemberFromDb.isHeadOfFamily()) {
 			familyDao.updateFamilyDisplayName(family, newMemberFromDb, getAuditInfo());
 		}
 
-
-		if(opRequest.getRelashinship() != null) {
-			//Add relationship
-			RelationshipType relationshipType = RelationshipType.getRelationshipType(opRequest.getRelashinship().getRelationshipType());
-			if(relationshipType == null) {
-				log.info("Invalid relationship type provided: {}", opRequest.getRelashinship().getRelationshipType());
-				throw new ValidationException ("Invalid relationship type provided");
-			}
-			List<MemberRelationshipEntity> relationships = RelationshipUtils.buildRelationships(newMemberFromDb, relationshipType, relatedMember, getAuditInfo());
-			MemberRelationshipEntity relationship = relationships.get(0);
-			log.info("Member {}'s {} is {}", relationship.getMemberId(), relationship.getRelationshipType(), relationship.getRelatedMemberId());
-			updateRelationships(relationships);
+		//If not head of family, then add relationship
+		if(!opRequest.isHeadOfFamily()) {
+			updateRelationships(opRequest, newMemberFromDb);
 		}
 		
 		AddFamilyMemberResponse response = AddFamilyMemberResponse.builder().firstName(opRequest.getFirstName()).lastName(family.getFamilyName()).memberId(newMemberFromDb.getMemberId()).build();
 		response.setOperationMessage(String.format("Member %s %s added successfully !!!", opRequest.getFirstName(), family.getFamilyName()));
 		return response;
 	}
-	
+
+	private void validateHeadOfFamilyValue(AddFamilyMemberRequest opRequest, List<FamilyMemberEntity> allFamilyMembers) throws ValidationException {
+
+		boolean familyAlreadyHasHeadOfFamily = false;
+		if(allFamilyMembers != null && !allFamilyMembers.isEmpty()) {
+			for (FamilyMemberEntity member : allFamilyMembers) {
+				if (member.isHeadOfFamily()) {
+					familyAlreadyHasHeadOfFamily = true;
+					break;				}
+			}
+		}
+
+		if(opRequest.isHeadOfFamily()) {
+			if (familyAlreadyHasHeadOfFamily) {
+				throw new ValidationException("Family can have only one head of family. Family already has head of family.");
+			}
+		} else {
+			if (!familyAlreadyHasHeadOfFamily) {
+				throw new ValidationException("First add head of family");
+			}
+		}
+	}
+
 	private AddressEntity getAddressFromRequest (AddFamilyMemberRequest opRequest) {
 		AddressDto inputAddress = opRequest.getMemberAddress();
 		if(inputAddress ==null) {
@@ -216,9 +250,9 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 				.birthDay(birthDay)
 				.birthMonth(Month.fromName(opRequest.getBirthMonth()))
 				.birthYear(opRequest.getBirthYear())
-				.dateOfDeath(opRequest.getDateOfDeath())
+				.dateOfDeath(parseISODateToLocalDate(opRequest.getDateOfDeath()))
 				.maritalStatus(MaritalStatus.getMaritalStatus(opRequest.getMaritalStatus()))
-				.weddingDate(opRequest.getWeddingDate())
+				.weddingDate(parseISODateToLocalDate(opRequest.getWeddingDate()))
 				.educationDetails(opRequest.getEducationDetails())
 				.occupation(opRequest.getOccupation())
 				.hobby(opRequest.getHobby())
@@ -232,25 +266,54 @@ public class AddFamilyMemberOperation extends AbstractOperation<AddFamilyMemberR
 				.build();
 	}
 	
-	private void updateRelationships (List<MemberRelationshipEntity> relationships) {
+	private void updateRelationships (AddFamilyMemberRequest opRequest, FamilyMemberEntity newMemberFromDb) {
+
+		RelationshipDto relationship = opRequest.getRelationship();
+		FamilyMemberEntity relatedMember = familyMemberDao.getMemberById(relationship.getMemberId());
+		if(relatedMember == null) {
+			throw new ValidationException ("Member whom adding relationship is missing " + relationship.getMemberName());
+		}
+		log.info("Input Relationship {}({})'s {} is {} ", relationship.getMemberName(), relationship.getMemberId(), relationship.getRelationshipType(), opRequest.getFirstName());
+
+		//Update relationship related member info (i.e. details for new member adding)
+		relationship.setRelatedMemberId(newMemberFromDb.getMemberId());
+		relationship.setRelatedMemberName(newMemberFromDb.getFirstName());
+
+		//Add relationship
+		MemberRelationshipEntity relationshipEntity = relationship.entityFromDto();
+		relationshipEntity = RelationshipUtils.normalizeRelationship(relationshipEntity, relatedMember);
+		log.info("Member {}'s {} is {}", relationship.getMemberId(), relationship.getRelationshipType(), relationship.getRelatedMemberId());
 		log.info("Adding relationship");
-		for(MemberRelationshipEntity relationship : relationships) {
-			MemberRelationshipEntity memberRelationshipFromDb = memberRelationshipDao.getRelationshipBetweenMembers(relationship.getMemberId(), relationship.getRelatedMemberId());
-			if(memberRelationshipFromDb == null) {
-				log.info("Adding {} is {} of {}", relationship.getMemberId(), relationship.getRelationshipType(), relationship.getRelatedMemberId() );
-				memberRelationshipDao.addMemberRelationship(relationship);
-			} else {
-				log.info("Relationship already exists between {} and {}", relationship.getMemberId(), relationship.getRelatedMemberId());
-				if(memberRelationshipFromDb.getRelationshipType() != relationship.getRelationshipType()) {
-					log.info("Relationship between member {} and {} is expected as {}, but found {}", relationship.getMemberId(), relationship.getRelatedMemberId(), relationship.getRelationshipType(), memberRelationshipFromDb.getRelationshipType());
-				}
+
+		//TODO: Check gender compatibility for relationship
+
+		//TODO: For related member check the following:
+		//1. If Wife/Husband of related member is already present, then do not add husband or wife.
+		//2. If father/mother already exists, then do not add son/daughter.
+
+		//TODO: Check the relationShipType to add
+		// If Mother/Father then fetch mother and father of related member and validate
+		// If Husband/Wife then fetch husband and wife of related member and validate
+
+		MemberRelationshipEntity memberRelationshipFromDb = memberRelationshipDao.getRelationshipBetweenMembers(relationship.getMemberId(), relationship.getRelatedMemberId());
+		if(memberRelationshipFromDb == null) {
+			log.info("Adding {}'s {} is {}", relationship.getMemberId(), relationship.getRelationshipType(), relationship.getRelatedMemberId() );
+			memberRelationshipDao.addMemberRelationship(relationshipEntity, getAuditInfo());
+		} else {
+			log.info("Relationship already exists between {} and {}", relationship.getMemberId(), relationship.getRelatedMemberId());
+			if(memberRelationshipFromDb.getRelationshipType() != relationshipEntity.getRelationshipType()) {
+				log.info("Relationship between member {} and {} is expected as {}, but found {}", relationship.getMemberId(), relationship.getRelatedMemberId(), relationship.getRelationshipType(), memberRelationshipFromDb.getRelationshipType());
 			}
 		}
 	}
 	
 	private static String getDefaultImagePath (AddFamilyMemberRequest opRequest) {
 		Gender gender = Gender.getGenderByString(opRequest.getGender());
-		int memberAge = DataFormatter.getMemberAgeInYears(opRequest.getBirthDay(), Month.fromName(opRequest.getBirthMonth()), opRequest.getBirthYear());
+		short birthDay = MISSING_BIRTH_DATE_VALUE;
+		if (opRequest.getBirthDay() != null) {
+			birthDay = opRequest.getBirthDay();
+		}
+		int memberAge = DataFormatter.getMemberAgeInYears(birthDay, Month.fromName(opRequest.getBirthMonth()), opRequest.getBirthYear());
 		if(gender == Gender.Female) {
 			if (memberAge < 20) {
 				return ImageConstants.DEFAULT_KID_GIRL_IMAGE;

@@ -33,14 +33,41 @@ public class AddFamilyMemberRequest extends OperationRequest {
 	private Short birthDay;
 	private String birthMonth;
 	private Short birthYear;
-	private LocalDate dateOfDeath;
+	private String dateOfDeath;
 	private String maritalStatus;
-	private LocalDate weddingDate;
+	private String weddingDate;
 	private String educationDetails;
 	private String occupation;
 	private String workingAt;
 	private String hobby;
 	private String profileImage;
 	private String profileImageThumbnail;
-	private RelationshipDto relashinship;
+	private RelationshipDto relationship;
+
+	public void trimFields() {
+		if (firstName != null) firstName = firstName.trim();
+		if (firstNameInHindi != null) firstNameInHindi = firstNameInHindi.trim();
+		if (lastName != null) lastName = lastName.trim();
+		if (maidenLastName != null) maidenLastName = maidenLastName.trim();
+		if (nickName != null) nickName = nickName.trim();
+		if (nickNameInHindi != null) nickNameInHindi = nickNameInHindi.trim();
+		if( memberAddress != null) memberAddress.trimFields();
+		if (phone != null) phone = phone.trim();
+		if (email != null) email = email.trim();
+		if (linkedinUrl != null) linkedinUrl = linkedinUrl.trim();
+		if (gender != null) gender = gender.trim();
+		if (birthMonth != null) birthMonth = birthMonth.trim();
+		if(dateOfDeath != null) dateOfDeath = dateOfDeath.trim();
+		if (maritalStatus != null) maritalStatus = maritalStatus.trim();
+		if( weddingDate != null ) weddingDate = weddingDate.trim();
+		if (educationDetails != null) educationDetails = educationDetails.trim();
+		if (occupation != null) occupation = occupation.trim();
+		if (workingAt != null) workingAt = workingAt.trim();
+		if (hobby != null) hobby = hobby.trim();
+		if (profileImage != null) profileImage = profileImage.trim();
+		if (profileImageThumbnail != null) profileImageThumbnail = profileImageThumbnail.trim();
+		if( relationship != null ) relationship.trimFields();
+	}
+
+
 }

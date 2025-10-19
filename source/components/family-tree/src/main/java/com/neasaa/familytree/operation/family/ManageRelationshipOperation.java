@@ -148,7 +148,7 @@ public class ManageRelationshipOperation extends AbstractOperation<ManageRelatio
                     .lastUpdatedDate(auditInfo.getLastUpdatedDate())
                     .build();
 
-            memberRelationshipDao.addMemberRelationship(memberRelationship);
+            memberRelationshipDao.addMemberRelationship(memberRelationship, getAuditInfo());
             log.info("Added relationship between member ID {} and related member ID {} with relationship type {}",
                     relationship.getMemberId(), relationship.getRelatedMemberId(), relationshipType);
         } else {

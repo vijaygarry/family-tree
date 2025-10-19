@@ -116,7 +116,7 @@ public class FamilyController {
 		return WebRequestHandler.processRequest(UpdateFamilyImageOperation.class, updateImageRequest);
 	}
 
-	@RequestMapping(value = "/addfamilymember")
+	@RequestMapping(value = "/addFamilyMember")
 	@ResponseBody
 	public ResponseEntity<AddFamilyMemberResponse> addFamilyMember (@RequestBody AddFamilyMemberRequest addFamilyMemberRequest) throws Exception {
 		return WebRequestHandler.processRequest(AddFamilyMemberOperation.class, addFamilyMemberRequest);

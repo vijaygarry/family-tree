@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.neasaa.base.app.operation.AuditInfo;
 import com.neasaa.familytree.entity.MemberRelationshipEntity;
 import com.neasaa.familytree.enums.RelationshipType;
 import lombok.extern.log4j.Log4j2;
@@ -201,16 +202,24 @@ public class MemberRelationshipDao extends AbstractDao {
 	}
 	
 	
-	public int addMemberRelationship(MemberRelationshipEntity aMemberRelationship) {
-		return getJdbcTemplate().update(new PreparedStatementCreator() {
-			@Override
-			public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {
-				return buildInsertStatement(aCon, aMemberRelationship);
-			}
-		});
+	public int addMemberRelationship(MemberRelationshipEntity aMemberRelationship, AuditInfo auditInfo) {
+		try {
+			return getJdbcTemplate().update(new PreparedStatementCreator() {
+				@Override
+				public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {
+					return buildInsertStatement(aCon, aMemberRelationship, auditInfo);
+				}
+			});
+		} catch (Exception ex) {
+			log.error("Error while adding member relationship for memberId: " + aMemberRelationship.getMemberId()
+					+ ", relatedMemberId: " + aMemberRelationship.getRelatedMemberId()
+					+ ", relationshipType: " + aMemberRelationship.getRelationshipType(), ex);
+			throw new RuntimeException("Error while adding member relationship.");
+
+		}
 	}
 	
-	private PreparedStatement buildInsertStatement(Connection aConection, MemberRelationshipEntity aMemberRelationship) throws SQLException {
+	private PreparedStatement buildInsertStatement(Connection aConection, MemberRelationshipEntity aMemberRelationship, AuditInfo auditInfo) throws SQLException {
 		String sqlStatement = "INSERT INTO " + BASE_SCHEMA_NAME + "MEMBERRELATIONSHIP (MEMBERID, RELATIONSHIPTYPE, RELATEDMEMBERID, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
@@ -218,10 +227,10 @@ public class MemberRelationshipDao extends AbstractDao {
 		setIntInStatement(prepareStatement, 1, aMemberRelationship.getMemberId());
 		setStringInStatement(prepareStatement, 2, aMemberRelationship.getRelationshipType().name());
 		setIntInStatement(prepareStatement, 3, aMemberRelationship.getRelatedMemberId());
-		setIntInStatement(prepareStatement, 4, aMemberRelationship.getCreatedBy());
-		setTimestampInStatement(prepareStatement, 5, aMemberRelationship.getCreatedDate());
-		setIntInStatement(prepareStatement, 6, aMemberRelationship.getLastUpdatedBy());
-		setTimestampInStatement(prepareStatement, 7, aMemberRelationship.getLastUpdatedDate());
+		setIntInStatement(prepareStatement, 4, auditInfo.getCreatedBy());
+		setTimestampInStatement(prepareStatement, 5, auditInfo.getCreatedDate());
+		setIntInStatement(prepareStatement, 6, auditInfo.getLastUpdatedBy());
+		setTimestampInStatement(prepareStatement, 7, auditInfo.getLastUpdatedDate());
 		return prepareStatement;
 	}
 
