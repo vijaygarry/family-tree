@@ -107,17 +107,31 @@ public class UpdateFamilyDetailsOperation
         true; // As user just updated the family details i.e. update is allowed
     boolean canLoggedInUserAddNewMember = canLoggedInUserAddNewMember(familyId);
 
-    familyDao.updateFamily(newFamilyEntity, getAuditInfo());
-    newFamilyEntity.setAddress(newFamilyAddress);
-    UpdateFamilyDetailsResponse response =
-        UpdateFamilyDetailsResponse.builder()
-            .familyDetails(
-                FamilyDetailsDto.fromFamilyDBEntity(
-                    newFamilyEntity,
-                    headOfFamily == null ? "" : headOfFamily.getFirstName(),
-                    canLoggedInUserUpdateFamily,
-                    canLoggedInUserAddNewMember))
-            .build();
+      String newFamilyName = newFamilyEntity.getFamilyName();
+      // Check if family name exists
+      String existingFamilyName = familyEntityFromDb.getFamilyName();
+      if(existingFamilyName == null) {
+          log.info("Family Name not found for family with Id {}", familyId);
+          throw new InternalServerException("Internal exception occurred, please contact administrator.");
+      }
+      boolean isfamilyNameUpdated = !(existingFamilyName.equals(newFamilyName));
+
+      int isfamilyUpdated = familyDao.updateFamily(newFamilyEntity, getAuditInfo(), isfamilyNameUpdated);
+      if(isfamilyUpdated>0)
+          log.info("Family Details updated for family with Id {}", familyId);
+      else
+          log.info("No Family Details is updated for family with Id {}", familyId);
+
+      newFamilyEntity.setAddress(newFamilyAddress);
+      UpdateFamilyDetailsResponse response =
+              UpdateFamilyDetailsResponse.builder()
+                      .familyDetails(
+                              FamilyDetailsDto.fromFamilyDBEntity(
+                                      newFamilyEntity,
+                                      headOfFamily == null ? "" : headOfFamily.getFirstName(),
+                                      canLoggedInUserUpdateFamily,
+                                      canLoggedInUserAddNewMember))
+                      .build();
 
     response.setOperationMessage(
         String.format("Family %s details updated successfully !!!", opRequest.getFamilyName()));
