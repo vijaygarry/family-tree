@@ -1,0 +1,61 @@
+name: Create Issues from README Tasks
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  create_issues:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create issues for pending tasks
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Parsing README.md for pending tasks..."
+
+          in_pending_section=false
+
+          while IFS= read -r line; do
+            # Detect start and end of Pending Tasks section
+            if [[ "$line" =~ "### Pending Tasks" ]]; then
+              in_pending_section=true
+              continue
+            fi
+            if [[ "$line" =~ "### Completed Tasks" ]]; then
+              in_pending_section=false
+              continue
+            fi
+
+            # If inside Pending Tasks, match table rows like: |I-16|Task Desc|Priority|POC|...|Status|
+            if $in_pending_section && [[ "$line" =~ ^\|I-([0-9]+)\|(.*)\|(.*)\|(.*)\|(.*)\|(.*)\|(.*)\|(.*)\|(.*)\| ]]; then
+              ISSUE_ID="I-${BASH_REMATCH[1]}"
+              TASK_DESC=$(echo "${BASH_REMATCH[2]}" | xargs)
+              STATUS=$(echo "${BASH_REMATCH[9]}" | xargs)
+
+              # Only create issue if status is Not Started or WIP
+              if [[ "$STATUS" == "Not Started" || "$STATUS" == "WIP" ]]; then
+                TITLE="$ISSUE_ID - $TASK_DESC"
+
+                echo "Checking for existing issue: $TITLE"
+
+                EXISTING=$(gh issue list --search "$ISSUE_ID in:title" --state all --json title -q '.[] | select(.title=="'"$TITLE"'") | .title')
+
+                if [ -z "$EXISTING" ]; then
+                  echo "Creating issue: $TITLE"
+                  gh issue create \
+                    --title "$TITLE" \
+                    --body "Auto-created from README.md pending task.\n\n**Priority:** ${BASH_REMATCH[3]}\n**POC:** ${BASH_REMATCH[4]}\n**Reported:** ${BASH_REMATCH[5]}" \
+                    --label "auto-generated"
+                else
+                  echo "Issue already exists: $TITLE"
+                fi
+              fi
+            fi
+          done < README.md
