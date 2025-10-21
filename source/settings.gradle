@@ -1,2 +1,8 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+    }
+}
+
 rootProject.name = 'family-tree'
 include ':components:neasaa-base-app', ':components:family-tree', ':components:family-tree-web-boot', 'components:integration-tests'

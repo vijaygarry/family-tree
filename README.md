@@ -2,19 +2,35 @@
 Family Tree App
 
 
-## Build Application:
-### Change dir to source
+## Useful commands
+```
+# Got to source folder for all the below commands
 cd source
-
-Run local server
 ```
+
+#### Gradle commands
+```
+# Compile java code
+./gradlew build
+
+# Start local server
 ./gradlew runApp
+
+# Build with UX for distribution
+./gradlew clean buildDist -PbuildReactApp
+
+# To format code
+./gradlew spotlessApply
+
+./gradlew spotlessApply -x :integration-tests:spotlessApply
+
+# To verify formatting
+./gradlew spotlessCheck
+
 ```
 
-Build with UX for distribution
-```
-./gradlew clean buildDist -PbuildReactApp
-```
+
+
 
 ## Date Handling
 For date without timezone, always use LocalDate class in Java.

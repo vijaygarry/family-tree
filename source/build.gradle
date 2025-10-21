@@ -1,3 +1,7 @@
+plugins {
+  	id 'com.diffplug.spotless' version '7.2.1'
+}
+
 // all external libraries required by all the project is listed in libraries.gradle.
 // Apply this class to use all jar files.
 apply from: "libraries.gradle"
@@ -8,8 +12,15 @@ allprojects {
 	apply plugin: 'java-library'
 	apply plugin: 'eclipse'
 	apply plugin: 'idea'
+	apply plugin: 'com.diffplug.spotless'
 	//apply plugin: 'distribution'
-
+	
+	spotless {
+		java {
+			googleJavaFormat('1.17.0')
+			target 'src/**/*.java'
+		}
+	}
 
 	dependencies {
         compileOnly libraries.lombok
