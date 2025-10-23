@@ -224,39 +224,6 @@ public class GetMemberProfileOperation
     return siblings;
   }
 
-  /**
-   * Get children for the member and set the relationship as Son of abc or Daughter of abc This is
-   * mainly to get siblings of a member by passing the parent ids.
-   */
-  private List<MemberSummaryDto> getChildrenForMember(int memberId, int spouseMemberId) {
-    List<MemberSummaryDto> children = new ArrayList<>();
-    List<MemberRelationshipEntity> childrenForMember =
-        memberRelationshipDao.getChildrenForMemberById(memberId, spouseMemberId);
-    if (childrenForMember != null) {
-      for (MemberRelationshipEntity childRelation : childrenForMember) {
-        MemberSummaryDto child = getMemberSummaryDtoFromDB(childRelation.getRelatedMemberId());
-        if (child != null) {
-          children.add(child);
-        }
-      }
-    } else {
-      log.info(
-          "No children found for member with parent1: {} and parent2: {}",
-          memberId,
-          spouseMemberId);
-      return null;
-    }
-    return children;
-  }
-
-  private MemberSummaryDto getMemberSummaryDtoFromDB(int memberId) {
-    FamilyMemberEntity memberFromDb = familyMemberDao.getMemberById(memberId);
-    if (memberFromDb == null) {
-      return null;
-    }
-    return MemberSummaryDto.getMemberSummaryDto(memberFromDb, UNKNOWN_RELATIONSHIP);
-  }
-
   private AddressDto getMemberAddress(FamilyMemberEntity member) {
     AddressEntity address = addressDao.getAddressById(member.getMemberAddressId());
     return AddressDto.getAddressDtoFromEntity(address);

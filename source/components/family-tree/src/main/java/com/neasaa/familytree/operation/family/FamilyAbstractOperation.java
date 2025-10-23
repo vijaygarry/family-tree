@@ -15,9 +15,15 @@ import com.neasaa.familytree.dao.pg.FamilyDao;
 import com.neasaa.familytree.dao.pg.FamilyMemberDao;
 import com.neasaa.familytree.dao.pg.MemberRelationshipDao;
 import com.neasaa.familytree.entity.FamilyMemberEntity;
+import com.neasaa.familytree.entity.MemberRelationshipEntity;
+import com.neasaa.familytree.enums.Gender;
+import com.neasaa.familytree.operation.family.model.MemberSummaryDto;
 import com.neasaa.familytree.utils.SessionUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Log4j2
 public abstract class FamilyAbstractOperation<
@@ -81,14 +87,14 @@ public abstract class FamilyAbstractOperation<
 
     if (getContext() == null || getContext().getAppSessionUser() == null) {
       log.info(
-          "Operation context or AppSessionUser is null, cannot check if family edit allowed for user");
+          "Operation context or AppSessionUser is null, cannot check if logged in user can add new member");
       return false;
     }
 
     FamilyMemberEntity memberEntity =
         SessionUtils.getFamilyMemberFromSession(getContext().getAppSessionUser());
     if (memberEntity == null) {
-      log.info("Family member not found in session, cannot check if family edit allowed for user");
+      log.info("Family member not found in session, cannot check if logged in user can add new member");
       return false;
     }
     if (memberEntity.getFamilyId() != familyId) {
@@ -121,4 +127,82 @@ public abstract class FamilyAbstractOperation<
     }
     return isOperationAllowedForUser(UPDATE_MY_FAMILY_MEMBER);
   }
+
+  /**
+   * Get children for the member and set the relationship as "Son of abc" or "Daughter of abc". This is
+   * mainly to get siblings of a member by passing the parent ids.
+   */
+  protected List<MemberSummaryDto> getChildrenForMember(int memberId, int spouseMemberId) {
+    List<MemberSummaryDto> children = new ArrayList<>();
+    List<MemberRelationshipEntity> childrenForMember =
+            memberRelationshipDao.getChildrenForMemberById(memberId, spouseMemberId);
+    if (childrenForMember != null) {
+      for (MemberRelationshipEntity childRelation : childrenForMember) {
+        MemberSummaryDto child = getMemberSummaryDtoFromDB(childRelation.getRelatedMemberId());
+        if (child != null) {
+          children.add(child);
+        }
+      }
+    } else {
+      log.info(
+              "No children found for member with parent1: {} and parent2: {}",
+              memberId,
+              spouseMemberId);
+      return null;
+    }
+    return children;
+  }
+
+  protected MemberSummaryDto getMemberSummaryDtoFromDB(int memberId) {
+    FamilyMemberEntity memberFromDb = familyMemberDao.getMemberById(memberId);
+    if (memberFromDb == null) {
+      return null;
+    }
+    return MemberSummaryDto.getMemberSummaryDto(memberFromDb, UNKNOWN_RELATIONSHIP);
+  }
+
+  protected List<MemberSummaryDto> getParentsForMember (
+          int memberId, String currentMemberName) {
+    List<MemberRelationshipEntity> parents =
+            memberRelationshipDao.getParentsForMemberById(memberId);
+
+    if (parents == null || parents.isEmpty()) {
+      log.info("No parents found for member: {}", memberId);
+      return null;
+    }
+
+    MemberSummaryDto father = null;
+    MemberSummaryDto mother = null;
+    for (MemberRelationshipEntity parentRelationship : parents) {
+      MemberSummaryDto parent = getMemberSummaryDtoFromDB(parentRelationship.getMemberId());
+      if (parent != null) {
+        String familyRelationship = null;
+        if (parent.getGender() == Gender.Male) {
+          father = parent;
+          familyRelationship = FATHER_OF_MEMBER.formatted(currentMemberName);
+          father.setFamilyRelationship(familyRelationship);
+        } else {
+          mother = parent;
+          familyRelationship = MOTHER_OF_MEMBER.formatted(currentMemberName);
+          mother.setFamilyRelationship(familyRelationship);
+        }
+      }
+    }
+    List<MemberSummaryDto> parentsList = new ArrayList<>();
+    if (father != null) {
+      log.info(
+              "Father found for member {}: {}", currentMemberName, father.getFirstName());
+      parentsList.add(father);
+      if(mother != null) {
+        parentsList.add(mother);
+      }
+    } else if (mother != null) {
+      log.info(
+              "Mother found for member {}: {}", currentMemberName, mother.getFirstName());
+      parentsList.add(mother);
+    }
+
+    return parentsList;
+  }
+
 }

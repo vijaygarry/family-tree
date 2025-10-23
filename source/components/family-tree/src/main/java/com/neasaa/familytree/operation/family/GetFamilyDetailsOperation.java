@@ -19,6 +19,8 @@ import com.neasaa.familytree.utils.SessionUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -105,9 +107,6 @@ public class GetFamilyDetailsOperation
     // Build family tree starting from head of family.
     FamilyTreeNode familyTreeRootNode = buildFamilyTree(headOfFamily, familyMemberMap);
 
-    // Add parents and siblings to the family tree root node.
-    familyTreeRootNode = addParentsAndSiblingsToFamilyTree(familyTreeRootNode, familyMemberMap);
-
     List<MemberSummaryDto> memberListToDisplay = new ArrayList<>();
 
     // Get the member list from tree and add other members which does not have any relationship
@@ -133,8 +132,53 @@ public class GetFamilyDetailsOperation
     headOfFamily.setSelectedNode(true);
 
     FamilyTreeNode rootNode = new FamilyTreeNode(headOfFamily);
-    addSpouseAndChildren(rootNode, familyMemberMap);
+    addSpouseAndChildren(rootNode, familyMemberMap, Set.of());
+    FamilyTreeNode parentNode = addParentsToFamilyTree(rootNode);
+    if(rootNode != parentNode) {
+        //If node is not same i.e. parents were added to tree.
+        rootNode = parentNode;
+        addSpouseAndChildren(rootNode, familyMemberMap, Set.of(headOfFamily.getMemberId()));
+    }
     return rootNode;
+  }
+
+  private FamilyTreeNode addParentsToFamilyTree(
+      FamilyTreeNode rootNode) {
+    if (rootNode == null || rootNode.getMember() == null) {
+      log.error("Tree node or member is null, cannot add parents.");
+      return rootNode;
+    }
+    MemberSummaryDto currentMember = rootNode.getMember();
+    List<MemberSummaryDto> parentsForMember = getParentsForMember(currentMember.getMemberId(), currentMember.getFirstName());
+    if (parentsForMember == null || parentsForMember.isEmpty()) {
+      return rootNode;
+    }
+
+      log.info(
+              "Adding parents to tree: {}", currentMember.getFirstName());
+      FamilyTreeNode parentNode = null;
+      MemberSummaryDto father = null;
+      MemberSummaryDto mother = null;
+      for (MemberSummaryDto parent : parentsForMember) {
+        if (parent.getGender() == Gender.Male) {
+          father = parent;
+        } else {
+          mother = parent;
+        }
+      }
+
+      if (father != null) {
+        parentNode = new FamilyTreeNode(father);
+        if(mother != null) {
+          parentNode.setSpouse(mother);
+        }
+      } else {
+        parentNode = new FamilyTreeNode(mother);
+      }
+      parentNode.addChild(rootNode);
+      return parentNode;
+
+
   }
 
   /**
@@ -144,14 +188,17 @@ public class GetFamilyDetailsOperation
    * @param familyMemberMap
    */
   private void addSpouseAndChildren(
-      FamilyTreeNode treeNode, Map<Integer, MemberSummaryDto> familyMemberMap) {
+      FamilyTreeNode treeNode, Map<Integer, MemberSummaryDto> familyMemberMap, Set<Integer> ignoredMemberIds) {
 
     if (treeNode == null || treeNode.getMember().getMaritalStatus() == MaritalStatus.Single) {
       // If member is single, no spouse or children to add.
       return;
     }
-
     MemberSummaryDto currentMember = treeNode.getMember();
+    if(ignoredMemberIds.contains(currentMember.getMemberId())) {
+      return;
+    }
+
     int spouseMemberId = -1;
     // If spouse is already set, no need to add again.
     if (treeNode.getSpouse() == null) {
@@ -192,7 +239,9 @@ public class GetFamilyDetailsOperation
               childRelation.getRelatedMemberId());
           continue;
         }
-
+        if(ignoredMemberIds.contains(child.getMemberId())) {
+            continue;
+        }
         String familyRelationship = null;
         if (child.getGender() == Gender.Male) {
           familyRelationship = SON_OF_MEMBER.formatted(currentMember.getFirstName());
@@ -202,7 +251,7 @@ public class GetFamilyDetailsOperation
         child.setFamilyRelationship(familyRelationship);
         FamilyTreeNode childNode = new FamilyTreeNode(child);
         treeNode.addChild(childNode);
-        addSpouseAndChildren(childNode, familyMemberMap);
+        addSpouseAndChildren(childNode, familyMemberMap, ignoredMemberIds);
       }
     }
   }
@@ -223,67 +272,6 @@ public class GetFamilyDetailsOperation
         getMemberListToDisplay(childNode, allFamilyMemberList, memberListToDisplay);
       }
     }
-  }
-
-  private MemberSummaryDto getMemberSummaryDtoFromDB(int memberId) {
-    FamilyMemberEntity memberFromDb = familyMemberDao.getMemberById(memberId);
-    if (memberFromDb == null) {
-      return null;
-    }
-    return MemberSummaryDto.getMemberSummaryDto(memberFromDb, UNKNOWN_RELATIONSHIP);
-  }
-
-  public FamilyTreeNode addParentsAndSiblingsToFamilyTree(
-      FamilyTreeNode treeNode, Map<Integer, MemberSummaryDto> familyMemberMap) {
-    if (treeNode == null || treeNode.getMember() == null) {
-      log.error("Tree node or member is null, cannot add parents.");
-      return treeNode;
-    }
-
-    MemberSummaryDto currentMember = treeNode.getMember();
-    log.info("Adding parents for member: {}", currentMember.getFirstName());
-    List<MemberRelationshipEntity> parents =
-        memberRelationshipDao.getParentsForMemberById(currentMember.getMemberId());
-    if (parents == null || parents.isEmpty()) {
-      log.info("No parents found for member: {}", currentMember.getFirstName());
-      return treeNode;
-    }
-    MemberSummaryDto father = null;
-    MemberSummaryDto mother = null;
-    for (MemberRelationshipEntity parentRelationship : parents) {
-      MemberSummaryDto parent = familyMemberMap.get(parentRelationship.getMemberId());
-      if (parent != null) {
-        String familyRelationship = null;
-        if (parent.getGender() == Gender.Male) {
-          father = parent;
-          familyRelationship = FATHER_OF_MEMBER.formatted(currentMember.getFirstName());
-          father.setFamilyRelationship(familyRelationship);
-        } else {
-          mother = parent;
-          familyRelationship = MOTHER_OF_MEMBER.formatted(currentMember.getFirstName());
-          mother.setFamilyRelationship(familyRelationship);
-        }
-      }
-    }
-
-    FamilyTreeNode primaryParentNode = null;
-    if (father != null) {
-      log.info(
-          "Father found for member {}: {}", currentMember.getFirstName(), father.getFirstName());
-      primaryParentNode = new FamilyTreeNode(father);
-      primaryParentNode.setSpouse(mother);
-    } else if (mother != null) {
-      log.info(
-          "Mother found for member {}: {}", currentMember.getFirstName(), mother.getFirstName());
-      primaryParentNode = new FamilyTreeNode(mother);
-      primaryParentNode.setSpouse(father);
-    } else {
-      log.info("No parents found for member: {}", currentMember.getFirstName());
-      return treeNode;
-    }
-
-    primaryParentNode.addChild(treeNode);
-    return primaryParentNode;
   }
 
   private MemberSummaryDto getHeadOfFamily(List<MemberSummaryDto> familyMembers) {
