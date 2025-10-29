@@ -21,7 +21,8 @@ import java.util.List;
 @Scope("prototype")
 public class WhoAmIOperation extends AbstractOperation<EmptyOperationRequest, WhoAmIResponse> {
 
-  @Autowired private FamilyMemberDao familyMemberDao;
+  @Autowired
+  private FamilyMemberDao familyMemberDao;
 
   @Override
   public String getOperationName() {
@@ -49,8 +50,8 @@ public class WhoAmIOperation extends AbstractOperation<EmptyOperationRequest, Wh
 
     List<String> operationAllowed = SessionUtils.getOperationAllowedFromSession(appSessionUser);
     return WhoAmIResponse.builder()
-        .firstName(appSessionUser.getFirstName())
-        .lastName(appSessionUser.getLastName())
+        .firstName(memberEntity.getFirstName())
+        .lastName(memberEntity.getLastName())
         .sessionActive(true)
         .lastAccessTime(appSessionUser.getLastAccessTime())
         .memberId(memberEntity.getMemberId())
