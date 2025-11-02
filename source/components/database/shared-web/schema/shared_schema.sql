@@ -313,6 +313,7 @@ ALTER SEQUENCE shared_schema.appuser_userid_seq OWNED BY shared_schema.appuser.u
 
 CREATE TABLE shared_schema.family (
     familyid integer NOT NULL,
+    samajid smallint NOT NULL,
     familyname character varying(120) NOT NULL,
     familynameinhindi character varying(120),
     gotra character varying(100) NOT NULL,
@@ -465,6 +466,7 @@ CREATE TABLE shared_schema.familyhistory (
     historyid integer NOT NULL,
     operation character varying(10) NOT NULL,
     familyid integer NOT NULL,
+    samajid smallint NOT NULL,
     familyname character varying(120) NOT NULL,
     familynameinhindi character varying(120),
     gotra character varying(100) NOT NULL,
@@ -561,6 +563,7 @@ ALTER SEQUENCE shared_schema.familyhistory_historyid_seq OWNED BY shared_schema.
 CREATE TABLE shared_schema.familymember (
     memberid integer NOT NULL,
     familyid integer NOT NULL,
+    samajid smallint NOT NULL,
     logonname character varying(150),
     headoffamily boolean DEFAULT false NOT NULL,
     firstname character varying(100) NOT NULL,
@@ -577,8 +580,10 @@ CREATE TABLE shared_schema.familymember (
     weddingdate date,
     dateofdeath date,
     phone character varying(20),
+    isphoneverified boolean DEFAULT false NOT NULL,
     isphonewhatsappregistered boolean DEFAULT false NOT NULL,
     email character varying(100),
+    isemailverified boolean DEFAULT false NOT NULL,
     addresssameasfamily boolean DEFAULT true NOT NULL,
     memberaddressid integer,
     educationdetails character varying(255),
@@ -842,6 +847,7 @@ CREATE TABLE shared_schema.familymemberhistory (
     operation character varying(10) NOT NULL,
     memberid integer NOT NULL,
     familyid integer NOT NULL,
+    samajid smallint NOT NULL,
     logonname character varying(150),
     headoffamily boolean DEFAULT false NOT NULL,
     firstname character varying(100) NOT NULL,
@@ -858,8 +864,10 @@ CREATE TABLE shared_schema.familymemberhistory (
     weddingdate date,
     dateofdeath date,
     phone character varying(20),
+    isphoneverified boolean DEFAULT false NOT NULL,
     isphonewhatsappregistered boolean DEFAULT false NOT NULL,
     email character varying(100),
+    isemailverified boolean DEFAULT false NOT NULL,
     addresssameasfamily boolean DEFAULT true NOT NULL,
     memberaddressid integer,
     educationdetails character varying(255),
@@ -1520,6 +1528,69 @@ ALTER SEQUENCE shared_schema.otpverificationhistory_seqid_seq OWNED BY shared_sc
 
 
 --
+-- Name: samaj; Type: TABLE; Schema: shared_schema; Owner: postgres
+--
+
+CREATE TABLE shared_schema.samaj (
+    samajid smallint NOT NULL,
+    samajname character varying(255) NOT NULL,
+    contactdetails character varying(255)
+);
+
+
+ALTER TABLE shared_schema.samaj OWNER TO postgres;
+
+--
+-- Name: TABLE samaj; Type: COMMENT; Schema: shared_schema; Owner: postgres
+--
+
+COMMENT ON TABLE shared_schema.samaj IS 'Main table for samaj.';
+
+
+--
+-- Name: COLUMN samaj.samajid; Type: COMMENT; Schema: shared_schema; Owner: postgres
+--
+
+COMMENT ON COLUMN shared_schema.samaj.samajid IS 'Unique samaj identifier';
+
+
+--
+-- Name: COLUMN samaj.samajname; Type: COMMENT; Schema: shared_schema; Owner: postgres
+--
+
+COMMENT ON COLUMN shared_schema.samaj.samajname IS 'Unique samaj name like Rajput Chhipa';
+
+
+--
+-- Name: COLUMN samaj.contactdetails; Type: COMMENT; Schema: shared_schema; Owner: postgres
+--
+
+COMMENT ON COLUMN shared_schema.samaj.contactdetails IS 'Main contact person for this samaj kind of super admin for samaj.';
+
+
+--
+-- Name: samaj_samajid_seq; Type: SEQUENCE; Schema: shared_schema; Owner: postgres
+--
+
+CREATE SEQUENCE shared_schema.samaj_samajid_seq
+    AS smallint
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE shared_schema.samaj_samajid_seq OWNER TO postgres;
+
+--
+-- Name: samaj_samajid_seq; Type: SEQUENCE OWNED BY; Schema: shared_schema; Owner: postgres
+--
+
+ALTER SEQUENCE shared_schema.samaj_samajid_seq OWNED BY shared_schema.samaj.samajid;
+
+
+--
 -- Name: txtsession; Type: TABLE; Schema: shared_schema; Owner: familytree_master
 --
 
@@ -1820,6 +1891,13 @@ ALTER TABLE ONLY shared_schema.otpverificationhistory ALTER COLUMN seqid SET DEF
 
 
 --
+-- Name: samaj samajid; Type: DEFAULT; Schema: shared_schema; Owner: postgres
+--
+
+ALTER TABLE ONLY shared_schema.samaj ALTER COLUMN samajid SET DEFAULT nextval('shared_schema.samaj_samajid_seq'::regclass);
+
+
+--
 -- Name: txtsession sessionid; Type: DEFAULT; Schema: shared_schema; Owner: familytree_master
 --
 
@@ -1895,6 +1973,14 @@ ALTER TABLE ONLY shared_schema.familymember
 
 ALTER TABLE ONLY shared_schema.familymember
     ADD CONSTRAINT familymember_logonname_key UNIQUE (logonname);
+
+
+--
+-- Name: familymember familymember_phone_key; Type: CONSTRAINT; Schema: shared_schema; Owner: postgres
+--
+
+ALTER TABLE ONLY shared_schema.familymember
+    ADD CONSTRAINT familymember_phone_key UNIQUE (phone);
 
 
 --
@@ -1978,6 +2064,14 @@ ALTER TABLE ONLY shared_schema.otpverificationhistory
 
 
 --
+-- Name: samaj samaj_pkey; Type: CONSTRAINT; Schema: shared_schema; Owner: postgres
+--
+
+ALTER TABLE ONLY shared_schema.samaj
+    ADD CONSTRAINT samaj_pkey PRIMARY KEY (samajid);
+
+
+--
 -- Name: txtsession txtsession_pkey; Type: CONSTRAINT; Schema: shared_schema; Owner: familytree_master
 --
 
@@ -2034,6 +2128,14 @@ ALTER TABLE ONLY shared_schema.family
 
 
 --
+-- Name: family family_samajid_fkey; Type: FK CONSTRAINT; Schema: shared_schema; Owner: postgres
+--
+
+ALTER TABLE ONLY shared_schema.family
+    ADD CONSTRAINT family_samajid_fkey FOREIGN KEY (samajid) REFERENCES shared_schema.samaj(samajid) ON UPDATE RESTRICT ON DELETE RESTRICT;
+
+
+--
 -- Name: familymember familymember_createdby_fkey; Type: FK CONSTRAINT; Schema: shared_schema; Owner: postgres
 --
 
@@ -2063,6 +2165,14 @@ ALTER TABLE ONLY shared_schema.familymember
 
 ALTER TABLE ONLY shared_schema.familymember
     ADD CONSTRAINT familymember_memberaddressid_fkey FOREIGN KEY (memberaddressid) REFERENCES shared_schema.address(addressid) ON UPDATE RESTRICT ON DELETE RESTRICT;
+
+
+--
+-- Name: familymember familymember_samajid_fkey; Type: FK CONSTRAINT; Schema: shared_schema; Owner: postgres
+--
+
+ALTER TABLE ONLY shared_schema.familymember
+    ADD CONSTRAINT familymember_samajid_fkey FOREIGN KEY (samajid) REFERENCES shared_schema.samaj(samajid) ON UPDATE RESTRICT ON DELETE RESTRICT;
 
 
 --
@@ -2400,6 +2510,20 @@ GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE shared_schema.otpverificationhistory 
 --
 
 GRANT ALL ON SEQUENCE shared_schema.otpverificationhistory_seqid_seq TO familytree_app_role;
+
+
+--
+-- Name: TABLE samaj; Type: ACL; Schema: shared_schema; Owner: postgres
+--
+
+GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE shared_schema.samaj TO familytree_app_role;
+
+
+--
+-- Name: SEQUENCE samaj_samajid_seq; Type: ACL; Schema: shared_schema; Owner: postgres
+--
+
+GRANT ALL ON SEQUENCE shared_schema.samaj_samajid_seq TO familytree_app_role;
 
 
 --
