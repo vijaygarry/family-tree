@@ -24,8 +24,7 @@ public class FamilyRowMapper implements RowMapper<FamilyEntity> {
     family.setGotra(aRs.getString("GOTRA"));
     family.setAddressId(aRs.getInt("ADDRESSID"));
     family.setRegion(aRs.getString("REGION"));
-    String phone = aRs.getString("PHONE");
-    family.setPhone(DataFormatter.formatPhoneNumberForUX(phone));
+    family.setPhone(aRs.getString("PHONE"));
     family.setPhoneWhatsappRegistered(aRs.getBoolean("ISPHONEWHATSAPPREGISTERED"));
     family.setEmail(aRs.getString("EMAIL"));
     family.setFamilysearchtext(aRs.getString("FAMILYSEARCHTEXT"));

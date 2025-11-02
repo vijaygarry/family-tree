@@ -6,6 +6,8 @@ import com.neasaa.familytree.entity.FamilyMemberEntity;
 import com.neasaa.familytree.enums.Gender;
 import com.neasaa.familytree.enums.MaritalStatus;
 import java.util.Date;
+
+import com.neasaa.familytree.utils.DataFormatter;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -72,7 +74,7 @@ public class MemberProfileDto {
         .addressSameAsFamily(familyMember.isAddressSameAsFamily())
         .memberAddress(memberAddress)
         .familyAddress(familyAddress)
-        .phone(familyMember.getPhone())
+        .phone(DataFormatter.formatPhoneNumberForUX(familyMember.getPhone()))
         .isPhoneVerified(familyMember.isPhoneVerified())
         .isPhoneWhatsappRegistered(familyMember.isPhoneWhatsappRegistered())
         .email(familyMember.getEmail())

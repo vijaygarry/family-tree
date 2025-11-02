@@ -74,7 +74,7 @@ public class FamilyMemberDao extends AbstractDao {
       "UPDATE "
           + BASE_SCHEMA_NAME
           + "FAMILYMEMBER "
-          + "SET LOGONNAME = ? , LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  "
+          + "SET LOGONNAME = ? , ISEMAILVERIFIED = true, LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  "
           + "where MEMBERID = ? ";
 
   private static final String IS_MEMBER_REGISTERED_BY_EMAIL_ID =
@@ -193,7 +193,7 @@ public class FamilyMemberDao extends AbstractDao {
     return memberList.get(0);
   }
 
-  public void updateMemberLogonName(
+  public void updateMemberLogonNameWithEmail(
       String logonName, int updatedBy, Date lastUpdatedDate, int memberId) {
     try {
       getJdbcTemplate()

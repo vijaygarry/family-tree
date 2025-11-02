@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.neasaa.familytree.entity.FamilyMemberEntity;
 import com.neasaa.familytree.enums.Gender;
 import com.neasaa.familytree.enums.MaritalStatus;
+import com.neasaa.familytree.utils.DataFormatter;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -62,7 +63,7 @@ public class MemberSummaryDto {
                 familyMemberEntity.getBirthYear()))
         .isAlive(familyMemberEntity.isAlive())
         .age(getFormattedMemberAge(familyMemberEntity))
-        .phone(familyMemberEntity.getPhone())
+        .phone(DataFormatter.formatPhoneNumberForUX(familyMemberEntity.getPhone()))
         .isPhoneWhatsappRegistered(familyMemberEntity.isPhoneWhatsappRegistered())
         .maritalStatus(familyMemberEntity.getMaritalStatus())
         .weddingDate(getISOFormatDate(familyMemberEntity.getWeddingDate()))

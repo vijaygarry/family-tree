@@ -9,6 +9,7 @@ import static com.neasaa.familytree.operation.OperationNames.UPDATE_MY_FAMILY_ME
 
 import com.neasaa.base.app.operation.AbstractOperation;
 import com.neasaa.base.app.operation.exception.InternalServerException;
+import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.base.app.operation.model.OperationRequest;
 import com.neasaa.base.app.operation.model.OperationResponse;
 import com.neasaa.base.app.service.AppSessionUser;
@@ -20,6 +21,7 @@ import com.neasaa.familytree.entity.FamilyMemberEntity;
 import com.neasaa.familytree.entity.MemberRelationshipEntity;
 import com.neasaa.familytree.enums.Gender;
 import com.neasaa.familytree.operation.family.model.MemberSummaryDto;
+import com.neasaa.familytree.utils.DataFormatter;
 import com.neasaa.familytree.utils.SessionUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -222,6 +224,50 @@ public abstract class FamilyAbstractOperation<
     }
 
     return parentsList;
+  }
+
+  protected void checkIfEmailOrPhoneExists (String inputEmail, String inputPhone, FamilyMemberEntity memberEntityFromDb) {
+    //If email in request is not null
+    if(inputEmail != null) {
+      // If DBEntity email different from request email (In this case DB Email can be null i.e. updating first time)
+      if(!inputEmail.equalsIgnoreCase(memberEntityFromDb.getEmail())) {
+        boolean memberExistsForEmail = familyMemberDao.isMemberExistsForEmail(inputEmail);
+        if(memberExistsForEmail) {
+          throw new ValidationException("Email id " + inputEmail + " already in use, please provide other email id");
+        }
+      }
+    }
+
+    //If phone in request is not null
+    if(inputPhone != null) {
+      String normalizePhoneNumber = DataFormatter.formatPhoneNumberForDBStorage(inputPhone);
+      // If DBEntity phone different from request phone (In this case DB phone can be null i.e. updating first time)
+      if(!normalizePhoneNumber.equalsIgnoreCase(memberEntityFromDb.getPhone())) {
+        boolean memberExistsForPhone = familyMemberDao.isMemberExistsForPhone(normalizePhoneNumber);
+        if(memberExistsForPhone) {
+          throw new ValidationException("Phone " + inputPhone + " already in use, please provide other phone number");
+        }
+      }
+    }
+  }
+
+  protected void checkIfEmailOrPhoneExists (String inputEmail, String inputPhone) {
+    //If email in request is not null
+    if (inputEmail != null) {
+      boolean memberExistsForEmail = familyMemberDao.isMemberExistsForEmail(inputEmail);
+      if (memberExistsForEmail) {
+        throw new ValidationException("Email id " + inputEmail + " already in use, please provide other email id");
+      }
+    }
+
+    //If phone in request is not null
+    if (inputPhone != null) {
+      String normalizePhoneNumber = DataFormatter.formatPhoneNumberForDBStorage(inputPhone);
+      boolean memberExistsForPhone = familyMemberDao.isMemberExistsForPhone(normalizePhoneNumber);
+      if (memberExistsForPhone) {
+        throw new ValidationException("Phone " + inputPhone + " already in use, please provide other phone number");
+      }
+    }
   }
 
 }

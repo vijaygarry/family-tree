@@ -127,8 +127,8 @@ public class UpdateFamilyMemberProfileOperation
       throw new AccessDeniedException("You are not allowed to update the member details.");
     }
 
-    //TODO: Check if change in phone or email, no other member should exists with
-    // same phone or email
+    // Check if email or phone already exists
+    checkIfEmailOrPhoneExists(opRequest.getEmail(), opRequest.getPhone(), memberEntityFromDb);
 
     int memberNewAddressId = memberEntityFromDb.getMemberAddressId();
     AddressEntity newAddressEntity = null;

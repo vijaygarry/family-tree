@@ -1,6 +1,7 @@
 package com.neasaa.familytree.operation.family.model;
 
 import com.neasaa.familytree.entity.FamilyEntity;
+import com.neasaa.familytree.utils.DataFormatter;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,7 +34,7 @@ public class FamilyDetailsDto {
     familyDetails.setFamilyNameInHindi(family.getFamilyNameInHindi());
     familyDetails.setHeadOfFamilyName(headOfFamilyName);
     familyDetails.setGotra(family.getGotra());
-    familyDetails.setPhone(family.getPhone());
+    familyDetails.setPhone(DataFormatter.formatPhoneNumberForUX(family.getPhone()));
     familyDetails.setPhoneWhatsappRegistered(family.isPhoneWhatsappRegistered());
     familyDetails.setEmail(family.getEmail());
     if (family.getAddress() != null) {

@@ -70,13 +70,13 @@ public class SignUpOperation extends AbstractOperation<SignUpRequest, EmptyOpera
     // Check if the email is already registered
     if (appUserDao.isEmailRegistered(emailId)) {
       throw new ValidationException(
-          "Email ID is already registered. Please use 'Forgot Password' option to reset the password.");
+          "Email Id is already registered. Please use 'Forgot Password' option to reset the password.");
     }
 
     AppUser userByLogonName = appUserDao.getUserByLogonName(emailId);
     if (userByLogonName != null) {
       throw new ValidationException(
-          "Email ID "
+          "Email Id "
               + emailId
               + " is already registered. Please use 'Forgot Password' option to reset the password.");
     }
@@ -85,7 +85,7 @@ public class SignUpOperation extends AbstractOperation<SignUpRequest, EmptyOpera
     FamilyMemberEntity memberByEmail = familyMemberDao.getMemberByEmail(emailId);
     if (memberByEmail == null) {
       throw new ValidationException(
-          "Email ID " + emailId + " is not allowed to signup, please contact administrator.");
+          "Email Id " + emailId + " is not allowed to signup, please contact administrator.");
     }
 
     // Get OTP for email, and OTP Type = SIGNUP
@@ -143,7 +143,7 @@ public class SignUpOperation extends AbstractOperation<SignUpRequest, EmptyOpera
     int newUerId = appUserDao.registerAppUser(user);
 
     // Update logon name in family member table
-    familyMemberDao.updateMemberLogonName(
+    familyMemberDao.updateMemberLogonNameWithEmail(
         emailId, newUerId, currentDate, memberByEmail.getMemberId());
 
     // Add default roles to user in user role table

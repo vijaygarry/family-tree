@@ -128,6 +128,8 @@ public class AddFamilyMemberOperation
       throw new ValidationException("Family not found");
     }
 
+    checkIfEmailOrPhoneExists(opRequest.getEmail(), opRequest.getPhone());
+    
     // Fetch list of family members
     // TODO: Do we need all the members or only HOF should be sufficient.
     List<FamilyMemberEntity> familyMembers =

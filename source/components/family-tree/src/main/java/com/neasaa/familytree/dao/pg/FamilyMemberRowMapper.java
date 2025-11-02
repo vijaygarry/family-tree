@@ -37,8 +37,7 @@ public class FamilyMemberRowMapper implements RowMapper<FamilyMemberEntity> {
     familyMember.setMaritalStatus(MaritalStatus.getMaritalStatus(aRs.getString("MARITALSTATUS")));
     familyMember.setWeddingDate(AbstractDao.getLocalDateFromResultSet(aRs, "WEDDINGDATE"));
     familyMember.setDateOfDeath(AbstractDao.getLocalDateFromResultSet(aRs, "DATEOFDEATH"));
-    String phone = aRs.getString("PHONE");
-    familyMember.setPhone(DataFormatter.formatPhoneNumberForUX(phone));
+    familyMember.setPhone(aRs.getString("PHONE"));
     familyMember.setPhoneVerified(aRs.getBoolean("ISPHONEVERIFIED"));
     familyMember.setPhoneWhatsappRegistered(aRs.getBoolean("ISPHONEWHATSAPPREGISTERED"));
     familyMember.setEmail(aRs.getString("EMAIL"));
