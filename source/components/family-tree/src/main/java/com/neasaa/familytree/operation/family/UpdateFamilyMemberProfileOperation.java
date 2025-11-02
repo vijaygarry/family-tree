@@ -105,13 +105,15 @@ public class UpdateFamilyMemberProfileOperation
   @Override
   public UpdateFamilyMemberProfileResponse doExecute(UpdateFamilyMemberProfileRequest opRequest)
       throws OperationException {
+
+    int samajId = getSamajIdFromSession();
     // Fetch existing family member details
-    FamilyMemberEntity memberEntityFromDb = familyMemberDao.getMemberById(opRequest.getMemberId());
+    FamilyMemberEntity memberEntityFromDb = familyMemberDao.getMemberById(samajId, opRequest.getMemberId());
     if (memberEntityFromDb == null) {
       throw new ValidationException("No family member found for the given member id.");
     }
 
-    // Make sure family id if right
+    // Make sure family id is right
     if (memberEntityFromDb.getFamilyId() != opRequest.getFamilyId()) {
       throw new ValidationException(
           "No family member found for the given member id in this family.");
@@ -124,6 +126,9 @@ public class UpdateFamilyMemberProfileOperation
           opRequest.getMemberId());
       throw new AccessDeniedException("You are not allowed to update the member details.");
     }
+
+    //TODO: Check if change in phone or email, no other member should exists with
+    // same phone or email
 
     int memberNewAddressId = memberEntityFromDb.getMemberAddressId();
     AddressEntity newAddressEntity = null;
@@ -167,7 +172,7 @@ public class UpdateFamilyMemberProfileOperation
     // If head of family, update family search text too
     if (newFamilyMemberEntity.isHeadOfFamily()) {
       FamilyEntity familyEntity =
-          familyDao.getFamilyByFamilyId(newFamilyMemberEntity.getFamilyId());
+          familyDao.getFamilyByFamilyId(samajId, newFamilyMemberEntity.getFamilyId());
       familyDao.updateFamilyDisplayName(familyEntity, newFamilyMemberEntity, getAuditInfo());
     }
 
@@ -207,16 +212,13 @@ public class UpdateFamilyMemberProfileOperation
       FamilyMemberEntity memberEntityFromDb,
       UpdateFamilyMemberProfileRequest opRequest,
       int addressId) {
-    AuditInfo auditInfo = getAuditInfo();
-    String phoneNumber = DataFormatter.formatPhoneNumber(opRequest.getPhone());
+    String phoneNumber = DataFormatter.formatPhoneNumberForDBStorage(opRequest.getPhone());
 
-    // Email id can be updated only if existing email is null or empty
-    // i.e. once email id is set, it cannot be changed.
-    if (opRequest.getEmail() != null && !opRequest.getEmail().isEmpty()) {
+    // Email id can be updated only if email is not verified i.e. registered
+    if (memberEntityFromDb.isEmailVerified()) {
       if (memberEntityFromDb.getEmail() != null
-          && !memberEntityFromDb.getEmail().isEmpty()
           && !memberEntityFromDb.getEmail().equalsIgnoreCase(opRequest.getEmail())) {
-        throw new ValidationException("You cannot change existing email id.");
+        throw new ValidationException("You cannot change existing registered email id.");
       }
     }
     FamilyMemberEntity newMemberEntity = memberEntityFromDb.copyOf();
@@ -241,9 +243,8 @@ public class UpdateFamilyMemberProfileOperation
     newMemberEntity.setBirthMonth(Month.fromName(opRequest.getBirthMonth()));
     newMemberEntity.setBirthYear(opRequest.getBirthYear());
 
-    if (newMemberEntity.getEmail() == null || newMemberEntity.getEmail().isEmpty()) {
-      newMemberEntity.setEmail(opRequest.getEmail());
-    }
+    newMemberEntity.setEmail(opRequest.getEmail());
+
     newMemberEntity.setEducationDetails(opRequest.getEducationDetails());
     newMemberEntity.setOccupation(opRequest.getOccupation());
     newMemberEntity.setHobby(opRequest.getHobby());

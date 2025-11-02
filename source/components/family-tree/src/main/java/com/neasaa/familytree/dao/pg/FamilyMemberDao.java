@@ -26,107 +26,105 @@ import org.springframework.stereotype.Repository;
 public class FamilyMemberDao extends AbstractDao {
 
   private static final String SELECT_ALL_MEMBERS_FOR_FAMILY =
-      "select  MEMBERID, FAMILYID, LOGONNAME, HEADOFFAMILY, FIRSTNAME, FIRSTNAMEINHINDI, LASTNAME, MAIDENLASTNAME, NICKNAME, NICKNAMEINHINDI, "
-          + "GENDER, BIRTHDAY, BIRTHMONTH, BIRTHYEAR, MARITALSTATUS, WEDDINGDATE, DATEOFDEATH, PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, "
-          + "ADDRESSSAMEASFAMILY, MEMBERADDRESSID, EDUCATIONDETAILS, OCCUPATION, HOBBY, MEMBERSEARCHTEXT, PROFILEIMAGE , PROFILEIMAGETHUMBNAIL , "
-          + "IMAGELASTUPDATED , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
-          + "from "
-          + BASE_SCHEMA_NAME
-          + "FAMILYMEMBER "
-          + "where FAMILYID = ? ";
+          "SELECT MEMBERID, FAMILYID, SAMAJID, LOGONNAME, HEADOFFAMILY, FIRSTNAME, FIRSTNAMEINHINDI, LASTNAME, MAIDENLASTNAME, NICKNAME, NICKNAMEINHINDI, "
+                  + "GENDER, BIRTHDAY, BIRTHMONTH, BIRTHYEAR, MARITALSTATUS, WEDDINGDATE, DATEOFDEATH, PHONE, ISPHONEVERIFIED, ISPHONEWHATSAPPREGISTERED, "
+                  + "EMAIL, ISEMAILVERIFIED, ADDRESSSAMEASFAMILY, MEMBERADDRESSID, EDUCATIONDETAILS, OCCUPATION, HOBBY, MEMBERSEARCHTEXT, PROFILEIMAGE, "
+                  + "PROFILEIMAGETHUMBNAIL, IMAGELASTUPDATED, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE "
+                  + "FROM "
+                  + BASE_SCHEMA_NAME + "FAMILYMEMBER "
+                  + "WHERE  SAMAJID = ? and FAMILYID = ?";
 
   private static final String SELECT_MEMBER_BY_ID =
-      "select  MEMBERID, FAMILYID, LOGONNAME, HEADOFFAMILY, FIRSTNAME, FIRSTNAMEINHINDI, LASTNAME, MAIDENLASTNAME, NICKNAME, NICKNAMEINHINDI, "
-          + "GENDER, BIRTHDAY, BIRTHMONTH, BIRTHYEAR, MARITALSTATUS, WEDDINGDATE, DATEOFDEATH, PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, "
-          + "ADDRESSSAMEASFAMILY, MEMBERADDRESSID, EDUCATIONDETAILS, OCCUPATION, HOBBY, MEMBERSEARCHTEXT, PROFILEIMAGE , PROFILEIMAGETHUMBNAIL , "
-          + "IMAGELASTUPDATED , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
-          + "from "
-          + BASE_SCHEMA_NAME
-          + "FAMILYMEMBER "
-          + "where MEMBERID = ? ";
+          "SELECT MEMBERID, FAMILYID, SAMAJID, LOGONNAME, HEADOFFAMILY, FIRSTNAME, FIRSTNAMEINHINDI, LASTNAME, MAIDENLASTNAME, NICKNAME, NICKNAMEINHINDI, "
+                  + "GENDER, BIRTHDAY, BIRTHMONTH, BIRTHYEAR, MARITALSTATUS, WEDDINGDATE, DATEOFDEATH, PHONE, ISPHONEVERIFIED, ISPHONEWHATSAPPREGISTERED, "
+                  + "EMAIL, ISEMAILVERIFIED, ADDRESSSAMEASFAMILY, MEMBERADDRESSID, EDUCATIONDETAILS, OCCUPATION, HOBBY, MEMBERSEARCHTEXT, PROFILEIMAGE, "
+                  + "PROFILEIMAGETHUMBNAIL, IMAGELASTUPDATED, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE "
+                  + "FROM "
+                  + BASE_SCHEMA_NAME + "FAMILYMEMBER "
+                  + "WHERE  SAMAJID = ? and MEMBERID = ?";
 
   private static final String SELECT_MEMBER_BY_LOGON_NAME =
-      "select  MEMBERID, FAMILYID, LOGONNAME, HEADOFFAMILY, FIRSTNAME, FIRSTNAMEINHINDI, LASTNAME, MAIDENLASTNAME, NICKNAME, NICKNAMEINHINDI, "
-          + "GENDER, BIRTHDAY, BIRTHMONTH, BIRTHYEAR, MARITALSTATUS, WEDDINGDATE, DATEOFDEATH, PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, "
-          + "ADDRESSSAMEASFAMILY, MEMBERADDRESSID, EDUCATIONDETAILS, OCCUPATION, HOBBY, MEMBERSEARCHTEXT, PROFILEIMAGE , PROFILEIMAGETHUMBNAIL , "
-          + "IMAGELASTUPDATED , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
-          + "from "
-          + BASE_SCHEMA_NAME
-          + "FAMILYMEMBER "
-          + "where LOGONNAME = ? ";
+          "SELECT MEMBERID, FAMILYID, SAMAJID, LOGONNAME, HEADOFFAMILY, FIRSTNAME, FIRSTNAMEINHINDI, LASTNAME, MAIDENLASTNAME, NICKNAME, NICKNAMEINHINDI, "
+                  + "GENDER, BIRTHDAY, BIRTHMONTH, BIRTHYEAR, MARITALSTATUS, WEDDINGDATE, DATEOFDEATH, PHONE, ISPHONEVERIFIED, ISPHONEWHATSAPPREGISTERED, "
+                  + "EMAIL, ISEMAILVERIFIED, ADDRESSSAMEASFAMILY, MEMBERADDRESSID, EDUCATIONDETAILS, OCCUPATION, HOBBY, MEMBERSEARCHTEXT, PROFILEIMAGE, "
+                  + "PROFILEIMAGETHUMBNAIL, IMAGELASTUPDATED, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE "
+                  + "FROM "
+                  + BASE_SCHEMA_NAME + "FAMILYMEMBER "
+                  + "where LOGONNAME = ? ";
 
   private static final String SELECT_MEMBER_BY_EMAIL_ID =
-      "select  MEMBERID, FAMILYID, LOGONNAME, HEADOFFAMILY, FIRSTNAME, FIRSTNAMEINHINDI, LASTNAME, MAIDENLASTNAME, NICKNAME, NICKNAMEINHINDI, "
-          + "GENDER, BIRTHDAY, BIRTHMONTH, BIRTHYEAR, MARITALSTATUS, WEDDINGDATE, DATEOFDEATH, PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, "
-          + "ADDRESSSAMEASFAMILY, MEMBERADDRESSID, EDUCATIONDETAILS, OCCUPATION, HOBBY, MEMBERSEARCHTEXT, PROFILEIMAGE , PROFILEIMAGETHUMBNAIL , "
-          + "IMAGELASTUPDATED , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
-          + "from "
-          + BASE_SCHEMA_NAME
-          + "FAMILYMEMBER "
-          + "where EMAIL = ? ";
+          "SELECT MEMBERID, FAMILYID, SAMAJID, LOGONNAME, HEADOFFAMILY, FIRSTNAME, FIRSTNAMEINHINDI, LASTNAME, MAIDENLASTNAME, NICKNAME, NICKNAMEINHINDI, "
+                  + "GENDER, BIRTHDAY, BIRTHMONTH, BIRTHYEAR, MARITALSTATUS, WEDDINGDATE, DATEOFDEATH, PHONE, ISPHONEVERIFIED, ISPHONEWHATSAPPREGISTERED, "
+                  + "EMAIL, ISEMAILVERIFIED, ADDRESSSAMEASFAMILY, MEMBERADDRESSID, EDUCATIONDETAILS, OCCUPATION, HOBBY, MEMBERSEARCHTEXT, PROFILEIMAGE, "
+                  + "PROFILEIMAGETHUMBNAIL, IMAGELASTUPDATED, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE "
+                  + "FROM "
+                  + BASE_SCHEMA_NAME + "FAMILYMEMBER "
+                  + "where EMAIL = ? ";
 
   private static final String SELECT_HEAD_OF_FAMILY_BY_FAMILY_ID =
-      "select  MEMBERID, FAMILYID, LOGONNAME, HEADOFFAMILY, FIRSTNAME, FIRSTNAMEINHINDI, LASTNAME, MAIDENLASTNAME, NICKNAME, NICKNAMEINHINDI, "
-          + "GENDER, BIRTHDAY, BIRTHMONTH, BIRTHYEAR, MARITALSTATUS, WEDDINGDATE, DATEOFDEATH, PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, "
-          + "ADDRESSSAMEASFAMILY, MEMBERADDRESSID, EDUCATIONDETAILS, OCCUPATION, HOBBY, MEMBERSEARCHTEXT, PROFILEIMAGE , PROFILEIMAGETHUMBNAIL , "
-          + "IMAGELASTUPDATED , CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE  "
-          + "from "
-          + BASE_SCHEMA_NAME
-          + "FAMILYMEMBER "
-          + "where FAMILYID = ? and HEADOFFAMILY = true";
+          "SELECT MEMBERID, FAMILYID, SAMAJID, LOGONNAME, HEADOFFAMILY, FIRSTNAME, FIRSTNAMEINHINDI, LASTNAME, MAIDENLASTNAME, NICKNAME, NICKNAMEINHINDI, "
+                  + "GENDER, BIRTHDAY, BIRTHMONTH, BIRTHYEAR, MARITALSTATUS, WEDDINGDATE, DATEOFDEATH, PHONE, ISPHONEVERIFIED, ISPHONEWHATSAPPREGISTERED, "
+                  + "EMAIL, ISEMAILVERIFIED, ADDRESSSAMEASFAMILY, MEMBERADDRESSID, EDUCATIONDETAILS, OCCUPATION, HOBBY, MEMBERSEARCHTEXT, PROFILEIMAGE, "
+                  + "PROFILEIMAGETHUMBNAIL, IMAGELASTUPDATED, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE "
+                  + "FROM "
+                  + BASE_SCHEMA_NAME + "FAMILYMEMBER "
+          + "where SAMAJID = ? and FAMILYID = ? and  HEADOFFAMILY = true";
 
   private static final String UPDATE_LOGON_NAME_FOR_MEMBER =
       "UPDATE "
           + BASE_SCHEMA_NAME
           + "FAMILYMEMBER "
           + "SET LOGONNAME = ? , LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  "
-          + "where MEMBERID = ?";
+          + "where MEMBERID = ? ";
 
   private static final String IS_MEMBER_REGISTERED_BY_EMAIL_ID =
       "SELECT " + " EXISTS (SELECT 1 FROM " + BASE_SCHEMA_NAME + "FAMILYMEMBER WHERE EMAIL = ?)";
 
-  private static final String INSERT_FAMILY_STATEMENT =
+  private static final String IS_MEMBER_REGISTERED_BY_PHONE_NUM =
+          "SELECT " + " EXISTS (SELECT 1 FROM " + BASE_SCHEMA_NAME + "FAMILYMEMBER WHERE PHONE = ?)";
+
+  private static final String INSERT_FAMILY_MEMBER_STATEMENT =
       "INSERT INTO "
           + BASE_SCHEMA_NAME
           + "FAMILYMEMBER "
-          + "(FAMILYID, LOGONNAME, HEADOFFAMILY, FIRSTNAME, FIRSTNAMEINHINDI, LASTNAME, MAIDENLASTNAME, "
+          + "(FAMILYID, SAMAJID, LOGONNAME, HEADOFFAMILY, FIRSTNAME, FIRSTNAMEINHINDI, LASTNAME, MAIDENLASTNAME, "
           + "NICKNAME, NICKNAMEINHINDI, GENDER, BIRTHDAY, BIRTHMONTH, BIRTHYEAR, MARITALSTATUS, WEDDINGDATE, DATEOFDEATH, "
-          + "PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, ADDRESSSAMEASFAMILY, MEMBERADDRESSID, "
+          + "PHONE, ISPHONEVERIFIED, ISPHONEWHATSAPPREGISTERED, EMAIL, ISEMAILVERIFIED, ADDRESSSAMEASFAMILY, MEMBERADDRESSID, "
           + "EDUCATIONDETAILS, OCCUPATION, HOBBY, MEMBERSEARCHTEXT, PROFILEIMAGE, PROFILEIMAGETHUMBNAIL, "
           + "IMAGELASTUPDATED, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE) "
-          + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+          + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   private static final String UPDATE_FAMILY_MEMBER_STATEMENT =
       "UPDATE "
           + BASE_SCHEMA_NAME
           + "FAMILYMEMBER "
-          + "SET FAMILYID = ? , LOGONNAME = ? , HEADOFFAMILY = ? , FIRSTNAME = ? , FIRSTNAMEINHINDI = ? , LASTNAME = ?, MAIDENLASTNAME = ?, "
+          + "SET HEADOFFAMILY = ? , FIRSTNAME = ? , FIRSTNAMEINHINDI = ? , LASTNAME = ?, MAIDENLASTNAME = ?, "
           + "NICKNAME = ?, NICKNAMEINHINDI = ?, GENDER = ?, BIRTHDAY = ?, BIRTHMONTH = ?, BIRTHYEAR = ?, MARITALSTATUS = ?, WEDDINGDATE = ?, DATEOFDEATH = ?,"
-          + "PHONE = ?, ISPHONEWHATSAPPREGISTERED = ?, EMAIL = ?, ADDRESSSAMEASFAMILY = ? , MEMBERADDRESSID = ?, "
-          + "EDUCATIONDETAILS = ? , OCCUPATION = ? , HOBBY = ? , MEMBERSEARCHTEXT = ?, PROFILEIMAGE = ? , PROFILEIMAGETHUMBNAIL = ? , "
-          + "IMAGELASTUPDATED = ? , LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  "
-          + "where MEMBERID = ?";
+          + "PHONE = ?, ISPHONEVERIFIED = ?, ISPHONEWHATSAPPREGISTERED = ?, EMAIL = ?, ISEMAILVERIFIED = ?, ADDRESSSAMEASFAMILY = ? , MEMBERADDRESSID = ?, "
+          + "EDUCATIONDETAILS = ? , OCCUPATION = ? , HOBBY = ? , MEMBERSEARCHTEXT = ?, "
+          + "LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  "
+          + "where SAMAJID = ? and FAMILYID = ? and MEMBERID = ? ";
 
   private static final String UPDATE_FAMILY_MEMBER_IMAGE_STATEMENT =
       "UPDATE "
           + BASE_SCHEMA_NAME
           + "FAMILYMEMBER "
           + "SET PROFILEIMAGE = ?, PROFILEIMAGETHUMBNAIL = ? , IMAGELASTUPDATED = ? ,  LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  "
-          + "where MEMBERID = ?";
+              + "where SAMAJID = ? and FAMILYID = ? and MEMBERID = ? ";
 
   private static final String FAMILY_MEMBER_HISTORY_INSERT_STATEMENT =
       "INSERT INTO "
           + BASE_SCHEMA_NAME
           + "familymemberhistory "
-          + "(operation, memberid, familyid, logonname, headoffamily, firstname, firstnameinhindi, "
+          + "(operation, memberid, familyid, samajid, logonname, headoffamily, firstname, firstnameinhindi, "
           + "lastname, maidenlastname, nickname, nicknameinhindi, gender, birthday, birthmonth, birthyear, "
-          + "maritalstatus, weddingdate, dateofdeath, phone, isphonewhatsappregistered, email, "
+          + "maritalstatus, weddingdate, dateofdeath, phone, ISPHONEVERIFIED, isphonewhatsappregistered, email, ISEMAILVERIFIED, "
           + "addresssameasfamily, memberaddressid, educationdetails, occupation, hobby, membersearchtext, "
           + "profileimage, profileimagethumbnail, imagelastupdated, createdby, createddate, "
           + "lastupdatedby, lastupdateddate) "
-          + "SELECT ?, memberid, familyid, logonname, headoffamily, firstname, firstnameinhindi, "
+          + "SELECT ?, memberid, familyid, samajid, logonname, headoffamily, firstname, firstnameinhindi, "
           + "lastname, maidenlastname, nickname, nicknameinhindi, gender, birthday, birthmonth, birthyear, "
-          + "maritalstatus, weddingdate, dateofdeath, phone, isphonewhatsappregistered, email, "
+          + "maritalstatus, weddingdate, dateofdeath, phone, ISPHONEVERIFIED, isphonewhatsappregistered, email, ISEMAILVERIFIED, "
           + "addresssameasfamily, memberaddressid, educationdetails, occupation, hobby, membersearchtext, "
           + "profileimage, profileimagethumbnail, imagelastupdated, createdby, createddate, "
           + "lastupdatedby, lastupdateddate "
@@ -134,14 +132,14 @@ public class FamilyMemberDao extends AbstractDao {
           + BASE_SCHEMA_NAME
           + "familymember WHERE memberid = ?";
 
-  public List<FamilyMemberEntity> allMembersForFamily(int familyId) {
+  public List<FamilyMemberEntity> allMembersForFamily(int samajId, int familyId) {
     return getJdbcTemplate()
-        .query(SELECT_ALL_MEMBERS_FOR_FAMILY, new FamilyMemberRowMapper(), familyId);
+        .query(SELECT_ALL_MEMBERS_FOR_FAMILY, new FamilyMemberRowMapper(), samajId, familyId);
   }
 
-  public FamilyMemberEntity getMemberById(int memberId) {
+  public FamilyMemberEntity getMemberById(int samajId, int memberId) {
     List<FamilyMemberEntity> memberList =
-        getJdbcTemplate().query(SELECT_MEMBER_BY_ID, new FamilyMemberRowMapper(), memberId);
+        getJdbcTemplate().query(SELECT_MEMBER_BY_ID, new FamilyMemberRowMapper(), samajId, memberId);
 
     if (memberList.isEmpty()) {
       return null;
@@ -152,10 +150,10 @@ public class FamilyMemberDao extends AbstractDao {
     return memberList.get(0);
   }
 
-  public FamilyMemberEntity getHeadOfFamilyByFamilyId(int familyId) {
+  public FamilyMemberEntity getHeadOfFamilyByFamilyId(int samajId, int familyId) {
     List<FamilyMemberEntity> memberList =
         getJdbcTemplate()
-            .query(SELECT_HEAD_OF_FAMILY_BY_FAMILY_ID, new FamilyMemberRowMapper(), familyId);
+            .query(SELECT_HEAD_OF_FAMILY_BY_FAMILY_ID, new FamilyMemberRowMapper(), samajId, familyId);
 
     if (memberList.isEmpty()) {
       return null;
@@ -229,7 +227,17 @@ public class FamilyMemberDao extends AbstractDao {
     }
   }
 
-  public void updateMemberImagePath(int memberId, String memberImagePath, AuditInfo auditInfo) {
+  public boolean isMemberExistsForPhone(String phone) {
+    try {
+      return Boolean.TRUE.equals(
+              jdbcTemplate.queryForObject(IS_MEMBER_REGISTERED_BY_PHONE_NUM, Boolean.class, phone));
+    } catch (Exception e) {
+      throw new InternalServerException(
+              "Internal error while processing your request, please try again.", e);
+    }
+  }
+
+  public void updateMemberImagePath(int samajId, int familyId, int memberId, String memberImagePath, AuditInfo auditInfo) {
     getJdbcTemplate()
         .update(
             UPDATE_FAMILY_MEMBER_IMAGE_STATEMENT,
@@ -238,6 +246,7 @@ public class FamilyMemberDao extends AbstractDao {
             auditInfo.getLastUpdatedDate(),
             auditInfo.getLastUpdatedBy(),
             auditInfo.getLastUpdatedDate(),
+                samajId, familyId,
             memberId);
     log.info("Member image path is updated for member id: {}", memberId);
   }
@@ -260,8 +269,8 @@ public class FamilyMemberDao extends AbstractDao {
     if (key != null) {
       memberId = key.intValue();
     }
-    log.info("New family member added with id " + memberId);
-    return getMemberById(memberId);
+    log.info("New family member added with id {}", memberId);
+    return getMemberById(aFamilyMember.getSamajId(), memberId);
   }
 
   private void addFamilyMemberHistoryRecord(int memberId, String operation) {
@@ -290,9 +299,10 @@ public class FamilyMemberDao extends AbstractDao {
       Connection aConection, FamilyMemberEntity aFamilyMember) throws SQLException {
 
     PreparedStatement prepareStatement =
-        aConection.prepareStatement(INSERT_FAMILY_STATEMENT, new String[] {"memberid"});
+        aConection.prepareStatement(INSERT_FAMILY_MEMBER_STATEMENT, new String[] {"memberid"});
     int columnIndex = 1;
     setIntInStatement(prepareStatement, columnIndex++, aFamilyMember.getFamilyId());
+    setIntInStatement(prepareStatement, columnIndex++, aFamilyMember.getSamajId());
     setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getLogonName());
     setBooleanInStatement(prepareStatement, columnIndex++, aFamilyMember.isHeadOfFamily());
     setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getFirstName());
@@ -313,6 +323,7 @@ public class FamilyMemberDao extends AbstractDao {
     setLocalDateInStatement(prepareStatement, columnIndex++, aFamilyMember.getDateOfDeath());
 
     setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getPhone());
+    setBooleanInStatement(prepareStatement, columnIndex++, aFamilyMember.isPhoneVerified());
     setBooleanInStatement(
         prepareStatement, columnIndex++, aFamilyMember.isPhoneWhatsappRegistered());
     if (aFamilyMember.getEmail() != null) {
@@ -321,6 +332,7 @@ public class FamilyMemberDao extends AbstractDao {
     } else {
       setStringInStatement(prepareStatement, columnIndex++, null);
     }
+    setBooleanInStatement(prepareStatement, columnIndex++, aFamilyMember.isEmailVerified());
 
     setBooleanInStatement(prepareStatement, columnIndex++, aFamilyMember.isAddressSameAsFamily());
     setIntInStatement(prepareStatement, columnIndex++, aFamilyMember.getMemberAddressId());
@@ -339,21 +351,6 @@ public class FamilyMemberDao extends AbstractDao {
     return prepareStatement;
   }
 
-  public int deleteFamilyMemberById(int familyMemberId) throws SQLException {
-    return getJdbcTemplate()
-        .update(
-            new PreparedStatementCreator() {
-              @Override
-              public PreparedStatement createPreparedStatement(Connection aConection)
-                  throws SQLException {
-                String deleteSqlQuery = "DELETE FROM FAMILYMEMBER WHERE MEMBERID = ?";
-                PreparedStatement prepareStatement = aConection.prepareStatement(deleteSqlQuery);
-                setIntInStatement(prepareStatement, 1, familyMemberId);
-                return prepareStatement;
-              }
-            });
-  }
-
   private PreparedStatement buildUpdateStatement(
       Connection aConection, FamilyMemberEntity aFamilyMember, AuditInfo auditInfo)
       throws SQLException {
@@ -362,8 +359,6 @@ public class FamilyMemberDao extends AbstractDao {
         aConection.prepareStatement(UPDATE_FAMILY_MEMBER_STATEMENT);
 
     int columnIndex = 1;
-    setIntInStatement(prepareStatement, columnIndex++, aFamilyMember.getFamilyId());
-    setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getLogonName());
     setBooleanInStatement(prepareStatement, columnIndex++, aFamilyMember.isHeadOfFamily());
     setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getFirstName());
     setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getFirstNameInHindi());
@@ -373,12 +368,8 @@ public class FamilyMemberDao extends AbstractDao {
     setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getNickNameInHindi());
 
     setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getGender().name());
-    if (aFamilyMember.getBirthDay() == null) {
-      setSmallIntInStatement(prepareStatement, columnIndex++, (short) -1);
-    } else {
-      // If birth day is not set, we set it to -1
-      setSmallIntInStatement(prepareStatement, columnIndex++, aFamilyMember.getBirthDay());
-    }
+    setSmallIntInStatement(prepareStatement, columnIndex++, aFamilyMember.getBirthDay());
+
     setSmallIntInStatement(
         prepareStatement, columnIndex++, aFamilyMember.getBirthMonth().getMonthNumber());
     setSmallIntInStatement(prepareStatement, columnIndex++, aFamilyMember.getBirthYear());
@@ -387,14 +378,13 @@ public class FamilyMemberDao extends AbstractDao {
     setLocalDateInStatement(prepareStatement, columnIndex++, aFamilyMember.getDateOfDeath());
 
     setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getPhone());
+    setBooleanInStatement(prepareStatement, columnIndex++, aFamilyMember.isPhoneVerified());
     setBooleanInStatement(
         prepareStatement, columnIndex++, aFamilyMember.isPhoneWhatsappRegistered());
-    if (aFamilyMember.getEmail() != null) {
-      setStringInStatement(
-          prepareStatement, columnIndex++, aFamilyMember.getEmail().toLowerCase().trim());
-    } else {
-      setStringInStatement(prepareStatement, columnIndex++, null);
-    }
+    setStringInStatement(
+          prepareStatement, columnIndex++, aFamilyMember.getEmail());
+
+    setBooleanInStatement(prepareStatement, columnIndex++, aFamilyMember.isEmailVerified());
 
     setBooleanInStatement(prepareStatement, columnIndex++, aFamilyMember.isAddressSameAsFamily());
     setIntInStatement(prepareStatement, columnIndex++, aFamilyMember.getMemberAddressId());
@@ -403,12 +393,12 @@ public class FamilyMemberDao extends AbstractDao {
     setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getOccupation());
     setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getHobby());
     setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getMemberSearchText());
-    setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getProfileImage());
-    setStringInStatement(prepareStatement, columnIndex++, aFamilyMember.getProfileImageThumbnail());
-    setTimestampInStatement(prepareStatement, columnIndex++, aFamilyMember.getImageLastUpdated());
     setIntInStatement(prepareStatement, columnIndex++, auditInfo.getLastUpdatedBy());
     setTimestampInStatement(prepareStatement, columnIndex++, auditInfo.getLastUpdatedDate());
+    setIntInStatement(prepareStatement, columnIndex++, aFamilyMember.getSamajId());
+    setIntInStatement(prepareStatement, columnIndex++, aFamilyMember.getFamilyId());
     setIntInStatement(prepareStatement, columnIndex++, aFamilyMember.getMemberId());
+    log.info("Update prepared statement {}", prepareStatement);
     return prepareStatement;
   }
 

@@ -7,6 +7,7 @@ import com.neasaa.base.app.operation.exception.InternalServerException;
 import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.familytree.constants.ImageConstants;
+import com.neasaa.familytree.entity.FamilyEntity;
 import com.neasaa.familytree.operation.family.model.UpdateImageRequest;
 import com.neasaa.familytree.operation.family.model.UpdateImageResponse;
 import com.neasaa.familytree.utils.FileUtils;
@@ -51,10 +52,17 @@ public class UpdateFamilyImageOperation
   public UpdateImageResponse doExecute(UpdateImageRequest opRequest) throws OperationException {
 
     int familyId = opRequest.getFamilyId();
+    int samajId = getSamajIdFromSession();
 
     // Check if this user is allowed to update family details
     if (!canLoggedInUserUpdateFamily(familyId)) {
       throw new AccessDeniedException("You are not allowed to update image for this family.");
+    }
+
+    FamilyEntity familyEntityFromDb = familyDao.getFamilyByFamilyId(samajId, familyId);
+    if (familyEntityFromDb == null) {
+      log.error("Family with Id {} not found.", familyId);
+      throw new ValidationException("Family not found.");
     }
 
     Path tmpUploadedFilePath = opRequest.getTmpUploadedFilePath();
@@ -80,7 +88,7 @@ public class UpdateFamilyImageOperation
     }
 
     // Update the family record in the database with the new image path
-    familyDao.updateFamilyImagePath(familyId, familyImageRelativePath, getContext().getAuditInfo());
+    familyDao.updateFamilyImagePath(samajId, familyId, familyImageRelativePath, getContext().getAuditInfo());
 
     // Return an empty response indicating the operation was successful
     UpdateImageResponse updateImageResponse = new UpdateImageResponse();

@@ -8,8 +8,10 @@ import static com.neasaa.familytree.operation.OperationNames.UPDATE_MY_FAMILY_DE
 import static com.neasaa.familytree.operation.OperationNames.UPDATE_MY_FAMILY_MEMBER;
 
 import com.neasaa.base.app.operation.AbstractOperation;
+import com.neasaa.base.app.operation.exception.InternalServerException;
 import com.neasaa.base.app.operation.model.OperationRequest;
 import com.neasaa.base.app.operation.model.OperationResponse;
+import com.neasaa.base.app.service.AppSessionUser;
 import com.neasaa.familytree.dao.pg.AddressDao;
 import com.neasaa.familytree.dao.pg.FamilyDao;
 import com.neasaa.familytree.dao.pg.FamilyMemberDao;
@@ -50,6 +52,23 @@ public abstract class FamilyAbstractOperation<
 
   @Autowired protected MemberRelationshipDao memberRelationshipDao;
 
+  protected FamilyMemberEntity getMemberEntityFromSession() {
+    if (getContext() == null || getContext().getAppSessionUser() == null) {
+      log.info("Operation context or AppSessionUser is null, cannot get FamilyMemberEntity from session");
+      return null;
+    }
+    AppSessionUser appSessionUser = getContext().getAppSessionUser();
+    return SessionUtils.getFamilyMemberFromSession(appSessionUser);
+  }
+
+  protected int getSamajIdFromSession() {
+    FamilyMemberEntity memberEntityFromSession = getMemberEntityFromSession();
+    if(memberEntityFromSession == null) {
+        log.info("FamilyMemberEntity not found in session, cannot get SamajId from session");
+        throw new InternalServerException("Internal error occurred, please try again later.");
+    }
+    return memberEntityFromSession.getSamajId();
+  }
   /**
    * Check if the logged in user is allowed to update family details of the given family id.
    *
@@ -132,13 +151,13 @@ public abstract class FamilyAbstractOperation<
    * Get children for the member and set the relationship as "Son of abc" or "Daughter of abc". This is
    * mainly to get siblings of a member by passing the parent ids.
    */
-  protected List<MemberSummaryDto> getChildrenForMember(int memberId, int spouseMemberId) {
+  protected List<MemberSummaryDto> getChildrenForMember(int samajId, int memberId, int spouseMemberId) {
     List<MemberSummaryDto> children = new ArrayList<>();
     List<MemberRelationshipEntity> childrenForMember =
             memberRelationshipDao.getChildrenForMemberById(memberId, spouseMemberId);
     if (childrenForMember != null) {
       for (MemberRelationshipEntity childRelation : childrenForMember) {
-        MemberSummaryDto child = getMemberSummaryDtoFromDB(childRelation.getRelatedMemberId());
+        MemberSummaryDto child = getMemberSummaryDtoFromDB(samajId, childRelation.getRelatedMemberId());
         if (child != null) {
           children.add(child);
         }
@@ -153,8 +172,8 @@ public abstract class FamilyAbstractOperation<
     return children;
   }
 
-  protected MemberSummaryDto getMemberSummaryDtoFromDB(int memberId) {
-    FamilyMemberEntity memberFromDb = familyMemberDao.getMemberById(memberId);
+  protected MemberSummaryDto getMemberSummaryDtoFromDB(int samajId, int memberId) {
+    FamilyMemberEntity memberFromDb = familyMemberDao.getMemberById(samajId, memberId);
     if (memberFromDb == null) {
       return null;
     }
@@ -162,7 +181,7 @@ public abstract class FamilyAbstractOperation<
   }
 
   protected List<MemberSummaryDto> getParentsForMember (
-          int memberId, String currentMemberName) {
+          int samajId, int memberId, String currentMemberName) {
     List<MemberRelationshipEntity> parents =
             memberRelationshipDao.getParentsForMemberById(memberId);
 
@@ -174,7 +193,7 @@ public abstract class FamilyAbstractOperation<
     MemberSummaryDto father = null;
     MemberSummaryDto mother = null;
     for (MemberRelationshipEntity parentRelationship : parents) {
-      MemberSummaryDto parent = getMemberSummaryDtoFromDB(parentRelationship.getMemberId());
+      MemberSummaryDto parent = getMemberSummaryDtoFromDB(samajId, parentRelationship.getMemberId());
       if (parent != null) {
         String familyRelationship = null;
         if (parent.getGender() == Gender.Male) {

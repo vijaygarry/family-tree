@@ -25,8 +25,10 @@ public class MemberProfileDto {
   private AddressDto memberAddress;
   private AddressDto familyAddress;
   private String phone;
+  private boolean isPhoneVerified;
   private boolean isPhoneWhatsappRegistered;
   private String email;
+  private boolean isEmailVerified;
   private String linkedinUrl;
   private Gender gender;
   private Short birthDay;
@@ -52,7 +54,6 @@ public class MemberProfileDto {
       boolean canUpdateMember) {
     Short birthDay;
     if (familyMember.getBirthDay() != null && familyMember.getBirthDay() > 0) {
-      ;
       birthDay = familyMember.getBirthDay();
     } else {
       birthDay = null;
@@ -72,8 +73,10 @@ public class MemberProfileDto {
         .memberAddress(memberAddress)
         .familyAddress(familyAddress)
         .phone(familyMember.getPhone())
+        .isPhoneVerified(familyMember.isPhoneVerified())
         .isPhoneWhatsappRegistered(familyMember.isPhoneWhatsappRegistered())
         .email(familyMember.getEmail())
+        .isEmailVerified(familyMember.isEmailVerified())
         .gender(familyMember.getGender())
         .birthDay(birthDay)
         .birthMonth(familyMember.getBirthMonth().getShortMonthName())

@@ -71,6 +71,7 @@ public class UpdateFamilyDetailsOperation
   public UpdateFamilyDetailsResponse doExecute(UpdateFamilyDetailsRequest opRequest)
       throws OperationException {
     int familyId = opRequest.getFamilyId();
+    int samajId = getSamajIdFromSession();
 
     // Check if this user is allowed to update family details
     if (!canLoggedInUserUpdateFamily(familyId)) {
@@ -80,10 +81,12 @@ public class UpdateFamilyDetailsOperation
     AddressEntity newFamilyAddress = getAddressFromRequest(opRequest);
 
     // Check if family exists
-    FamilyEntity familyEntityFromDb = familyDao.getFamilyByFamilyId(familyId);
+    FamilyEntity familyEntityFromDb = familyDao.getFamilyByFamilyId(samajId, familyId);
     if (familyEntityFromDb == null) {
-      throw new ValidationException("Family with Id " + familyId + " not found.");
+      log.error("Family with Id {} not found.", familyId);
+      throw new ValidationException("Family not found.");
     }
+
     AddressEntity existingAddress = addressDao.getAddressById(familyEntityFromDb.getAddressId());
     if (existingAddress == null) {
       log.info("Address not found for family with Id {}", familyId);
@@ -97,9 +100,9 @@ public class UpdateFamilyDetailsOperation
       // Update existing address record
       addressDao.updateAddress(newFamilyAddress);
     }
-    FamilyMemberEntity headOfFamily = familyMemberDao.getHeadOfFamilyByFamilyId(familyId);
+    FamilyMemberEntity headOfFamily = familyMemberDao.getHeadOfFamilyByFamilyId(samajId, familyId);
     // Create history record with audit details
-    FamilyEntity newFamilyEntity = getFamilyFromRequest(opRequest, headOfFamily, newFamilyAddress);
+    FamilyEntity newFamilyEntity = getFamilyFromRequest(opRequest, samajId, headOfFamily, newFamilyAddress);
     // TODO: Apply logic like copy of existing family and update new fields. For the time being
     // update family image here.
     newFamilyEntity.setFamilyImage(familyEntityFromDb.getFamilyImage());
@@ -107,31 +110,31 @@ public class UpdateFamilyDetailsOperation
         true; // As user just updated the family details i.e. update is allowed
     boolean canLoggedInUserAddNewMember = canLoggedInUserAddNewMember(familyId);
 
-      String newFamilyName = newFamilyEntity.getFamilyName();
-      // Check if family name exists
-      String existingFamilyName = familyEntityFromDb.getFamilyName();
-      if(existingFamilyName == null) {
-          log.info("Family Name not found for family with Id {}", familyId);
-          throw new InternalServerException("Internal exception occurred, please contact administrator.");
-      }
-      boolean isfamilyNameUpdated = !(existingFamilyName.equals(newFamilyName));
+    String newFamilyName = newFamilyEntity.getFamilyName();
+    // Check if family name exists
+    String existingFamilyName = familyEntityFromDb.getFamilyName();
+    if(existingFamilyName == null) {
+        log.info("Family Name not found for family with Id {}", familyId);
+        throw new InternalServerException("Internal exception occurred, please contact administrator.");
+    }
+    boolean isFamilyNameUpdated = !(existingFamilyName.equals(newFamilyName));
 
-      int isfamilyUpdated = familyDao.updateFamily(newFamilyEntity, getAuditInfo(), isfamilyNameUpdated);
-      if(isfamilyUpdated>0)
-          log.info("Family Details updated for family with Id {}", familyId);
-      else
-          log.info("No Family Details is updated for family with Id {}", familyId);
-
-      newFamilyEntity.setAddress(newFamilyAddress);
-      UpdateFamilyDetailsResponse response =
-              UpdateFamilyDetailsResponse.builder()
-                      .familyDetails(
-                              FamilyDetailsDto.fromFamilyDBEntity(
-                                      newFamilyEntity,
-                                      headOfFamily == null ? "" : headOfFamily.getFirstName(),
-                                      canLoggedInUserUpdateFamily,
-                                      canLoggedInUserAddNewMember))
-                      .build();
+    int isFamilyUpdated = familyDao.updateFamily(newFamilyEntity, getAuditInfo(), isFamilyNameUpdated);
+    if(isFamilyUpdated>0) {
+      log.info("Family Details updated for family with Id {}", familyId);
+    } else {
+      log.info("No Family Details is updated for family with Id {}", familyId);
+    }
+    newFamilyEntity.setAddress(newFamilyAddress);
+    UpdateFamilyDetailsResponse response =
+            UpdateFamilyDetailsResponse.builder()
+                    .familyDetails(
+                            FamilyDetailsDto.fromFamilyDBEntity(
+                                    newFamilyEntity,
+                                    headOfFamily == null ? "" : headOfFamily.getFirstName(),
+                                    canLoggedInUserUpdateFamily,
+                                    canLoggedInUserAddNewMember))
+                    .build();
 
     response.setOperationMessage(
         String.format("Family %s details updated successfully !!!", opRequest.getFamilyName()));
@@ -159,16 +162,18 @@ public class UpdateFamilyDetailsOperation
 
   private FamilyEntity getFamilyFromRequest(
       UpdateFamilyDetailsRequest opRequest,
+      int samajId,
       FamilyMemberEntity headOfFamily,
       AddressEntity familyAddress) {
     AuditInfo auditInfo = getAuditInfo();
-    String phoneNumber = DataFormatter.formatPhoneNumber(opRequest.getPhone());
+    String phoneNumber = DataFormatter.formatPhoneNumberForDBStorage(opRequest.getPhone());
     String familyRegion = DataFormatter.getRegion(familyAddress);
     String emailId = (opRequest.getEmail() != null) ? opRequest.getEmail().toLowerCase() : null;
     String familyName = DataFormatter.capitalizeFirstLetter(opRequest.getFamilyName());
     FamilyEntity familyEntity =
         FamilyEntity.builder()
             .familyId(opRequest.getFamilyId())
+            .samajId(samajId)
             .familyName(familyName)
             .familyNameInHindi(opRequest.getFamilyNameInHindi())
             .gotra(opRequest.getGotra())

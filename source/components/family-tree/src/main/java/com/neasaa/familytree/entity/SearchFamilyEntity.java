@@ -12,6 +12,7 @@ public class SearchFamilyEntity extends BaseEntity {
   @Serial private static final long serialVersionUID = 1;
 
   private int familyId;
+  private int samajId;
   private String familyName;
   private String familyNameInHindi;
   private String gotra;

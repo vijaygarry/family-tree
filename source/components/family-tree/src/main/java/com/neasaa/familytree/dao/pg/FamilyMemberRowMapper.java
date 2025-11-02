@@ -21,6 +21,7 @@ public class FamilyMemberRowMapper implements RowMapper<FamilyMemberEntity> {
     FamilyMemberEntity familyMember = new FamilyMemberEntity();
     familyMember.setMemberId(aRs.getInt("MEMBERID"));
     familyMember.setFamilyId(aRs.getInt("FAMILYID"));
+    familyMember.setSamajId(aRs.getInt("SAMAJID"));
     familyMember.setLogonName(aRs.getString("LOGONNAME"));
     familyMember.setHeadOfFamily(aRs.getBoolean("HEADOFFAMILY"));
     familyMember.setFirstName(aRs.getString("FIRSTNAME"));
@@ -37,9 +38,11 @@ public class FamilyMemberRowMapper implements RowMapper<FamilyMemberEntity> {
     familyMember.setWeddingDate(AbstractDao.getLocalDateFromResultSet(aRs, "WEDDINGDATE"));
     familyMember.setDateOfDeath(AbstractDao.getLocalDateFromResultSet(aRs, "DATEOFDEATH"));
     String phone = aRs.getString("PHONE");
-    familyMember.setPhone(DataFormatter.formatPhoneNumber(phone));
+    familyMember.setPhone(DataFormatter.formatPhoneNumberForUX(phone));
+    familyMember.setPhoneVerified(aRs.getBoolean("ISPHONEVERIFIED"));
     familyMember.setPhoneWhatsappRegistered(aRs.getBoolean("ISPHONEWHATSAPPREGISTERED"));
     familyMember.setEmail(aRs.getString("EMAIL"));
+    familyMember.setEmailVerified(aRs.getBoolean("ISEMAILVERIFIED"));
 
     familyMember.setAddressSameAsFamily(aRs.getBoolean("ADDRESSSAMEASFAMILY"));
     familyMember.setMemberAddressId(aRs.getInt("MEMBERADDRESSID"));

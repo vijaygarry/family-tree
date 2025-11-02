@@ -43,21 +43,24 @@ public class GetMemberProfileOperation
   public GetMemberProfileResponse doExecute(GetMemberProfileRequest opRequest)
       throws OperationException {
     FamilyMemberEntity memberEntity = null;
+    int samajId = getSamajIdFromSession();
+
     if (opRequest != null && opRequest.getMemberId() != null) {
       int memberId = opRequest.getMemberId();
-      memberEntity = familyMemberDao.getMemberById(memberId);
+      memberEntity = familyMemberDao.getMemberById(samajId, memberId);
     } else {
       String logonName = getContext().getAppSessionUser().getLogonName();
+      //TODO: Get member id from session instead of looking up member by logon name
       memberEntity = familyMemberDao.getMemberByLogonName(logonName);
     }
     if (memberEntity == null) {
       throw new ValidationException("Member not found.");
     }
 
-    List<MemberSummaryDto> parents = getParents(memberEntity);
-    MemberSummaryDto spouse = getSpouse(memberEntity);
-    List<MemberSummaryDto> children = getChildrenForMember(memberEntity, spouse);
-    List<MemberSummaryDto> siblings = getSiblings(memberEntity, parents);
+    List<MemberSummaryDto> parents = getParents(samajId, memberEntity);
+    MemberSummaryDto spouse = getSpouse(samajId, memberEntity);
+    List<MemberSummaryDto> children = getChildrenForMember(samajId, memberEntity, spouse);
+    List<MemberSummaryDto> siblings = getSiblings(samajId, memberEntity, parents);
     boolean canLoggedInUserUpdateMember = canLoggedInUserUpdateMember(memberEntity.getFamilyId());
     AddressDto familyAddress = getFamilyAddress(memberEntity);
     AddressDto memberAddress = null;
@@ -77,7 +80,7 @@ public class GetMemberProfileOperation
         .build();
   }
 
-  public List<MemberSummaryDto> getParents(FamilyMemberEntity selectedMemberEntity) {
+  public List<MemberSummaryDto> getParents(int samajId, FamilyMemberEntity selectedMemberEntity) {
 
     log.info("Adding parents for member: {}", selectedMemberEntity.getFirstName());
     List<MemberRelationshipEntity> parents =
@@ -89,7 +92,7 @@ public class GetMemberProfileOperation
     MemberSummaryDto father = null;
     MemberSummaryDto mother = null;
     for (MemberRelationshipEntity parentRelationship : parents) {
-      MemberSummaryDto parent = getMemberSummaryDtoFromDB(parentRelationship.getMemberId());
+      MemberSummaryDto parent = getMemberSummaryDtoFromDB(samajId, parentRelationship.getMemberId());
       if (parent != null) {
         if (parent.getGender() == Gender.Male) {
           father = parent;
@@ -120,7 +123,7 @@ public class GetMemberProfileOperation
     return parentList;
   }
 
-  public MemberSummaryDto getSpouse(FamilyMemberEntity selectedMemberEntity) {
+  public MemberSummaryDto getSpouse(int samajId, FamilyMemberEntity selectedMemberEntity) {
     if (selectedMemberEntity.getMaritalStatus() == null
         || selectedMemberEntity.getMaritalStatus() == MaritalStatus.Single) {
       log.info("Member {} is not married, so no spouse.", selectedMemberEntity.getFirstName());
@@ -129,7 +132,7 @@ public class GetMemberProfileOperation
     MemberRelationshipEntity spouseForMember =
         memberRelationshipDao.getSpouseForMemberById(selectedMemberEntity.getMemberId());
     if (spouseForMember != null) {
-      MemberSummaryDto spouse = getMemberSummaryDtoFromDB(spouseForMember.getRelatedMemberId());
+      MemberSummaryDto spouse = getMemberSummaryDtoFromDB(samajId, spouseForMember.getRelatedMemberId());
       if (spouse != null) {
         if (selectedMemberEntity.getGender() == Gender.Male) {
           spouse.setFamilyRelationship(
@@ -148,7 +151,7 @@ public class GetMemberProfileOperation
 
   /** Get children for the member and set the relationship as Son of abc or Daughter of abc */
   private List<MemberSummaryDto> getChildrenForMember(
-      FamilyMemberEntity selectedMemberEntity, MemberSummaryDto selectedMemberSpouseDto) {
+      int samajId, FamilyMemberEntity selectedMemberEntity, MemberSummaryDto selectedMemberSpouseDto) {
     if (selectedMemberEntity.getMaritalStatus() == null
         || selectedMemberEntity.getMaritalStatus() == MaritalStatus.Single) {
       log.info("Member {} is not married, so no children.", selectedMemberEntity.getFirstName());
@@ -162,7 +165,7 @@ public class GetMemberProfileOperation
             selectedMemberEntity.getMemberId(), spouseMemberId);
     if (childrenForMember != null) {
       for (MemberRelationshipEntity childRelation : childrenForMember) {
-        MemberSummaryDto child = getMemberSummaryDtoFromDB(childRelation.getRelatedMemberId());
+        MemberSummaryDto child = getMemberSummaryDtoFromDB(samajId, childRelation.getRelatedMemberId());
         if (child != null) {
           if (child.getGender() == Gender.Male) {
             child.setFamilyRelationship(
@@ -182,7 +185,7 @@ public class GetMemberProfileOperation
   }
 
   public List<MemberSummaryDto> getSiblings(
-      FamilyMemberEntity selectedMemberEntity, List<MemberSummaryDto> parents) {
+      int samajId, FamilyMemberEntity selectedMemberEntity, List<MemberSummaryDto> parents) {
     if (parents == null || parents.isEmpty()) {
       log.info(
           "No parents found for member: {}, so cannot find siblings.",
@@ -198,7 +201,7 @@ public class GetMemberProfileOperation
       parentId2 = parents.get(1).getMemberId();
     }
 
-    List<MemberSummaryDto> siblingsFromDb = getChildrenForMember(parentId1, parentId2);
+    List<MemberSummaryDto> siblingsFromDb = getChildrenForMember(samajId, parentId1, parentId2);
     List<MemberSummaryDto> siblings = null;
     if (siblingsFromDb != null) {
       for (MemberSummaryDto child : siblingsFromDb) {

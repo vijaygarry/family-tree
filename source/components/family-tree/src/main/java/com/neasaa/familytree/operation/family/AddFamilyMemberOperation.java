@@ -8,16 +8,11 @@ import static com.neasaa.familytree.utils.DataFormatter.parseISODateToLocalDate;
 import static com.neasaa.familytree.utils.FamilytreeValidationUtils.validateBirthDate;
 import static com.neasaa.familytree.utils.FamilytreeValidationUtils.validateStringLength;
 
-import com.neasaa.base.app.operation.AbstractOperation;
 import com.neasaa.base.app.operation.AuditInfo;
 import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.base.app.utils.EmailValidator;
 import com.neasaa.familytree.constants.ImageConstants;
-import com.neasaa.familytree.dao.pg.AddressDao;
-import com.neasaa.familytree.dao.pg.FamilyDao;
-import com.neasaa.familytree.dao.pg.FamilyMemberDao;
-import com.neasaa.familytree.dao.pg.MemberRelationshipDao;
 import com.neasaa.familytree.entity.AddressEntity;
 import com.neasaa.familytree.entity.FamilyEntity;
 import com.neasaa.familytree.entity.FamilyMemberEntity;
@@ -37,7 +32,6 @@ import com.neasaa.familytree.utils.FamilytreeValidationUtils;
 import com.neasaa.familytree.utils.RelationshipUtils;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -45,15 +39,7 @@ import org.springframework.stereotype.Component;
 @Component("AddFamilyMemberOperation")
 @Scope("prototype")
 public class AddFamilyMemberOperation
-    extends AbstractOperation<AddFamilyMemberRequest, AddFamilyMemberResponse> {
-
-  @Autowired private FamilyDao familyDao;
-
-  @Autowired private FamilyMemberDao familyMemberDao;
-
-  @Autowired private AddressDao addressDao;
-
-  @Autowired private MemberRelationshipDao memberRelationshipDao;
+    extends FamilyAbstractOperation<AddFamilyMemberRequest, AddFamilyMemberResponse> {
 
   @Override
   public String getOperationName() {
@@ -134,7 +120,9 @@ public class AddFamilyMemberOperation
   public AddFamilyMemberResponse doExecute(AddFamilyMemberRequest opRequest)
       throws OperationException {
     log.info("Adding family member");
-    FamilyEntity family = familyDao.getFamilyByFamilyId(opRequest.getFamilyId());
+    int samajId = getSamajIdFromSession();
+
+    FamilyEntity family = familyDao.getFamilyByFamilyId(samajId, opRequest.getFamilyId());
     if (family == null) {
       log.info("Family not found for family id {}", opRequest.getFamilyId());
       throw new ValidationException("Family not found");
@@ -143,8 +131,10 @@ public class AddFamilyMemberOperation
     // Fetch list of family members
     // TODO: Do we need all the members or only HOF should be sufficient.
     List<FamilyMemberEntity> familyMembers =
-        familyMemberDao.allMembersForFamily(opRequest.getFamilyId());
+        familyMemberDao.allMembersForFamily(samajId, opRequest.getFamilyId());
     validateHeadOfFamilyValue(opRequest, familyMembers);
+
+    //TODO: Check if other member exists with same phone or email
 
     AddressEntity newAddressEntity = null;
     int memberNewAddressId = Constants.MEMBER_ADDRESS_SAME_AS_FAMILY_ADDRESS;
@@ -234,7 +224,7 @@ public class AddFamilyMemberOperation
   private FamilyMemberEntity getFamilyMemberFromRequest(
       AddFamilyMemberRequest opRequest, FamilyEntity family, int addressId) {
     AuditInfo auditInfo = getAuditInfo();
-    String phoneNumber = DataFormatter.formatPhoneNumber(opRequest.getPhone());
+    String phoneNumber = DataFormatter.formatPhoneNumberForDBStorage(opRequest.getPhone());
     String emailId =
         opRequest.getEmail() != null ? opRequest.getEmail().toLowerCase().trim() : null;
     short birthDay = MISSING_BIRTH_DATE_VALUE;
@@ -245,6 +235,7 @@ public class AddFamilyMemberOperation
 
     return FamilyMemberEntity.builder()
         .familyId(family.getFamilyId())
+        .samajId(family.getSamajId())
         .headOfFamily(opRequest.isHeadOfFamily())
         .firstName(opRequest.getFirstName())
         .firstNameInHindi(opRequest.getFirstNameInHindi())
@@ -255,8 +246,10 @@ public class AddFamilyMemberOperation
         .addressSameAsFamily(opRequest.isAddressSameAsFamily())
         .memberAddressId(addressId)
         .phone(phoneNumber)
+         .isPhoneVerified(false)
         .isPhoneWhatsappRegistered(opRequest.isPhoneWhatsappRegistered())
         .email(emailId)
+         .isEmailVerified(false)
         .gender(Gender.getGenderByString(opRequest.getGender()))
         .birthDay(birthDay)
         .birthMonth(Month.fromName(opRequest.getBirthMonth()))
@@ -281,11 +274,16 @@ public class AddFamilyMemberOperation
       AddFamilyMemberRequest opRequest, FamilyMemberEntity newMemberFromDb) {
 
     RelationshipDto relationship = opRequest.getRelationship();
-    FamilyMemberEntity relatedMember = familyMemberDao.getMemberById(relationship.getMemberId());
+    FamilyMemberEntity relatedMember = familyMemberDao.getMemberById(newMemberFromDb.getSamajId(), relationship.getMemberId());
     if (relatedMember == null) {
       throw new ValidationException(
           "Member whom adding relationship is missing " + relationship.getMemberName());
     }
+    if (!relatedMember.getFirstName().equalsIgnoreCase(relationship.getMemberName())) {
+      throw new ValidationException(
+              "Member name " + relationship.getMemberName()  + " not matching with member id provided");
+    }
+
     log.info(
         "Input Relationship {}({})'s {} is {} ",
         relationship.getMemberName(),

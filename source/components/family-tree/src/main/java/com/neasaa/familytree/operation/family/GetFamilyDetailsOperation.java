@@ -49,10 +49,10 @@ public class GetFamilyDetailsOperation
   public GetFamilyDetailsResponse doExecute(GetFamilyDetailsRequest opRequest)
       throws OperationException {
     int familyId = -1;
+    int samajId = getSamajIdFromSession();
     if (opRequest == null || opRequest.getFamilyId() == null) {
       // If family id not provided in request, fetch family id from session user.
-      FamilyMemberEntity familyMemberFromContext =
-          SessionUtils.getFamilyMemberFromContext(getContext());
+      FamilyMemberEntity familyMemberFromContext = getMemberEntityFromSession();
       if (familyMemberFromContext == null) {
         throw new ValidationException("Member is not linked to any family.");
       }
@@ -61,15 +61,18 @@ public class GetFamilyDetailsOperation
       familyId = opRequest.getFamilyId();
     }
 
+    log.info("Fetching family details for familyid {}.", familyId);
     // Fetch family details using family id.
-    FamilyEntity familyDetailsFromDB = familyDao.getFamilyByFamilyId(familyId);
+    FamilyEntity familyDetailsFromDB = familyDao.getFamilyByFamilyId(samajId, familyId);
     // If family not found, throw ValidationException.
     if (familyDetailsFromDB == null) {
-      throw new ValidationException("Family not found for the provided family id " + familyId);
+        log.error("Family not found for the provided family id {}", familyId);
+      throw new ValidationException("Family not found");
     }
 
     // Fetch all the members of the family.
-    List<FamilyMemberEntity> familyMemberEntities = familyMemberDao.allMembersForFamily(familyId);
+    List<FamilyMemberEntity> familyMemberEntities = familyMemberDao.allMembersForFamily(samajId, familyId);
+
     // Create a list of MemberSummaryDto from familyMemberEntities
     List<MemberSummaryDto> memberSummaryDtoList =
         familyMemberEntities.stream()
@@ -105,7 +108,7 @@ public class GetFamilyDetailsOperation
         memberSummaryDtoList.stream().collect(toMap(MemberSummaryDto::getMemberId, dto -> dto));
 
     // Build family tree starting from head of family.
-    FamilyTreeNode familyTreeRootNode = buildFamilyTree(headOfFamily, familyMemberMap);
+    FamilyTreeNode familyTreeRootNode = buildFamilyTree(samajId, headOfFamily, familyMemberMap);
 
     List<MemberSummaryDto> memberListToDisplay = new ArrayList<>();
 
@@ -121,7 +124,7 @@ public class GetFamilyDetailsOperation
   }
 
   private FamilyTreeNode buildFamilyTree(
-      MemberSummaryDto headOfFamily, Map<Integer, MemberSummaryDto> familyMemberMap) {
+          int samajId, MemberSummaryDto headOfFamily, Map<Integer, MemberSummaryDto> familyMemberMap) {
     if (headOfFamily == null) {
       log.error("Head of family is null, cannot build family tree.");
       return null;
@@ -132,24 +135,24 @@ public class GetFamilyDetailsOperation
     headOfFamily.setSelectedNode(true);
 
     FamilyTreeNode rootNode = new FamilyTreeNode(headOfFamily);
-    addSpouseAndChildren(rootNode, familyMemberMap, Set.of());
-    FamilyTreeNode parentNode = addParentsToFamilyTree(rootNode);
+    addSpouseAndChildren(samajId, rootNode, familyMemberMap, Set.of());
+    FamilyTreeNode parentNode = addParentsToFamilyTree(samajId, rootNode);
     if(rootNode != parentNode) {
         //If node is not same i.e. parents were added to tree.
         rootNode = parentNode;
-        addSpouseAndChildren(rootNode, familyMemberMap, Set.of(headOfFamily.getMemberId()));
+        addSpouseAndChildren(samajId, rootNode, familyMemberMap, Set.of(headOfFamily.getMemberId()));
     }
     return rootNode;
   }
 
   private FamilyTreeNode addParentsToFamilyTree(
-      FamilyTreeNode rootNode) {
+          int samajId, FamilyTreeNode rootNode) {
     if (rootNode == null || rootNode.getMember() == null) {
       log.error("Tree node or member is null, cannot add parents.");
       return rootNode;
     }
     MemberSummaryDto currentMember = rootNode.getMember();
-    List<MemberSummaryDto> parentsForMember = getParentsForMember(currentMember.getMemberId(), currentMember.getFirstName());
+    List<MemberSummaryDto> parentsForMember = getParentsForMember(samajId, currentMember.getMemberId(), currentMember.getFirstName());
     if (parentsForMember == null || parentsForMember.isEmpty()) {
       return rootNode;
     }
@@ -188,7 +191,7 @@ public class GetFamilyDetailsOperation
    * @param familyMemberMap
    */
   private void addSpouseAndChildren(
-      FamilyTreeNode treeNode, Map<Integer, MemberSummaryDto> familyMemberMap, Set<Integer> ignoredMemberIds) {
+          int samajId, FamilyTreeNode treeNode, Map<Integer, MemberSummaryDto> familyMemberMap, Set<Integer> ignoredMemberIds) {
 
     if (treeNode == null || treeNode.getMember().getMaritalStatus() == MaritalStatus.Single) {
       // If member is single, no spouse or children to add.
@@ -211,7 +214,7 @@ public class GetFamilyDetailsOperation
           log.info(
               "Spouse not found in family member map, fetching from DB for member id: {}",
               spouseMemberId);
-          spouse = getMemberSummaryDtoFromDB(spouseMemberId);
+          spouse = getMemberSummaryDtoFromDB(samajId, spouseMemberId);
         }
         if (spouse != null) {
           String familyRelationship = null;
@@ -251,7 +254,7 @@ public class GetFamilyDetailsOperation
         child.setFamilyRelationship(familyRelationship);
         FamilyTreeNode childNode = new FamilyTreeNode(child);
         treeNode.addChild(childNode);
-        addSpouseAndChildren(childNode, familyMemberMap, ignoredMemberIds);
+        addSpouseAndChildren(samajId, childNode, familyMemberMap, ignoredMemberIds);
       }
     }
   }

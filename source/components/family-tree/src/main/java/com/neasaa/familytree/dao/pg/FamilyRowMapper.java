@@ -18,13 +18,14 @@ public class FamilyRowMapper implements RowMapper<FamilyEntity> {
   public FamilyEntity mapRow(ResultSet aRs, int aRowNum) throws SQLException {
     FamilyEntity family = new FamilyEntity();
     family.setFamilyId(aRs.getInt("FAMILYID"));
+    family.setSamajId(aRs.getInt("SAMAJID"));
     family.setFamilyName(aRs.getString("FAMILYNAME"));
     family.setFamilyNameInHindi(aRs.getString("FAMILYNAMEINHINDI"));
     family.setGotra(aRs.getString("GOTRA"));
     family.setAddressId(aRs.getInt("ADDRESSID"));
     family.setRegion(aRs.getString("REGION"));
     String phone = aRs.getString("PHONE");
-    family.setPhone(DataFormatter.formatPhoneNumber(phone));
+    family.setPhone(DataFormatter.formatPhoneNumberForUX(phone));
     family.setPhoneWhatsappRegistered(aRs.getBoolean("ISPHONEWHATSAPPREGISTERED"));
     family.setEmail(aRs.getString("EMAIL"));
     family.setFamilysearchtext(aRs.getString("FAMILYSEARCHTEXT"));

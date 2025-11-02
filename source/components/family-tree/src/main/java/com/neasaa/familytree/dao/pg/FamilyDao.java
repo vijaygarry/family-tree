@@ -28,7 +28,7 @@ import org.springframework.stereotype.Repository;
 public class FamilyDao extends AbstractDao {
 
   private static final String SELECT_FAMILY_BY_FAMILYID =
-      "SELECT f.familyid, f.familyname, f.familynameinhindi, f.gotra, f.addressid, "
+      "SELECT f.familyid, f.samajid, f.familyname, f.familynameinhindi, f.gotra, f.addressid, "
           + "f.region, f.phone, f.isphonewhatsappregistered, f.email, f.familysearchtext, "
           + "f.active, f.familyimage, f.imagelastupdated, "
           + "a.addressline1, a.addressline2, a.addressline3, a.city, a.district, a.state, a.postalcode, a.country "
@@ -38,10 +38,10 @@ public class FamilyDao extends AbstractDao {
           + "LEFT JOIN "
           + BASE_SCHEMA_NAME
           + "ADDRESS a on f.addressid = a.addressid "
-          + "WHERE f.familyid = ? and f.active = true";
+          + "WHERE f.familyid = ? and f.samajid = ? and f.active = true";
 
   private static final String SEARCH_FAMILY =
-      "SELECT f.familyid, f.familyname, f.familynameinhindi, f.gotra, "
+      "SELECT f.familyid, f.samajid, f.familyname, f.familynameinhindi, f.gotra, "
           + "f.region, f.phone, f.isphonewhatsappregistered, f.familyimage, "
           + "m.FIRSTNAME, m. FIRSTNAMEINHINDI "
           + "FROM "
@@ -50,27 +50,27 @@ public class FamilyDao extends AbstractDao {
           + "LEFT JOIN "
           + BASE_SCHEMA_NAME
           + "FAMILYMEMBER m on f.familyid = m.familyid and m.HEADOFFAMILY = true "
-          + "WHERE f.active = true and f.familysearchtext ilike ? ";
+          + "WHERE f.active = true and f.samajid = ? and f.familysearchtext ilike ? ";
 
   private static final String UPDATE_FAMILY_DISPLAY_NAME =
       "UPDATE "
           + BASE_SCHEMA_NAME
           + "FAMILY "
-          + "SET region = ?, familysearchtext = ?, LASTUPDATEDBY = ?, lastupdateddate = ? WHERE FAMILYID = ?";
+          + "SET region = ?, familysearchtext = ?, LASTUPDATEDBY = ?, lastupdateddate = ? WHERE FAMILYID = ? AND SAMAJID = ?";
 
   private static final String UPDATE_FAMILY_IMAGE_PATH =
       "UPDATE "
           + BASE_SCHEMA_NAME
           + "FAMILY "
-          + "SET familyimage = ?, imagelastupdated = ?, LASTUPDATEDBY = ?, lastupdateddate = ? WHERE FAMILYID = ?";
+          + "SET familyimage = ?, imagelastupdated = ?, LASTUPDATEDBY = ?, lastupdateddate = ? WHERE FAMILYID = ? AND SAMAJID = ?";
 
   private static final String FAMILY_INSERT_STATEMENT =
       "INSERT INTO "
           + BASE_SCHEMA_NAME
           + "FAMILY "
-          + "(FAMILYNAME, FAMILYNAMEINHINDI, GOTRA, ADDRESSID, REGION, PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, FAMILYSEARCHTEXT, "
+          + "(SAMAJID, FAMILYNAME, FAMILYNAMEINHINDI, GOTRA, ADDRESSID, REGION, PHONE, ISPHONEWHATSAPPREGISTERED, EMAIL, FAMILYSEARCHTEXT, "
           + "ACTIVE, FAMILYIMAGE, IMAGELASTUPDATED, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE) "
-          + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+          + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   // Family image and image update date is not updated here
   private static final String UPDATE_FAMILY_BY_ID_STATEMENT =
@@ -80,16 +80,16 @@ public class FamilyDao extends AbstractDao {
           + "SET FAMILYNAME = ? , FAMILYNAMEINHINDI = ? , GOTRA = ? , ADDRESSID = ? , REGION = ? , "
           + "PHONE = ? , ISPHONEWHATSAPPREGISTERED = ? , EMAIL = ? , FAMILYSEARCHTEXT = ? , "
           + "ACTIVE = ? , LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  "
-          + "where FAMILYID = ?";
+          + "where FAMILYID = ? AND SAMAJID = ?";
 
   private static final String FAMILY_HISTORY_INSERT_STATEMENT =
       "INSERT INTO "
           + BASE_SCHEMA_NAME
           + "familyhistory "
-          + "(operation, familyid, familyname, familynameinhindi, gotra, addressid, region, phone, "
+          + "(operation, familyid, samajid, familyname, familynameinhindi, gotra, addressid, region, phone, "
           + " isphonewhatsappregistered, email, familysearchtext, active, familyimage, imagelastupdated, "
           + " createdby, createddate, lastupdatedby, lastupdateddate) "
-          + " SELECT ?, familyid, familyname, familynameinhindi, gotra, addressid, region, phone, "
+          + " SELECT ?, familyid, samajid, familyname, familynameinhindi, gotra, addressid, region, phone, "
           + " isphonewhatsappregistered, email, familysearchtext, active, familyimage, imagelastupdated, "
           + " createdby, createddate, lastupdatedby, lastupdateddate"
           + " FROM "
@@ -97,14 +97,12 @@ public class FamilyDao extends AbstractDao {
           + "family WHERE familyid = ?";
 
 	private static final String UPDATE_FAMILY_MEMBERS_LAST_NAME_BY_FAMILYID = "UPDATE "  + BASE_SCHEMA_NAME + "FAMILYMEMBER " +
-			"SET LASTNAME = ? where FAMILYID = ?";
+			"SET LASTNAME = ? where FAMILYID = ?  AND SAMAJID = ?";
 
-    private static final String DELETE_FAMILY_BY_ID_STATEMENT =
-            "DELETE FROM " + BASE_SCHEMA_NAME + "FAMILY WHERE FAMILYID = ?";
 
-  public FamilyEntity getFamilyByFamilyId(int familyId) {
+  public FamilyEntity getFamilyByFamilyId(int samajId, int familyId) {
     List<FamilyEntity> familyList =
-        getJdbcTemplate().query(SELECT_FAMILY_BY_FAMILYID, new FamilyRowMapper(), familyId);
+        getJdbcTemplate().query(SELECT_FAMILY_BY_FAMILYID, new FamilyRowMapper(), familyId, samajId);
 
     if (familyList.isEmpty()) {
       return null;
@@ -115,9 +113,9 @@ public class FamilyDao extends AbstractDao {
     return familyList.get(0);
   }
 
-  public List<SearchFamilyEntity> searchFamily(String searchString) {
+  public List<SearchFamilyEntity> searchFamily(int samajId, String searchString) {
     return getJdbcTemplate()
-        .query(SEARCH_FAMILY, new SearchFamilyRowMapper(), "%" + searchString + "%");
+        .query(SEARCH_FAMILY, new SearchFamilyRowMapper(), samajId, "%" + searchString + "%");
   }
 
   public void updateFamilyDisplayName(
@@ -137,11 +135,11 @@ public class FamilyDao extends AbstractDao {
             searchString,
             auditInfo.getLastUpdatedBy(),
             auditInfo.getLastUpdatedDate(),
-            family.getFamilyId());
+            family.getFamilyId(), family.getSamajId());
     log.info("Family region and search text is updated for family id: {}", family.getFamilyId());
   }
 
-  public void updateFamilyImagePath(int familyId, String familyImagePath, AuditInfo auditInfo) {
+  public void updateFamilyImagePath(int samajId, int familyId, String familyImagePath, AuditInfo auditInfo) {
     getJdbcTemplate()
         .update(
             UPDATE_FAMILY_IMAGE_PATH,
@@ -149,7 +147,7 @@ public class FamilyDao extends AbstractDao {
             auditInfo.getLastUpdatedDate(),
             auditInfo.getLastUpdatedBy(),
             auditInfo.getLastUpdatedDate(),
-            familyId);
+            familyId, samajId);
     log.info("Family image path is updated for family id: {}", familyId);
   }
 
@@ -176,25 +174,26 @@ public class FamilyDao extends AbstractDao {
 
   private PreparedStatement buildInsertStatement(Connection aConection, FamilyEntity aFamily)
       throws SQLException {
-
+    int colIndex = 1;
     PreparedStatement prepareStatement =
         aConection.prepareStatement(FAMILY_INSERT_STATEMENT, new String[] {"familyid"});
-    setStringInStatement(prepareStatement, 1, aFamily.getFamilyName());
-    setStringInStatement(prepareStatement, 2, aFamily.getFamilyNameInHindi());
-    setStringInStatement(prepareStatement, 3, aFamily.getGotra());
-    setIntInStatement(prepareStatement, 4, aFamily.getAddressId());
-    setStringInStatement(prepareStatement, 5, aFamily.getRegion());
-    setStringInStatement(prepareStatement, 6, aFamily.getPhone());
-    setBooleanInStatement(prepareStatement, 7, aFamily.isPhoneWhatsappRegistered());
-    setStringInStatement(prepareStatement, 8, aFamily.getEmail());
-    setStringInStatement(prepareStatement, 9, aFamily.getFamilysearchtext());
-    setBooleanInStatement(prepareStatement, 10, aFamily.isActive());
-    setStringInStatement(prepareStatement, 11, aFamily.getFamilyImage());
-    setTimestampInStatement(prepareStatement, 12, aFamily.getImageLastUpdated());
-    setIntInStatement(prepareStatement, 13, aFamily.getCreatedBy());
-    setTimestampInStatement(prepareStatement, 14, aFamily.getCreatedDate());
-    setIntInStatement(prepareStatement, 15, aFamily.getLastUpdatedBy());
-    setTimestampInStatement(prepareStatement, 16, aFamily.getLastUpdatedDate());
+    setIntInStatement(prepareStatement, colIndex++, aFamily.getSamajId());
+    setStringInStatement(prepareStatement, colIndex++, aFamily.getFamilyName());
+    setStringInStatement(prepareStatement, colIndex++, aFamily.getFamilyNameInHindi());
+    setStringInStatement(prepareStatement, colIndex++, aFamily.getGotra());
+    setIntInStatement(prepareStatement, colIndex++, aFamily.getAddressId());
+    setStringInStatement(prepareStatement, colIndex++, aFamily.getRegion());
+    setStringInStatement(prepareStatement, colIndex++, aFamily.getPhone());
+    setBooleanInStatement(prepareStatement, colIndex++, aFamily.isPhoneWhatsappRegistered());
+    setStringInStatement(prepareStatement, colIndex++, aFamily.getEmail());
+    setStringInStatement(prepareStatement, colIndex++, aFamily.getFamilysearchtext());
+    setBooleanInStatement(prepareStatement, colIndex++, aFamily.isActive());
+    setStringInStatement(prepareStatement, colIndex++, aFamily.getFamilyImage());
+    setTimestampInStatement(prepareStatement, colIndex++, aFamily.getImageLastUpdated());
+    setIntInStatement(prepareStatement, colIndex++, aFamily.getCreatedBy());
+    setTimestampInStatement(prepareStatement, colIndex++, aFamily.getCreatedDate());
+    setIntInStatement(prepareStatement, colIndex++, aFamily.getLastUpdatedBy());
+    setTimestampInStatement(prepareStatement, colIndex++, aFamily.getLastUpdatedDate());
     return prepareStatement;
   }
 
@@ -225,7 +224,6 @@ public class FamilyDao extends AbstractDao {
 
   public PreparedStatement buildUpdateStatement(
       Connection aConection, FamilyEntity aFamily, AuditInfo auditInfo) throws SQLException {
-
     PreparedStatement prepareStatement = aConection.prepareStatement(UPDATE_FAMILY_BY_ID_STATEMENT);
     setStringInStatement(prepareStatement, 1, aFamily.getFamilyName());
     setStringInStatement(prepareStatement, 2, aFamily.getFamilyNameInHindi());
@@ -240,21 +238,8 @@ public class FamilyDao extends AbstractDao {
     setIntInStatement(prepareStatement, 11, auditInfo.getLastUpdatedBy());
     setTimestampInStatement(prepareStatement, 12, auditInfo.getLastUpdatedDate());
     setIntInStatement(prepareStatement, 13, aFamily.getFamilyId());
+    setIntInStatement(prepareStatement, 14, aFamily.getSamajId());
     return prepareStatement;
   }
 
-  public int deleteFamilyById(int familyId) throws SQLException {
-    return getJdbcTemplate()
-        .update(
-            new PreparedStatementCreator() {
-              @Override
-              public PreparedStatement createPreparedStatement(Connection aConection)
-                  throws SQLException {
-                PreparedStatement prepareStatement =
-                    aConection.prepareStatement(DELETE_FAMILY_BY_ID_STATEMENT);
-                setIntInStatement(prepareStatement, 1, familyId);
-                return prepareStatement;
-              }
-            });
-  }
 }

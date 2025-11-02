@@ -1,9 +1,7 @@
 package com.neasaa.familytree.operation.family;
 
-import com.neasaa.base.app.operation.AbstractOperation;
 import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
-import com.neasaa.familytree.dao.pg.FamilyDao;
 import com.neasaa.familytree.entity.SearchFamilyEntity;
 import com.neasaa.familytree.operation.OperationNames;
 import com.neasaa.familytree.operation.family.model.SearchFamilyDto;
@@ -11,7 +9,6 @@ import com.neasaa.familytree.operation.family.model.SearchFamilyRequest;
 import com.neasaa.familytree.operation.family.model.SearchFamilyResponse;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -19,9 +16,7 @@ import org.springframework.stereotype.Component;
 @Component("SearchFamilyOperation")
 @Scope("prototype")
 public class SearchFamilyOperation
-    extends AbstractOperation<SearchFamilyRequest, SearchFamilyResponse> {
-
-  @Autowired private FamilyDao familyDao;
+    extends FamilyAbstractOperation<SearchFamilyRequest, SearchFamilyResponse> {
 
   @Override
   public String getOperationName() {
@@ -38,7 +33,8 @@ public class SearchFamilyOperation
   @Override
   public SearchFamilyResponse doExecute(SearchFamilyRequest opRequest) throws OperationException {
     log.info("Searching family{}", opRequest.getSearchString());
-    List<SearchFamilyEntity> families = familyDao.searchFamily(opRequest.getSearchString());
+    int samajId = getSamajIdFromSession();
+    List<SearchFamilyEntity> families = familyDao.searchFamily(samajId, opRequest.getSearchString());
     SearchFamilyResponse response = new SearchFamilyResponse();
     if (families == null || families.isEmpty()) {
       response.setOperationMessage(

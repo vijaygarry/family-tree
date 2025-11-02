@@ -51,7 +51,9 @@ public class UpdateFamilyMemberImageOperation
   @Override
   public UpdateImageResponse doExecute(UpdateImageRequest opRequest) throws OperationException {
     int memberId = opRequest.getMemberId();
-    FamilyMemberEntity memberEntity = familyMemberDao.getMemberById(memberId);
+    int samajId = getSamajIdFromSession();
+
+    FamilyMemberEntity memberEntity = familyMemberDao.getMemberById(samajId, memberId);
     if (memberEntity == null) {
       log.info("Family member not found for the provided member id: {}", memberId);
       throw new ValidationException("Family member not found ");
@@ -86,7 +88,7 @@ public class UpdateFamilyMemberImageOperation
 
     // Update the member record in the database with the new image path
     familyMemberDao.updateMemberImagePath(
-        memberId, memberImageRelativePath, getContext().getAuditInfo());
+            samajId, memberEntity.getFamilyId(), memberId, memberImageRelativePath, getContext().getAuditInfo());
 
     // Return an empty response indicating the operation was successful
     UpdateImageResponse updateImageResponse = new UpdateImageResponse();

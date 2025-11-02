@@ -23,6 +23,7 @@ public class FamilyEntity extends BaseEntity {
   @Serial private static final long serialVersionUID = 1748919840051L;
 
   private int familyId;
+  private int samajId;
   private String familyName;
   private String familyNameInHindi;
   private String gotra;

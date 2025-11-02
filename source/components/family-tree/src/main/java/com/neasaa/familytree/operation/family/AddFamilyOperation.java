@@ -3,13 +3,10 @@ package com.neasaa.familytree.operation.family;
 import static com.neasaa.base.app.utils.ValidationUtils.checkObjectPresent;
 import static com.neasaa.base.app.utils.ValidationUtils.checkValuePresent;
 
-import com.neasaa.base.app.operation.AbstractOperation;
 import com.neasaa.base.app.operation.AuditInfo;
 import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.familytree.constants.ImageConstants;
-import com.neasaa.familytree.dao.pg.AddressDao;
-import com.neasaa.familytree.dao.pg.FamilyDao;
 import com.neasaa.familytree.entity.AddressEntity;
 import com.neasaa.familytree.entity.FamilyEntity;
 import com.neasaa.familytree.operation.OperationNames;
@@ -19,18 +16,13 @@ import com.neasaa.familytree.operation.family.model.AddressDto;
 import com.neasaa.familytree.utils.DataFormatter;
 import com.neasaa.familytree.utils.FamilytreeValidationUtils;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Log4j2
 @Component("AddFamilyOperation")
 @Scope("prototype")
-public class AddFamilyOperation extends AbstractOperation<AddFamilyRequest, AddFamilyResponse> {
-
-  @Autowired private AddressDao addressDao;
-
-  @Autowired private FamilyDao familyDao;
+public class AddFamilyOperation extends FamilyAbstractOperation<AddFamilyRequest, AddFamilyResponse> {
 
   @Override
   public String getOperationName() {
@@ -92,10 +84,11 @@ public class AddFamilyOperation extends AbstractOperation<AddFamilyRequest, AddF
   private FamilyEntity getFamilyFromRequest(
       AddFamilyRequest opRequest, AddressEntity familyAddress) {
     AuditInfo auditInfo = getAuditInfo();
-    String phoneNumber = DataFormatter.formatPhoneNumber(opRequest.getPhone());
+    String phoneNumber = DataFormatter.formatPhoneNumberForDBStorage(opRequest.getPhone());
     String familyRegion = DataFormatter.getRegion(familyAddress);
-
+    int samajId = getSamajIdFromSession();
     return FamilyEntity.builder()
+            .samajId(samajId)
         .familyName(opRequest.getFamilyName())
         .familyNameInHindi(opRequest.getFamilyNameInHindi())
         .gotra(opRequest.getGotra())

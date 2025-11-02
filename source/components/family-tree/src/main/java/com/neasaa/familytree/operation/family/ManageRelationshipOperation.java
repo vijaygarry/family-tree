@@ -2,12 +2,9 @@ package com.neasaa.familytree.operation.family;
 
 import static com.neasaa.familytree.operation.OperationNames.MANAGE_RELATIONSHIP;
 
-import com.neasaa.base.app.operation.AbstractOperation;
 import com.neasaa.base.app.operation.AuditInfo;
 import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
-import com.neasaa.familytree.dao.pg.FamilyMemberDao;
-import com.neasaa.familytree.dao.pg.MemberRelationshipDao;
 import com.neasaa.familytree.entity.FamilyMemberEntity;
 import com.neasaa.familytree.entity.MemberRelationshipEntity;
 import com.neasaa.familytree.enums.RelationshipType;
@@ -18,7 +15,6 @@ import com.neasaa.familytree.utils.RelationshipUtils;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -26,11 +22,7 @@ import org.springframework.stereotype.Component;
 @Component("ManageRelationshipOperation")
 @Scope("prototype")
 public class ManageRelationshipOperation
-    extends AbstractOperation<ManageRelationshipRequest, ManageRelationshipResponse> {
-
-  @Autowired private FamilyMemberDao familyMemberDao;
-
-  @Autowired private MemberRelationshipDao memberRelationshipDao;
+    extends FamilyAbstractOperation<ManageRelationshipRequest, ManageRelationshipResponse> {
 
   @Override
   public String getOperationName() {
@@ -79,14 +71,14 @@ public class ManageRelationshipOperation
     ManageRelationshipResponse response = new ManageRelationshipResponse();
     response.setRemovedResult(new ArrayList<>());
     response.setAddedResult(new ArrayList<>());
-
+    int samajId = getSamajIdFromSession();
     // First process relationships to delete
     if (opRequest.getToRemove() != null && !opRequest.getToRemove().isEmpty()) {
       opRequest
           .getToRemove()
           .forEach(
               relationshipDto -> {
-                removeRelationship(relationshipDto);
+                removeRelationship(samajId, relationshipDto);
                 response
                     .getRemovedResult()
                     .add(
@@ -104,7 +96,7 @@ public class ManageRelationshipOperation
           .getToAdd()
           .forEach(
               relationshipDto -> {
-                addRelationship(relationshipDto);
+                addRelationship(samajId, relationshipDto);
                 response
                     .getAddedResult()
                     .add(
@@ -118,11 +110,11 @@ public class ManageRelationshipOperation
     return response;
   }
 
-  private void removeRelationship(RelationshipDto relationship) {
+  private void removeRelationship(int samajId, RelationshipDto relationship) {
     // Fetch both the members and make sure both members exist in the database
     FamilyMemberEntity member =
-        getAndValidateMember(relationship.getMemberId(), relationship.getMemberName());
-    getAndValidateMember(relationship.getRelatedMemberId(), relationship.getRelatedMemberName());
+        getAndValidateMember(samajId, relationship.getMemberId(), relationship.getMemberName());
+    getAndValidateMember(samajId, relationship.getRelatedMemberId(), relationship.getRelatedMemberName());
 
     // Normalize the relationship type e.g. Father to Son or Husband to Wife
     relationship = RelationshipUtils.normalizeRelationship(relationship, member);
@@ -162,11 +154,11 @@ public class ManageRelationshipOperation
     }
   }
 
-  private void addRelationship(RelationshipDto relationship) {
+  private void addRelationship(int samajId, RelationshipDto relationship) {
     // Fetch both the members and make sure both members exist in the database
     FamilyMemberEntity member =
-        getAndValidateMember(relationship.getMemberId(), relationship.getMemberName());
-    getAndValidateMember(relationship.getRelatedMemberId(), relationship.getRelatedMemberName());
+        getAndValidateMember(samajId, relationship.getMemberId(), relationship.getMemberName());
+    getAndValidateMember(samajId, relationship.getRelatedMemberId(), relationship.getRelatedMemberName());
 
     // Normalize the relationship type e.g. Father to Son or Husband to Wife
     relationship = RelationshipUtils.normalizeRelationship(relationship, member);
@@ -203,8 +195,8 @@ public class ManageRelationshipOperation
     }
   }
 
-  private FamilyMemberEntity getAndValidateMember(int memberId, String memberName) {
-    FamilyMemberEntity familyMember = familyMemberDao.getMemberById(memberId);
+  private FamilyMemberEntity getAndValidateMember(int samajId, int memberId, String memberName) {
+    FamilyMemberEntity familyMember = familyMemberDao.getMemberById(samajId, memberId);
     if (familyMember == null) {
       throw new ValidationException("Member not found for the member ID " + memberId);
     }

@@ -28,6 +28,7 @@ public class FamilyMemberEntity extends BaseEntity {
 
   private int memberId;
   private int familyId;
+  private int samajId;
   private String logonName;
   private boolean headOfFamily;
   private String firstName;
@@ -44,8 +45,10 @@ public class FamilyMemberEntity extends BaseEntity {
   private LocalDate weddingDate;
   private LocalDate dateOfDeath;
   private String phone;
+  private boolean isPhoneVerified;
   private boolean isPhoneWhatsappRegistered;
   private String email;
+  private boolean isEmailVerified;
   private boolean addressSameAsFamily;
   private int memberAddressId;
 
@@ -69,6 +72,7 @@ public class FamilyMemberEntity extends BaseEntity {
     return FamilyMemberEntity.builder()
         .memberId(this.memberId)
         .familyId(this.familyId)
+         .samajId(this.samajId)
         .logonName(this.logonName)
         .headOfFamily(this.headOfFamily)
         .firstName(this.firstName)
@@ -85,8 +89,10 @@ public class FamilyMemberEntity extends BaseEntity {
         .weddingDate(this.weddingDate)
         .dateOfDeath(this.dateOfDeath)
         .phone(this.phone)
+         .isPhoneVerified(this.isPhoneVerified)
         .isPhoneWhatsappRegistered(this.isPhoneWhatsappRegistered)
         .email(this.email)
+         .isEmailVerified(this.isEmailVerified)
         .addressSameAsFamily(this.addressSameAsFamily)
         .memberAddressId(this.memberAddressId)
         .educationDetails(this.educationDetails)

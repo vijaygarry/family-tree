@@ -13,12 +13,43 @@ public class DataFormatter {
 
   private static final String WEDDING_DATE_FORMAT = "dd-MMM-yyyy";
 
-  public static String formatPhoneNumber(String phoneNumber) {
+  /**
+   * Possible inputs
+   * 5714843763, 571 484 3763, +1-571-484-3763, 001-571-484-3763, +91-9123456789, 091-9123456789
+   * +1 (571) 484-3763, 0091 (912) 345-6789, +971 56 788 2525
+   *
+   * @param phoneNumber
+   * @return - Formatted phone number for storing in db as phone number for user lookup.
+   */
+  public static String formatPhoneNumberForDBStorage (String phoneNumber) {
+    // if phone number is not null,format as following:
+    // country code without + followed by 10 digit number
+    // 919123456789
+    if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
+      return null;
+    }
+
+    // Remove all non-digit characters
+    String digits = phoneNumber.replaceAll("[^\\d]", "");
+    if(digits.startsWith("0")) {
+      // Remove leading zeros
+      digits = digits.replaceFirst("^0+", "");
+    }
+    if (digits.length() <= 10) {
+      // Assume India number and prefix india country code
+      String localNumber = String.format("%010d", Long.parseLong(digits));
+      return "91" + localNumber;
+    } else {
+      return digits;
+    }
+  }
+
+  public static String formatPhoneNumberForUX(String phoneNumber) {
     // TODO: if phone number is not null,format as following:
     // +91-912 345 6789
     // +1-123 456 7890
     if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
-      return "";
+      return null;
     }
 
     // Remove all non-digit characters
@@ -44,10 +75,10 @@ public class DataFormatter {
   }
 
   public static void main(String[] args) {
-    System.out.println(formatPhoneNumber("9123456789")); // +91-912 345 6789
-    System.out.println(formatPhoneNumber("+1-1234567890")); // +1-123 456 7890
-    System.out.println(formatPhoneNumber("001234567890")); // +0-012 345 67890
-    System.out.println(formatPhoneNumber("98765 43210")); // +91-987 654 3210
+    System.out.println(formatPhoneNumberForUX("9123456789")); // +91-912 345 6789
+    System.out.println(formatPhoneNumberForUX("+1-1234567890")); // +1-123 456 7890
+    System.out.println(formatPhoneNumberForUX("001234567890")); // +0-012 345 67890
+    System.out.println(formatPhoneNumberForUX("98765 43210")); // +91-987 654 3210
   }
 
   public static boolean isIndianAddress(AddressEntity address) {
