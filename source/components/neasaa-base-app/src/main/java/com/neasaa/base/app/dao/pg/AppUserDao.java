@@ -105,6 +105,16 @@ public class AppUserDao extends AbstractDao {
           + "LASTUPDATEDBY = ? "
           + "WHERE USERID = ?";
 
+  private static final String UPDATE_USER_EMAIL_AND_PHONE_STATEMENT =
+          "UPDATE "
+                  + BASE_SCHEMA_NAME
+                  + "APPUSER "
+                  + "SET EMAILID = ?,"
+                  + "PHONE = ?, "
+                  + "lastupdateddate = ?, "
+                  + "lastupdatedby = ? "
+                  + "WHERE LOGONNAME = ?";
+
   public AppUser getUserByLogonName(String logonName) {
     try {
       List<AppUser> userList =
@@ -249,6 +259,27 @@ public class AppUserDao extends AbstractDao {
                 }
               });
     } catch (Exception e) {
+      throw new InternalServerException(
+          "Internal error while processing your request, please try again.", e);
+    }
+  }
+
+  public void updateUserEmailAndPhone (AppUser aAppUser, int updatedBy, Date lastUpdatedDate) {
+    try {
+      getJdbcTemplate().update(new PreparedStatementCreator() {
+        @Override
+        public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {
+          PreparedStatement prepareStatement = aCon.prepareStatement(UPDATE_USER_EMAIL_AND_PHONE_STATEMENT);
+          setStringInStatement(prepareStatement, 1, aAppUser.getEmailId());
+          setStringInStatement(prepareStatement, 2, aAppUser.getPhone());
+          setTimestampInStatement(prepareStatement, 3, lastUpdatedDate); // Last password updated
+          setIntInStatement(prepareStatement, 4, updatedBy); // Updated by
+          setStringInStatement(prepareStatement, 5, aAppUser.getLogonName());
+          return prepareStatement;
+        }
+      });
+    } catch (Exception e) {
+      log.info("Error updating user email and phone for logon name {}", aAppUser.getLogonName(), e);
       throw new InternalServerException(
           "Internal error while processing your request, please try again.", e);
     }

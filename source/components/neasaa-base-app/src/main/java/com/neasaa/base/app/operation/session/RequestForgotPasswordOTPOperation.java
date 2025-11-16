@@ -2,7 +2,6 @@ package com.neasaa.base.app.operation.session;
 
 import static com.neasaa.base.app.operation.BeanNames.APP_EMAIL_SENDER;
 import static com.neasaa.base.app.operation.OperationNames.FORGOT_PASSWORD_REQUEST_OTP;
-import static com.neasaa.base.app.utils.OTPUtil.OTP_EXPIRY_DURATION;
 import static com.neasaa.base.app.utils.ValidationUtils.checkValuePresent;
 
 import com.neasaa.base.app.dao.pg.AppUserDao;
@@ -103,7 +102,7 @@ public class RequestForgotPasswordOTPOperation
                     newOtp)) // In real application, hash the OTP before storing
             .status(OTPStatus.Pending)
             .expiryDate(
-                new Date(currentDate.getTime() + OTP_EXPIRY_DURATION)) // OTP valid for 15 minutes
+                new Date(currentDate.getTime() + OTPUtil.EMAIL_OTP_EXPIRY_DURATION)) // OTP valid for 15 minutes
             .attempts(0)
             .createdDate(currentDate)
             .lastUpdatedDate(currentDate)

@@ -37,6 +37,9 @@ public class AppProperties {
   @Value("${email.sender.displayname}")
   private String emailSenderDisplayName;
 
+  @Value("${email.list.for.sms.otp}")
+  private String emailListForSMSOtp;
+
   @Value("${app.upload.dir}")
   private String appUploadDir;
 }

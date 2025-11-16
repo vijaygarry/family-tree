@@ -30,7 +30,7 @@ public class PhoneUtil {
             normalizeNumber = normalizeNumber.replaceFirst("^0+", "");
         }
         if(normalizeNumber.length() < 10) {
-            throw new ValidationException("Invalid phone number provided. Should be 10 normalizeNumber number.");
+            throw new ValidationException("Invalid phone number provided. Should have at least 10 digits.");
         }
         if (normalizeNumber.length() == 10) {
             return "91" + normalizeNumber;

@@ -8,13 +8,16 @@ import com.neasaa.base.app.operation.exception.InternalServerException;
 import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.base.app.utils.email.EmailMessage;
 import com.neasaa.base.app.utils.email.EmailSender;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class OTPUtil {
-  public static final long OTP_EXPIRY_DURATION = 15 * 60 * 1000; // 5 minutes in milliseconds
+  public static final long EMAIL_OTP_EXPIRY_DURATION = 15 * 60 * 1000; // 15 minutes in milliseconds
+  public static final long MOBILE_OTP_EXPIRY_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
   public static final String FORGET_PASSWORD_OTP_SUBJECT = "Your OTP code to reset password";
   public static final String FORGET_PASSWORD_OTP_BODY_TEMPLATE =
@@ -63,6 +66,64 @@ public class OTPUtil {
   public static boolean isOTPValid(String providedOtp, OtpVerification otpInformation)
       throws ValidationException {
     return PasswordUtil.matchPassword(providedOtp, otpInformation.getHashOtpCode());
+  }
+
+  public static void sendOtpSMS(
+          String phone,
+          String otpCode,
+          OTPType otpType,
+          String firstName,
+          String lastName,
+          AppProperties appProperties,
+          EmailSender emailSender) {
+    String formattedPhone = PhoneUtil.formatPhoneNumber(phone);
+    log.info ("Sending OTP {} on mobile {} for {}", otpCode, formattedPhone, otpType);
+
+    String emailSubject = null;
+    String emailBody = null;
+    if (otpType == OTPType.FORGOT_PASSWORD) {
+      emailSubject = "Forget password request for mobile " + formattedPhone;
+      emailBody = String.format("""
+                    Send below message to mobile: %s.
+                    
+                    Dear %s %s,
+                    
+                    Your OTP to reset password is: %s
+                    
+                    Regards,
+                    Rajput Chhipa Team""",
+              formattedPhone, firstName, lastName, otpCode);
+    } else if (otpType == OTPType.SIGN_UP) {
+      emailSubject = "Sign-Up request for mobile " + formattedPhone;
+      emailBody = String.format("""
+                    Send below message to mobile: %s.
+                    
+                    Dear %s %s,
+                    
+                    Your OTP to complete sign up is: %s
+                    
+                    Regards,
+                    Rajput Chhipa Team""",
+              formattedPhone, firstName, lastName, otpCode);
+    } else {
+      log.error("Unsupported OTP type: {}", otpType);
+      throw new InternalServerException(
+              "Failed to process your request, please contact administrator");
+    }
+
+    String emailListForSMSOtp = appProperties.getEmailListForSMSOtp();
+    List<String> emailList = Arrays.asList(emailListForSMSOtp.trim().split(";"));
+    EmailMessage emailMessage =
+            EmailMessage.builder()
+                    .from(appProperties.getEmailSenderEmailId())
+                    .fromDisplayName(appProperties.getEmailSenderDisplayName())
+                    .to(emailList)
+                    .subject(emailSubject)
+                    .body(emailBody)
+                    .type(EmailMessage.EmailType.TEXT)
+                    .build();
+    log.info("Sending SMS OTP email to: {}, Subject: {}", emailList, emailSubject);
+    emailSender.sendEmail(emailMessage);
   }
 
   public static void sendOtpEmail(

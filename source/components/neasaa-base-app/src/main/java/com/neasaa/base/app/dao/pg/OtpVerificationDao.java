@@ -6,6 +6,7 @@ package com.neasaa.base.app.dao.pg;
 
 import com.neasaa.base.app.entity.OtpVerification;
 import com.neasaa.base.app.enums.OTPType;
+import com.neasaa.base.app.operation.BeanNames;
 import com.neasaa.base.app.operation.exception.InternalServerException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,6 +16,8 @@ import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @Repository
@@ -25,6 +28,16 @@ public class OtpVerificationDao extends AbstractDao {
           + " from "
           + BASE_SCHEMA_NAME
           + "OTPVERIFICATION where EMAILID = ?  and OTPTYPE = ? ";
+
+  private static final String UPDATE_OTP_VALIDATION_ATTEMPTS =
+          "UPDATE " + BASE_SCHEMA_NAME + " OTPVERIFICATION "
+                  + "UPDATE ATTEMPTS = ?, LASTATTEMPTDATE = ?, LASTUPDATEDDATE = ? "
+                  + " where EMAILID = ?  and OTPTYPE = ? ";
+
+  private static final String UPDATE_OTP_VERIFIED_SUCCESSFULLY  =
+          "UPDATE " + BASE_SCHEMA_NAME + " OTPVERIFICATION "
+                  + "UPDATE STATUS = ?, VERIFIEDAT = ?, ATTEMPTS = ?, LASTATTEMPTDATE = ?, LASTUPDATEDDATE = ? "
+                  + " where EMAILID = ?  and OTPTYPE = ? ";
 
   private static final String INSERT_INTO_HISTORY_FROM_MAIN =
       "INSERT INTO "
@@ -71,6 +84,45 @@ public class OtpVerificationDao extends AbstractDao {
       throw new InternalServerException("Internal server exception. Please try again later.", e);
     }
   }
+
+  @Transactional(
+          transactionManager = BeanNames.TRANSACTION_MANAGER,
+          propagation = Propagation.REQUIRES_NEW,
+          rollbackFor = Exception.class)
+  public void updateOtpValidationAttempts(OtpVerification aOtpVerification) {
+    try {
+      Date currentTimestamp = new Date();
+      getJdbcTemplate()
+          .update(
+              UPDATE_OTP_VALIDATION_ATTEMPTS,
+              aOtpVerification.getAttempts() + 1,
+                  currentTimestamp,
+                  currentTimestamp,
+              aOtpVerification.getEmailId(),
+              aOtpVerification.getOtpType().name());
+    } catch (Exception e) {
+      throw new InternalServerException("Internal server exception. Please try again later.", e);
+    }
+  }
+
+  public void updateOtpVerifiedSuccessfully(OtpVerification aOtpVerification) {
+    try {
+      Date currentTimestamp = new Date();
+      getJdbcTemplate()
+          .update(
+              UPDATE_OTP_VERIFIED_SUCCESSFULLY,
+              aOtpVerification.getStatus().name(),
+                  currentTimestamp,
+              aOtpVerification.getAttempts() + 1,
+              currentTimestamp,
+              currentTimestamp,
+              aOtpVerification.getEmailId(),
+              aOtpVerification.getOtpType().name());
+    } catch (Exception e) {
+      throw new InternalServerException("Internal server exception. Please try again later.", e);
+    }
+  }
+
 
   public void moveOtpToHistory(OtpVerification aOtpVerification) {
     try {

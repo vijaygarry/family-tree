@@ -20,7 +20,7 @@ public class AppUserRowMapper implements RowMapper<AppUser> {
     appUser.setFirstName(aRs.getString("FIRSTNAME"));
     appUser.setLastName(aRs.getString("LASTNAME"));
     appUser.setEmailId(aRs.getString("EMAILID"));
-    appUser.setEmailId(aRs.getString("PHONE"));
+    appUser.setPhone(aRs.getString("PHONE"));
     appUser.setAuthenticationType(aRs.getString("AUTHENTICATIONTYPE"));
     appUser.setSingleSignonId(aRs.getString("SINGLESIGNONID"));
     appUser.setInvalidLoginAttempts(aRs.getInt("INVALIDLOGINATTEMPTS"));
