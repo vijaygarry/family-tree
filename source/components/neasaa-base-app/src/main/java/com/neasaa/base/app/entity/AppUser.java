@@ -26,6 +26,7 @@ public class AppUser extends BaseEntity {
   private String firstName;
   private String lastName;
   private String emailId;
+  private String phone;
   private String authenticationType;
   private String singleSignonId;
   private int invalidLoginAttempts;

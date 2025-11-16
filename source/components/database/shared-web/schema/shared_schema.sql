@@ -2,8 +2,6 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.5
--- Dumped by pg_dump version 17.5
 
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
@@ -151,7 +149,8 @@ CREATE TABLE shared_schema.appuser (
     hashpassword character varying(1024) NOT NULL,
     firstname character varying(64) NOT NULL,
     lastname character varying(64) NOT NULL,
-    emailid character varying(255) NOT NULL,
+    emailid character varying(255),
+    phone character varying(20),
     authenticationtype character varying(100) DEFAULT 'DB_PWD'::character varying NOT NULL,
     singlesignonid character varying(100),
     invalidloginattempts integer,
@@ -1933,6 +1932,14 @@ ALTER TABLE ONLY shared_schema.appuser
 
 ALTER TABLE ONLY shared_schema.appuser
     ADD CONSTRAINT appuser_logonname_key UNIQUE (logonname);
+
+
+--
+-- Name: appuser appuser_phone_key; Type: CONSTRAINT; Schema: shared_schema; Owner: familytree_master
+--
+
+ALTER TABLE ONLY shared_schema.appuser
+    ADD CONSTRAINT appuser_phone_key UNIQUE (phone);
 
 
 --

@@ -61,8 +61,13 @@ public class EmailValidator {
     if (!domainPart.contains(".")) {
       throw new ValidationException("Domain must contain at least one '.'");
     }
-
-    //        if (email == null || email.isBlank()) return false;
-    //        return EMAIL_PATTERN.matcher(email).matches();
   }
+
+  public static boolean isEmailId (String stringVal) {
+    if(stringVal == null || stringVal.isEmpty()) {
+      return false;
+    }
+    return EMAIL_PATTERN.matcher(stringVal).matches();
+  }
+
 }

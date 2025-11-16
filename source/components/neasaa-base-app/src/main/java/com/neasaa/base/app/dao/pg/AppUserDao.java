@@ -7,6 +7,7 @@ package com.neasaa.base.app.dao.pg;
 import static com.neasaa.base.app.constant.AppConstants.SYSTEM_USER_ID;
 
 import com.neasaa.base.app.entity.AppUser;
+import com.neasaa.base.app.operation.BeanNames;
 import com.neasaa.base.app.operation.exception.InternalServerException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,6 +19,8 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @Repository
@@ -25,7 +28,7 @@ public class AppUserDao extends AbstractDao {
 
   private static final String GET_USER_BY_LOGON_NAME =
       "SELECT "
-          + " USERID , LOGONNAME , HASHPASSWORD , FIRSTNAME , LASTNAME , EMAILID , AUTHENTICATIONTYPE , "
+          + " USERID , LOGONNAME , HASHPASSWORD , FIRSTNAME , LASTNAME , EMAILID , PHONE, AUTHENTICATIONTYPE , "
           + "SINGLESIGNONID , INVALIDLOGINATTEMPTS , LASTLOGINTIME , LASTPASSWORDCHANGETIME , STATUS , "
           + "CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE"
           + " FROM "
@@ -35,7 +38,7 @@ public class AppUserDao extends AbstractDao {
 
   private static final String GET_USER_BY_EMAIL =
       "SELECT "
-          + " USERID , LOGONNAME , HASHPASSWORD , FIRSTNAME , LASTNAME , EMAILID , AUTHENTICATIONTYPE , "
+          + " USERID , LOGONNAME , HASHPASSWORD , FIRSTNAME , LASTNAME , EMAILID , PHONE, AUTHENTICATIONTYPE , "
           + "SINGLESIGNONID , INVALIDLOGINATTEMPTS , LASTLOGINTIME , LASTPASSWORDCHANGETIME , STATUS , "
           + "CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE"
           + " FROM "
@@ -43,11 +46,27 @@ public class AppUserDao extends AbstractDao {
           + "APPUSER"
           + " WHERE EMAILID = ? ";
 
+  private static final String GET_USER_BY_PHONE =
+          "SELECT "
+              + " USERID , LOGONNAME , HASHPASSWORD , FIRSTNAME , LASTNAME , EMAILID , PHONE, AUTHENTICATIONTYPE , "
+              + "SINGLESIGNONID , INVALIDLOGINATTEMPTS , LASTLOGINTIME , LASTPASSWORDCHANGETIME , STATUS , "
+              + "CREATEDBY , CREATEDDATE , LASTUPDATEDBY , LASTUPDATEDDATE"
+              + " FROM "
+              + BASE_SCHEMA_NAME
+              + "APPUSER"
+              + " WHERE PHONE = ? ";
+
   private static final String IS_USER_REGISTERED_BY_EMAIL_ID =
       "SELECT "
           + " EXISTS (SELECT 1 FROM "
           + BASE_SCHEMA_NAME
           + "APPUSER WHERE lower(EMAILID) = ?)";
+
+  private static final String IS_USER_REGISTERED_BY_PHONE =
+          "SELECT "
+                  + " EXISTS (SELECT 1 FROM "
+                  + BASE_SCHEMA_NAME
+                  + "APPUSER WHERE phone = ?)";
 
   private static final String UPDATE_INVALID_LOGIN_ATTEMPTS_STATEMENT =
       "UPDATE "
@@ -98,8 +117,9 @@ public class AppUserDao extends AbstractDao {
       }
       return userList.get(0);
     } catch (Exception e) {
+      log.error("Failed to get user by logon name {}", logonName, e);
       throw new InternalServerException(
-          "Internal error while processing your request, please try again.", e);
+          "Internal error while processing your request, please try again.");
     }
   }
 
@@ -115,8 +135,27 @@ public class AppUserDao extends AbstractDao {
       }
       return userList.get(0);
     } catch (Exception e) {
+      log.error("Failed to get user by email {}", emailId, e);
       throw new InternalServerException(
-          "Internal error while processing your request, please try again.", e);
+          "Internal error while processing your request, please try again.");
+    }
+  }
+
+  public AppUser getUserByPhone(String phone) {
+    try {
+      List<AppUser> userList =
+              getJdbcTemplate().query(GET_USER_BY_PHONE, new AppUserRowMapper(), phone);
+      if (userList.isEmpty()) {
+        return null;
+      }
+      if (userList.size() > 1) {
+        throw new RuntimeException("Invalid user entry");
+      }
+      return userList.get(0);
+    } catch (Exception e) {
+      log.error("Failed to get user by phone {}", phone, e);
+      throw new InternalServerException(
+              "Internal error while processing your request, please try again.");
     }
   }
 
@@ -125,8 +164,20 @@ public class AppUserDao extends AbstractDao {
       return Boolean.TRUE.equals(
           jdbcTemplate.queryForObject(IS_USER_REGISTERED_BY_EMAIL_ID, Boolean.class, emailId));
     } catch (Exception e) {
+      log.error("Failed to check if email registered {}", emailId, e);
       throw new InternalServerException(
-          "Internal error while processing your request, please try again.", e);
+          "Internal error while processing your request, please try again.");
+    }
+  }
+
+  public boolean isPhoneRegistered(String phone) {
+    try {
+      return Boolean.TRUE.equals(
+              jdbcTemplate.queryForObject(IS_USER_REGISTERED_BY_PHONE, Boolean.class, phone));
+    } catch (Exception e) {
+      log.error("Failed to check if phone registered {}", phone, e);
+      throw new InternalServerException(
+              "Internal error while processing your request, please try again.");
     }
   }
 
@@ -138,6 +189,10 @@ public class AppUserDao extends AbstractDao {
    * @return
    * @throws SQLException
    */
+  @Transactional(
+          transactionManager = BeanNames.TRANSACTION_MANAGER,
+          propagation = Propagation.REQUIRES_NEW,
+          rollbackFor = Exception.class)
   public int updateInvalidLoginAttempt(String logonName, int numberOfInvalidAttempts, String status)
       throws SQLException {
     return getJdbcTemplate()
@@ -205,9 +260,9 @@ public class AppUserDao extends AbstractDao {
         "INSERT INTO "
             + BASE_SCHEMA_NAME
             + "APPUSER (LOGONNAME, HASHPASSWORD, FIRSTNAME, LASTNAME, "
-            + "EMAILID, AUTHENTICATIONTYPE, SINGLESIGNONID, INVALIDLOGINATTEMPTS, LASTLOGINTIME, "
+            + "EMAILID, PHONE, AUTHENTICATIONTYPE, SINGLESIGNONID, INVALIDLOGINATTEMPTS, LASTLOGINTIME, "
             + "LASTPASSWORDCHANGETIME, STATUS, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE) "
-            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     PreparedStatement prepareStatement =
         aConection.prepareStatement(sqlStatement, new String[] {"userid"});
@@ -216,16 +271,17 @@ public class AppUserDao extends AbstractDao {
     setStringInStatement(prepareStatement, 3, aAppUser.getFirstName());
     setStringInStatement(prepareStatement, 4, aAppUser.getLastName());
     setStringInStatement(prepareStatement, 5, aAppUser.getEmailId());
-    setStringInStatement(prepareStatement, 6, aAppUser.getAuthenticationType());
-    setStringInStatement(prepareStatement, 7, aAppUser.getSingleSignonId());
-    setIntInStatement(prepareStatement, 8, aAppUser.getInvalidLoginAttempts());
-    setTimestampInStatement(prepareStatement, 9, aAppUser.getLastLoginTime());
-    setTimestampInStatement(prepareStatement, 10, aAppUser.getLastPasswordChangeTime());
-    setStringInStatement(prepareStatement, 11, aAppUser.getStatus());
-    setIntInStatement(prepareStatement, 12, aAppUser.getCreatedBy());
-    setTimestampInStatement(prepareStatement, 13, aAppUser.getCreatedDate());
-    setIntInStatement(prepareStatement, 14, aAppUser.getLastUpdatedBy());
-    setTimestampInStatement(prepareStatement, 15, aAppUser.getLastUpdatedDate());
+    setStringInStatement(prepareStatement, 6, aAppUser.getPhone());
+    setStringInStatement(prepareStatement, 7, aAppUser.getAuthenticationType());
+    setStringInStatement(prepareStatement, 8, aAppUser.getSingleSignonId());
+    setIntInStatement(prepareStatement, 9, aAppUser.getInvalidLoginAttempts());
+    setTimestampInStatement(prepareStatement, 10, aAppUser.getLastLoginTime());
+    setTimestampInStatement(prepareStatement, 11, aAppUser.getLastPasswordChangeTime());
+    setStringInStatement(prepareStatement, 12, aAppUser.getStatus());
+    setIntInStatement(prepareStatement, 13, aAppUser.getCreatedBy());
+    setTimestampInStatement(prepareStatement, 14, aAppUser.getCreatedDate());
+    setIntInStatement(prepareStatement, 15, aAppUser.getLastUpdatedBy());
+    setTimestampInStatement(prepareStatement, 16, aAppUser.getLastUpdatedDate());
     return prepareStatement;
   }
 
@@ -271,59 +327,4 @@ public class AppUserDao extends AbstractDao {
     return userId;
   }
 
-  public int deleteAppUser(AppUser aAppUser) throws SQLException {
-    return getJdbcTemplate()
-        .update(
-            new PreparedStatementCreator() {
-              @Override
-              public PreparedStatement createPreparedStatement(Connection aConection)
-                  throws SQLException {
-                String deleteSqlQuery = "DELETE FROM APPUSER WHERE USERID = ?";
-                PreparedStatement prepareStatement = aConection.prepareStatement(deleteSqlQuery);
-                setIntInStatement(prepareStatement, 1, aAppUser.getUserId());
-                return prepareStatement;
-              }
-            });
-  }
-
-  private PreparedStatement buildUpdateStatement(Connection aConection, AppUser aAppUser)
-      throws SQLException {
-    String updateStatement =
-        "UPDATE APPUSER "
-            + "SET LOGONNAME = ? , HASHPASSWORD = ? , FIRSTNAME = ? , LASTNAME = ? , EMAILID = ? , "
-            + "AUTHENTICATIONTYPE = ? , SINGLESIGNONID = ? , INVALIDLOGINATTEMPTS = ? , LASTLOGINTIME = ? , "
-            + "LASTPASSWORDCHANGETIME = ? , STATUS = ? , CREATEDBY = ? , CREATEDDATE = ? , "
-            + "LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  where USERID = ?";
-
-    PreparedStatement prepareStatement = aConection.prepareStatement(updateStatement);
-    setStringInStatement(prepareStatement, 1, aAppUser.getLogonName());
-    setStringInStatement(prepareStatement, 2, aAppUser.getHashPassword());
-    setStringInStatement(prepareStatement, 3, aAppUser.getFirstName());
-    setStringInStatement(prepareStatement, 4, aAppUser.getLastName());
-    setStringInStatement(prepareStatement, 5, aAppUser.getEmailId());
-    setStringInStatement(prepareStatement, 6, aAppUser.getAuthenticationType());
-    setStringInStatement(prepareStatement, 7, aAppUser.getSingleSignonId());
-    setIntInStatement(prepareStatement, 8, aAppUser.getInvalidLoginAttempts());
-    setTimestampInStatement(prepareStatement, 9, aAppUser.getLastLoginTime());
-    setTimestampInStatement(prepareStatement, 10, aAppUser.getLastPasswordChangeTime());
-    setStringInStatement(prepareStatement, 11, aAppUser.getStatus());
-    setIntInStatement(prepareStatement, 12, aAppUser.getCreatedBy());
-    setTimestampInStatement(prepareStatement, 13, aAppUser.getCreatedDate());
-    setIntInStatement(prepareStatement, 14, aAppUser.getLastUpdatedBy());
-    setTimestampInStatement(prepareStatement, 15, aAppUser.getLastUpdatedDate());
-    setIntInStatement(prepareStatement, 16, aAppUser.getUserId());
-    return prepareStatement;
-  }
-
-  public int updateAppUser(AppUser aAppUser) throws SQLException {
-    return getJdbcTemplate()
-        .update(
-            new PreparedStatementCreator() {
-              @Override
-              public PreparedStatement createPreparedStatement(Connection aCon)
-                  throws SQLException {
-                return buildUpdateStatement(aCon, aAppUser);
-              }
-            });
-  }
 }

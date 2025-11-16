@@ -8,10 +8,13 @@ import com.neasaa.base.app.operation.exception.InternalServerException;
 import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.UnauthorizedException;
 import com.neasaa.base.app.operation.exception.ValidationException;
+import com.neasaa.base.app.utils.EmailValidator;
 import com.neasaa.base.app.utils.PasswordUtil;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.Map;
+
+import com.neasaa.base.app.utils.PhoneUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,15 +40,17 @@ public class DBAuthenticationServiceImpl implements AuthenticationService {
       String logonName, String plainTextPwd, Map<String, String> aOtherParams)
       throws OperationException {
     try {
-      AppUser appUser = this.appUserDao.getUserByLogonName(logonName);
+
+      AppUser appUser = getUserByLogonName(logonName);
       if (appUser == null) {
         log.info("User {} not found.", logonName);
         throw new UnauthorizedException("Invalid user or password.");
       }
-      log.info("User {} found in DB with status as {}", logonName, appUser.getStatus());
+      String appUserLogonName = appUser.getLogonName();
+      log.info("User {} found in DB with status as {}", appUserLogonName, appUser.getStatus());
       UserStatusEnum userStatus = UserStatusEnum.getUserStatusByCode(appUser.getStatus());
       if (userStatus != UserStatusEnum.ACTIVE) {
-        log.info("User {} is not active", logonName);
+        log.info("User {} is not active", appUserLogonName);
         throw new UnauthorizedException("User is not active, please contact administrator.");
       }
 
@@ -57,17 +62,36 @@ public class DBAuthenticationServiceImpl implements AuthenticationService {
           userStatus = UserStatusEnum.LOCKED;
         }
         this.appUserDao.updateInvalidLoginAttempt(
-            logonName, invalidAttempts, userStatus.getStatusCode());
+                appUserLogonName, invalidAttempts, userStatus.getStatusCode());
         log.info("User password does not match.");
         throw new UnauthorizedException("Invalid user or password.");
       }
 
-      this.appUserDao.updateLastSuccessLoginTime(logonName, appUser.getUserId());
-      appUser = this.appUserDao.getUserByLogonName(logonName);
-      return appUser;
+      this.appUserDao.updateLastSuccessLoginTime(appUserLogonName, appUser.getUserId());
+      return this.appUserDao.getUserByLogonName(appUserLogonName);
     } catch (SQLException se) {
       throw new InternalServerException("Internal exception while authenticating the user", se);
     }
+  }
+
+  private AppUser getUserByLogonName (String logonName) {
+
+    if(EmailValidator.isEmailId(logonName)) {
+      log.info("Looking for user with emailId {}", logonName);
+      return this.appUserDao.getUserByEmailId(logonName);
+    }
+
+    // Remove all non-digit characters
+    try {
+      String mobileNumber = PhoneUtil.normalizePhoneNumber(logonName);
+      log.info("Looking for user with mobile {}", mobileNumber);
+      return this.appUserDao.getUserByPhone(mobileNumber);
+    } catch(ValidationException e) {
+        // Ignore exception, as logon name may not be phone number
+    }
+
+    log.info("Looking for user with logon name {}", logonName);
+    return this.appUserDao.getUserByLogonName(logonName);
   }
 
   @Override
