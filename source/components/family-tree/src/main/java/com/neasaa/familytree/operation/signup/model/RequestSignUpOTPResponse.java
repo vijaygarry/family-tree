@@ -7,6 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RequestSignUpOTPResponse extends OperationResponse {
+  private String otpChannel;
+  private String mobileNumber;
   private String emailId;
   private String requestId;
 }

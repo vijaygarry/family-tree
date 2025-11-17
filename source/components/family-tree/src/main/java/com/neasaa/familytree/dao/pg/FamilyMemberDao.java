@@ -61,6 +61,15 @@ public class FamilyMemberDao extends AbstractDao {
                   + BASE_SCHEMA_NAME + "FAMILYMEMBER "
                   + "where EMAIL = ? ";
 
+  private static final String SELECT_MEMBER_BY_PHONE =
+          "SELECT MEMBERID, FAMILYID, SAMAJID, LOGONNAME, HEADOFFAMILY, FIRSTNAME, FIRSTNAMEINHINDI, LASTNAME, MAIDENLASTNAME, NICKNAME, NICKNAMEINHINDI, "
+                  + "GENDER, BIRTHDAY, BIRTHMONTH, BIRTHYEAR, MARITALSTATUS, WEDDINGDATE, DATEOFDEATH, PHONE, ISPHONEVERIFIED, ISPHONEWHATSAPPREGISTERED, "
+                  + "EMAIL, ISEMAILVERIFIED, ADDRESSSAMEASFAMILY, MEMBERADDRESSID, EDUCATIONDETAILS, OCCUPATION, HOBBY, MEMBERSEARCHTEXT, PROFILEIMAGE, "
+                  + "PROFILEIMAGETHUMBNAIL, IMAGELASTUPDATED, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE "
+                  + "FROM "
+                  + BASE_SCHEMA_NAME + "FAMILYMEMBER "
+                  + "where PHONE = ? ";
+
   private static final String SELECT_HEAD_OF_FAMILY_BY_FAMILY_ID =
           "SELECT MEMBERID, FAMILYID, SAMAJID, LOGONNAME, HEADOFFAMILY, FIRSTNAME, FIRSTNAMEINHINDI, LASTNAME, MAIDENLASTNAME, NICKNAME, NICKNAMEINHINDI, "
                   + "GENDER, BIRTHDAY, BIRTHMONTH, BIRTHYEAR, MARITALSTATUS, WEDDINGDATE, DATEOFDEATH, PHONE, ISPHONEVERIFIED, ISPHONEWHATSAPPREGISTERED, "
@@ -74,7 +83,7 @@ public class FamilyMemberDao extends AbstractDao {
       "UPDATE "
           + BASE_SCHEMA_NAME
           + "FAMILYMEMBER "
-          + "SET LOGONNAME = ? , ISEMAILVERIFIED = true, LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  "
+          + "SET LOGONNAME = ? , ISEMAILVERIFIED = ?, ISPHONEVERIFIED = ?, LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  "
           + "where MEMBERID = ? ";
 
   private static final String IS_MEMBER_REGISTERED_BY_EMAIL_ID =
@@ -193,24 +202,37 @@ public class FamilyMemberDao extends AbstractDao {
     return memberList.get(0);
   }
 
-  public void updateMemberLogonNameWithEmail(
-      String logonName, int updatedBy, Date lastUpdatedDate, int memberId) {
+  public FamilyMemberEntity getMemberByPhone(String phone) {
+    List<FamilyMemberEntity> memberList =
+            getJdbcTemplate().query(SELECT_MEMBER_BY_PHONE, new FamilyMemberRowMapper(), phone);
+
+    if (memberList.isEmpty()) {
+      return null;
+    }
+    if (memberList.size() > 1) {
+      throw new RuntimeException(
+              "Phone number is not unique, multiple members found with same phone");
+    }
+    return memberList.get(0);
+  }
+
+
+  public void updateMemberLogonName (
+      String logonName, boolean emailVerified, boolean phoneVerified, int updatedBy, Date lastUpdatedDate, int memberId) {
     try {
-      getJdbcTemplate()
-          .update(
-              new PreparedStatementCreator() {
-                @Override
-                public PreparedStatement createPreparedStatement(Connection aCon)
-                    throws SQLException {
-                  PreparedStatement prepareStatement =
-                      aCon.prepareStatement(UPDATE_LOGON_NAME_FOR_MEMBER);
-                  setStringInStatement(prepareStatement, 1, logonName);
-                  setIntInStatement(prepareStatement, 2, updatedBy);
-                  setTimestampInStatement(prepareStatement, 3, lastUpdatedDate);
-                  setIntInStatement(prepareStatement, 4, memberId);
-                  return prepareStatement;
-                }
-              });
+      getJdbcTemplate().update(new PreparedStatementCreator() {
+        @Override
+        public PreparedStatement createPreparedStatement(Connection aCon) throws SQLException {
+          PreparedStatement prepareStatement = aCon.prepareStatement(UPDATE_LOGON_NAME_FOR_MEMBER);
+          setStringInStatement(prepareStatement, 1, logonName);
+          setBooleanInStatement(prepareStatement, 2, emailVerified);
+          setBooleanInStatement(prepareStatement, 3, phoneVerified);
+          setIntInStatement(prepareStatement, 4, updatedBy);
+          setTimestampInStatement(prepareStatement, 5, lastUpdatedDate);
+          setIntInStatement(prepareStatement, 6, memberId);
+          return prepareStatement;
+        }
+      });
     } catch (Exception e) {
       throw new InternalServerException(
           "Internal error while processing your request, please try again.", e);
