@@ -3,8 +3,8 @@ package com.neasaa.familytree.operation.signup;
 import static com.neasaa.base.app.operation.BeanNames.APP_EMAIL_SENDER;
 import static com.neasaa.base.app.operation.OperationNames.SIGN_UP_REQUEST_OTP;
 import static com.neasaa.base.app.utils.ValidationUtils.checkValuePresent;
-import static com.neasaa.familytree.utils.Constants.EMAIL_OTP_CHANNEL;
-import static com.neasaa.familytree.utils.Constants.MOBILE_OTP_CHANNEL;
+import static com.neasaa.base.app.constant.AppConstants.EMAIL_OTP_CHANNEL;
+import static com.neasaa.base.app.constant.AppConstants.MOBILE_OTP_CHANNEL;
 
 import com.neasaa.base.app.dao.pg.AppUserDao;
 import com.neasaa.base.app.dao.pg.OtpVerificationDao;

@@ -1,12 +1,12 @@
 package com.neasaa.familytree.operation.signup;
 
 import static com.neasaa.base.app.constant.AppConstants.DEFAULT_ROLE_ON_SIGNUP;
+import static com.neasaa.base.app.constant.AppConstants.EMAIL_OTP_CHANNEL;
+import static com.neasaa.base.app.constant.AppConstants.MOBILE_OTP_CHANNEL;
 import static com.neasaa.base.app.constant.AppConstants.SYSTEM_USER_ID;
 import static com.neasaa.base.app.enums.UserStatusEnum.ACTIVE;
 import static com.neasaa.base.app.operation.OperationNames.SIGN_UP;
 import static com.neasaa.base.app.utils.ValidationUtils.checkValuePresent;
-import static com.neasaa.familytree.utils.Constants.EMAIL_OTP_CHANNEL;
-import static com.neasaa.familytree.utils.Constants.MOBILE_OTP_CHANNEL;
 
 import com.neasaa.base.app.dao.pg.AppUserDao;
 import com.neasaa.base.app.dao.pg.OtpVerificationDao;

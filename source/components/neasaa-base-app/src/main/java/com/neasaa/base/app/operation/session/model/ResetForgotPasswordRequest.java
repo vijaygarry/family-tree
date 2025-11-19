@@ -8,7 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ResetForgotPasswordRequest extends OperationRequest {
-  private String emailId;
+  private String loginName;
+  private String otpChannel;
 
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private String otp;
@@ -17,4 +18,22 @@ public class ResetForgotPasswordRequest extends OperationRequest {
   private String newPassword;
 
   private String requestId;
+
+  public void trimValues() {
+    if (this.loginName != null) {
+      this.loginName = this.loginName.trim().toLowerCase();
+    }
+    if (this.otpChannel != null) {
+      this.otpChannel = this.otpChannel.trim();
+    }
+    if (this.otp != null) {
+      this.otp = this.otp.trim();
+    }
+    if (this.newPassword != null) {
+      this.newPassword = this.newPassword.trim();
+    }
+    if (this.requestId != null) {
+      this.requestId = this.requestId.trim();
+    }
+  }
 }

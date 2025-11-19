@@ -77,8 +77,6 @@ public class OTPUtil {
           AppProperties appProperties,
           EmailSender emailSender) {
     String formattedPhone = PhoneUtil.formatPhoneNumber(phone);
-    log.info ("Sending OTP {} on mobile {} for {}", otpCode, formattedPhone, otpType);
-
     String emailSubject = null;
     String emailBody = null;
     if (otpType == OTPType.FORGOT_PASSWORD) {
@@ -146,7 +144,6 @@ public class OTPUtil {
         throw new InternalServerException(
             "Failed to process your request, please contact administrator");
       }
-
       EmailMessage emailMessage =
           EmailMessage.builder()
               // TODO: Include replyTo address

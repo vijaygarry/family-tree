@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RequestForgotPasswordOTPResponse extends OperationResponse {
-  private String emailId;
+  private String loginName;
   private String requestId;
+  private String otpChannel;
 }

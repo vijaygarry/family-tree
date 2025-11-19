@@ -13,4 +13,7 @@ public class AppConstants {
 
   // Operation type in history table when main table record is deleted
   public static final String DELETE_OPERATION = "DELETE";
+
+  public static final String EMAIL_OTP_CHANNEL = "email";
+  public static final String MOBILE_OTP_CHANNEL = "mobile";
 }

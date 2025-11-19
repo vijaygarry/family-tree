@@ -1,11 +1,14 @@
 package com.neasaa.base.app.operation.session;
 
+import static com.neasaa.base.app.constant.AppConstants.EMAIL_OTP_CHANNEL;
+import static com.neasaa.base.app.constant.AppConstants.MOBILE_OTP_CHANNEL;
 import static com.neasaa.base.app.operation.BeanNames.APP_EMAIL_SENDER;
 import static com.neasaa.base.app.operation.OperationNames.FORGOT_PASSWORD_REQUEST_OTP;
 import static com.neasaa.base.app.utils.ValidationUtils.checkValuePresent;
 
 import com.neasaa.base.app.dao.pg.AppUserDao;
 import com.neasaa.base.app.dao.pg.OtpVerificationDao;
+import com.neasaa.base.app.entity.AppUser;
 import com.neasaa.base.app.entity.OtpVerification;
 import com.neasaa.base.app.enums.OTPStatus;
 import com.neasaa.base.app.enums.OTPType;
@@ -18,6 +21,7 @@ import com.neasaa.base.app.utils.AppProperties;
 import com.neasaa.base.app.utils.EmailValidator;
 import com.neasaa.base.app.utils.OTPUtil;
 import com.neasaa.base.app.utils.PasswordUtil;
+import com.neasaa.base.app.utils.PhoneUtil;
 import com.neasaa.base.app.utils.email.EmailSender;
 import java.util.Date;
 import lombok.extern.log4j.Log4j2;
@@ -52,23 +56,39 @@ public class RequestForgotPasswordOTPOperation
     if (opRequest == null) {
       throw new ValidationException("Invalid request provided.");
     }
-    checkValuePresent(opRequest.getEmailId(), "Email Id");
-    boolean isMandatory = true;
-    EmailValidator.validateEmail(opRequest.getEmailId(), isMandatory);
+    checkValuePresent(opRequest.getLoginName(), "mobile number/email ID");
   }
 
   @Override
   public RequestForgotPasswordOTPResponse doExecute(RequestForgotPasswordOTPRequest opRequest)
       throws OperationException {
-    String emailId = opRequest.getEmailId().toLowerCase().trim();
-    // Check if the email is not already registered
-    if (!appUserDao.isEmailRegistered(emailId)) {
-      throw new ValidationException("Email ID is not registered. Please check email ID");
+
+    String logonName = opRequest.getLoginName().toLowerCase().trim();
+    String otpChannel = null;
+    AppUser appUser = null;
+    if(EmailValidator.isEmailId(logonName)) {
+      otpChannel = EMAIL_OTP_CHANNEL;
+      log.info("Looking for user with emailId {}", logonName);
+      appUser = this.appUserDao.getUserByEmailId(logonName);
+      // Check logon name is not registered
+      if (appUser == null) {
+        throw new ValidationException("Email ID is not registered. Please check email ID");
+      }
+    } else {
+      // Remove all non-digit characters
+      logonName = PhoneUtil.normalizePhoneNumber(logonName);
+      otpChannel = MOBILE_OTP_CHANNEL;
+      log.info("Looking for user with mobile {}", logonName);
+      appUser = this.appUserDao.getUserByPhone(logonName);
+      // Check logon name is not registered
+      if (appUser == null) {
+        throw new ValidationException("Mobile number is not registered. Please check the number");
+      }
     }
 
     // Fetch the existing OTP information if any
     OtpVerification otpInformation =
-        otpVerificationDao.getOtpInformation(emailId, OTPType.FORGOT_PASSWORD);
+        otpVerificationDao.getOtpInformation(logonName, OTPType.FORGOT_PASSWORD);
     log.info("OTP Verification info fetched from DB: {}", otpInformation);
     if (otpInformation != null) {
       if (OTPUtil.isOtpExpired(otpInformation)) {
@@ -76,13 +96,17 @@ public class RequestForgotPasswordOTPOperation
         otpInformation.setStatus(OTPStatus.Expired);
         otpVerificationDao.moveOtpToHistory(otpInformation);
         log.info(
-            "Record moved to history table for email: {} and OTP Type: {}",
-            emailId,
+            "Record moved to history table for logonName: {} and OTP Type: {}", logonName,
             OTPType.SIGN_UP);
       } else {
         // Current OTP is still valid, we can resend the same OTP
         RequestForgotPasswordOTPResponse response = new RequestForgotPasswordOTPResponse();
-        response.setEmailId(opRequest.getEmailId());
+        if(MOBILE_OTP_CHANNEL.equalsIgnoreCase(otpChannel)) {
+          response.setLoginName(PhoneUtil.formatPhoneNumber(logonName));
+        } else {
+          response.setLoginName(logonName);
+        }
+        response.setOtpChannel(otpChannel);
         response.setRequestId(otpInformation.getRequestId()); // Simulated request ID for OTP
         return response;
       }
@@ -91,27 +115,43 @@ public class RequestForgotPasswordOTPOperation
     String newOtp = OTPUtil.generateOTP();
     String requestId = OTPUtil.generateRequestId();
     Date currentDate = new Date();
+    Date expiryDate;
+    if(MOBILE_OTP_CHANNEL.equalsIgnoreCase(otpChannel)) {
+        expiryDate = new Date(currentDate.getTime() + OTPUtil.MOBILE_OTP_EXPIRY_DURATION); // OTP valid for 1 day
+    } else {
+        expiryDate = new Date(currentDate.getTime() + OTPUtil.EMAIL_OTP_EXPIRY_DURATION); // OTP valid for 15 minutes
+    }
 
     OtpVerification otpVerificationInfo =
         OtpVerification.builder()
-            .emailId(emailId)
+            .emailId(logonName)
             .otpType(OTPType.FORGOT_PASSWORD)
             .requestId(requestId)
             .hashOtpCode(
                 PasswordUtil.hashPassword(
                     newOtp)) // In real application, hash the OTP before storing
             .status(OTPStatus.Pending)
-            .expiryDate(
-                new Date(currentDate.getTime() + OTPUtil.EMAIL_OTP_EXPIRY_DURATION)) // OTP valid for 15 minutes
+            .expiryDate(expiryDate)
             .attempts(0)
             .createdDate(currentDate)
             .lastUpdatedDate(currentDate)
             .build();
 
     otpVerificationDao.insertOtpVerification(otpVerificationInfo);
-    OTPUtil.sendOtpEmail(emailId, newOtp, OTPType.FORGOT_PASSWORD, appProperties, emailSender);
+    if(MOBILE_OTP_CHANNEL.equalsIgnoreCase(otpChannel)) {
+      OTPUtil.sendOtpSMS(logonName, newOtp, OTPType.FORGOT_PASSWORD, appUser.getFirstName(), appUser.getLastName(),
+              appProperties, emailSender);
+    } else {
+      OTPUtil.sendOtpEmail(logonName, newOtp, OTPType.FORGOT_PASSWORD, appProperties, emailSender);
+    }
+
     RequestForgotPasswordOTPResponse response = new RequestForgotPasswordOTPResponse();
-    response.setEmailId(emailId);
+    if(MOBILE_OTP_CHANNEL.equalsIgnoreCase(otpChannel)) {
+      response.setLoginName(PhoneUtil.formatPhoneNumber(logonName));
+    } else {
+      response.setLoginName(logonName);
+    }
+    response.setOtpChannel(otpChannel);
     response.setRequestId(requestId); // Simulated request ID for OTP
     return response;
   }

@@ -10,6 +10,4 @@ public interface Constants {
 
   int MISSING_BIRTH_DATE_VALUE = -1;
 
-  String EMAIL_OTP_CHANNEL = "email";
-  String MOBILE_OTP_CHANNEL = "mobile";
 }
