@@ -31,7 +31,6 @@ cd source
 
 
 
-
 ## Date Handling
 For date without timezone, always use LocalDate class in Java.
 When sending this date to UX, format the date to String in ISO 8601 format i.e. yyyy-MM-dd
@@ -49,10 +48,13 @@ Last number is 42:
 ### Pending Tasks
 | Issue | Task Desc             |   Priority   |POC   | Date Reported | Start Date | End Date | Effort | Status |
 |---|------------------ |---------------|-------|--|--|--|--|--|
+|I-43|Create short video: How to use application, How to register user, how to reset password, how to add family and family members to this app  |      High   |  Vijay| 22-Oct-2025 | | | 1 day | Not Started |
+|I-45| On click on hamburger menu on mobile phone, left menu flickers every alternate click |      Low   |  Vijay| 25-Oct-2025 | | | 1 day | Not Started |
+|I-46| On family/profile page update the relationship as "ABC's son" instead of "son of ABC" |      Low   |  Vijay| 28-Oct-2025 | | | 1 day | Not Started |
+|I-44| We are using address on 4 screen Add/Update Family/Member. Can we extract address form outside to make it same on all 4 screen |      Low   |  Vijay| 23-Oct-2025 | | | 1 day | Not Started |
 |I-16|Add family member- in sequence  |      Low   |  Vijay| 29-Sep-2025 |29-Sep-2025 | | 1 day | Not Started |
 |I-15|Add family - only admin- show add admin only if user has permission  |      High   |  Vijay| 03-Oct-2025 | | 1 day | WIP |
 |I-37|Disable cross origin request on server |      High   |  Vijay| 12-Oct-2025 | | 1 day | WIP |
-|I-34| Add family for Ramnarayan Rajput with members |      High   |  Vijay| 11-Oct-2025 | | 1 hour | WIP |
 |I-35| Add family for Lachoriya (Megha family) |      High   |  Vijay| 11-Oct-2025 | | 1 hour | WIP |
 |I-39| Add screen/modal for terms and condition and privacy link on SignUp page and footer |      High   |  Vijay| 12-Oct-2025 | | | 1 day | Not Started |
 |I-33|Create thumbnail image while updating profile image |      High   |  Vijay| 11-Oct-2025 | | 1 hour | WIP |
@@ -97,7 +99,7 @@ Last number is 42:
 |I-40| Update FAQ to have vasic questions like, how to register, reset password, add family, add member |      High   |  Vijay| 12-Oct-2025 | 14-Oct-2025| 14-Oct-2025| 1 day | Done |
 |I-41|Super Admin should see edit button for all family and members  |      High   |  Vijay| 14-Oct-2025 |14-Oct-2025 | 14-Oct-2025| 1 day | Done |
 |I-42|If there is no member in family, show message as no members instead of empty tree/table.  |      Low   |  Vijay| 14-Oct-2025 |14-Oct-2025 | 14-Oct-2025| 1 day | Done |
-
+|I-34| Add family for Ramnarayan Rajput with members |      High   |  Vijay| 11-Oct-2025 | 15-Oct-2025| 15-Oct-2025 | 1 hour | Done |
 
 
 ## Feedback

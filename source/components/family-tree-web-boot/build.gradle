@@ -28,6 +28,7 @@ def uxBuildDir = "${uxDir}/build"
 def buildUxComponent = project.hasProperty("buildReactApp")
 
 def resourcesDir = "$projectDir/src/main/resources"
+def distributionDir = "${rootDir}/distribution"
 
 task buildUx(type: Exec) {
     onlyIf { buildUxComponent }
@@ -103,5 +104,15 @@ tasks.register('buildDist', Copy) {
         into 'lib'
     }
 
-    into "${rootDir}/distribution"  // target location in project
+    into "${distributionDir}"  // target location in project
 }
+
+
+task extraCleanup(type: Delete) {
+    doFirst {
+        println "🔍 Deleting: $distributionDir"
+    }
+    delete distributionDir
+}
+
+clean.dependsOn(extraCleanup)

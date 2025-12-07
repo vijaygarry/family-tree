@@ -179,7 +179,7 @@ public class FamilyMemberDao extends AbstractDao {
             .query(SELECT_MEMBER_BY_LOGON_NAME, new FamilyMemberRowMapper(), logonName);
 
     if (memberList.isEmpty()) {
-      throw new RuntimeException("No member found with logon name");
+      throw new RuntimeException("No member found with logon name " + logonName);
     }
     if (memberList.size() > 1) {
       throw new RuntimeException(
