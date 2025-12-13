@@ -41,9 +41,19 @@ public class MemberSummaryDto {
   private String occupation;
   private String profileImageThumbnail;
   private boolean selectedNode;
+  // On family details page, to indicate whether this member belongs to the family being viewed
+  // E.g. When viewing family A, if member is say daughter of family member A but married to family B, then this will be false
+  private boolean belongsToSameFamily;
 
   public static MemberSummaryDto getMemberSummaryDto(
-      FamilyMemberEntity familyMemberEntity, String familyRelationship) {
+      FamilyMemberEntity familyMemberEntity, String familyRelationship, int referencedInFamilyId) {
+    boolean belongsToSameFamily;
+    if(referencedInFamilyId == familyMemberEntity.getFamilyId()) {
+      belongsToSameFamily = true;
+    } else {
+      belongsToSameFamily = false;
+    }
+
     return MemberSummaryDto.builder()
         .memberId(familyMemberEntity.getMemberId())
         .familyId(familyMemberEntity.getFamilyId())
@@ -70,6 +80,7 @@ public class MemberSummaryDto {
         .educationDetails(familyMemberEntity.getEducationDetails())
         .occupation(familyMemberEntity.getOccupation())
         .profileImageThumbnail(familyMemberEntity.getProfileImageThumbnail())
+        .belongsToSameFamily(belongsToSameFamily)
         .build();
   }
 }

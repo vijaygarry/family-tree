@@ -35,16 +35,16 @@ public abstract class FamilyAbstractOperation<
     extends AbstractOperation<Request, Response> {
 
   public static final String HEAD_OF_FAMILY = "Head of Family";
-  public static final String WIFE_OF_MEMBER = "Wife of %s";
-  public static final String HUSBAND_OF_MEMBER = "Husband of %s";
-  public static final String SON_OF_MEMBER = "Son of %s";
-  public static final String DAUGHTER_OF_MEMBER = "Daughter of %s";
-  public static final String FATHER_OF_MEMBER = "Father of %s";
-  public static final String MOTHER_OF_MEMBER = "Mother of %s";
+  public static final String WIFE_OF_MEMBER = "%s's wife";
+  public static final String HUSBAND_OF_MEMBER = "%s's husband";
+  public static final String SON_OF_MEMBER = "%s's son";
+  public static final String DAUGHTER_OF_MEMBER = "%s's daughter";
+  public static final String FATHER_OF_MEMBER = "%s's father";
+  public static final String MOTHER_OF_MEMBER = "%s's mother";
   public static final String UNKNOWN_RELATIONSHIP = "Relationship unknown";
   public static final String SELF_RELATIONSHIP = "Self";
-  public static final String BROTHER_OF_MEMBER = "Brother of %s";
-  public static final String SISTER_OF_MEMBER = "Sister of %s";
+  public static final String BROTHER_OF_MEMBER = "%s's brother";
+  public static final String SISTER_OF_MEMBER = "%s's sister";
 
   @Autowired protected AddressDao addressDao;
 
@@ -153,37 +153,35 @@ public abstract class FamilyAbstractOperation<
    * Get children for the member and set the relationship as "Son of abc" or "Daughter of abc". This is
    * mainly to get siblings of a member by passing the parent ids.
    */
-  protected List<MemberSummaryDto> getChildrenForMember(int samajId, int memberId, int spouseMemberId) {
+  protected List<MemberSummaryDto> getChildrenForMember(int samajId, int memberId, int spouseMemberId, int referencedInFamilyId) {
     List<MemberSummaryDto> children = new ArrayList<>();
     List<MemberRelationshipEntity> childrenForMember =
             memberRelationshipDao.getChildrenForMemberById(memberId, spouseMemberId);
     if (childrenForMember != null) {
       for (MemberRelationshipEntity childRelation : childrenForMember) {
-        MemberSummaryDto child = getMemberSummaryDtoFromDB(samajId, childRelation.getRelatedMemberId());
+        MemberSummaryDto child = getMemberSummaryDtoFromDB(samajId, childRelation.getRelatedMemberId(), referencedInFamilyId);
         if (child != null) {
           children.add(child);
         }
       }
     } else {
-      log.info(
-              "No children found for member with parent1: {} and parent2: {}",
-              memberId,
-              spouseMemberId);
+      log.info("No children found for member with parent1: {} and parent2: {}",
+              memberId, spouseMemberId);
       return null;
     }
     return children;
   }
 
-  protected MemberSummaryDto getMemberSummaryDtoFromDB(int samajId, int memberId) {
+  protected MemberSummaryDto getMemberSummaryDtoFromDB(int samajId, int memberId, int referencedInFamilyId) {
     FamilyMemberEntity memberFromDb = familyMemberDao.getMemberById(samajId, memberId);
     if (memberFromDb == null) {
       return null;
     }
-    return MemberSummaryDto.getMemberSummaryDto(memberFromDb, UNKNOWN_RELATIONSHIP);
+    return MemberSummaryDto.getMemberSummaryDto(memberFromDb, UNKNOWN_RELATIONSHIP, referencedInFamilyId);
   }
 
   protected List<MemberSummaryDto> getParentsForMember (
-          int samajId, int memberId, String currentMemberName) {
+          int samajId, int memberId, String currentMemberName, int currentMemberFamilyId) {
     List<MemberRelationshipEntity> parents =
             memberRelationshipDao.getParentsForMemberById(memberId);
 
@@ -195,7 +193,7 @@ public abstract class FamilyAbstractOperation<
     MemberSummaryDto father = null;
     MemberSummaryDto mother = null;
     for (MemberRelationshipEntity parentRelationship : parents) {
-      MemberSummaryDto parent = getMemberSummaryDtoFromDB(samajId, parentRelationship.getMemberId());
+      MemberSummaryDto parent = getMemberSummaryDtoFromDB(samajId, parentRelationship.getMemberId(), currentMemberFamilyId);
       if (parent != null) {
         String familyRelationship = null;
         if (parent.getGender() == Gender.Male) {

@@ -92,7 +92,7 @@ public class GetMemberProfileOperation
     MemberSummaryDto father = null;
     MemberSummaryDto mother = null;
     for (MemberRelationshipEntity parentRelationship : parents) {
-      MemberSummaryDto parent = getMemberSummaryDtoFromDB(samajId, parentRelationship.getMemberId());
+      MemberSummaryDto parent = getMemberSummaryDtoFromDB(samajId, parentRelationship.getMemberId(), selectedMemberEntity.getFamilyId());
       if (parent != null) {
         if (parent.getGender() == Gender.Male) {
           father = parent;
@@ -132,7 +132,7 @@ public class GetMemberProfileOperation
     MemberRelationshipEntity spouseForMember =
         memberRelationshipDao.getSpouseForMemberById(selectedMemberEntity.getMemberId());
     if (spouseForMember != null) {
-      MemberSummaryDto spouse = getMemberSummaryDtoFromDB(samajId, spouseForMember.getRelatedMemberId());
+      MemberSummaryDto spouse = getMemberSummaryDtoFromDB(samajId, spouseForMember.getRelatedMemberId(), selectedMemberEntity.getFamilyId());
       if (spouse != null) {
         if (selectedMemberEntity.getGender() == Gender.Male) {
           spouse.setFamilyRelationship(
@@ -165,7 +165,7 @@ public class GetMemberProfileOperation
             selectedMemberEntity.getMemberId(), spouseMemberId);
     if (childrenForMember != null) {
       for (MemberRelationshipEntity childRelation : childrenForMember) {
-        MemberSummaryDto child = getMemberSummaryDtoFromDB(samajId, childRelation.getRelatedMemberId());
+        MemberSummaryDto child = getMemberSummaryDtoFromDB(samajId, childRelation.getRelatedMemberId(), selectedMemberEntity.getFamilyId());
         if (child != null) {
           if (child.getGender() == Gender.Male) {
             child.setFamilyRelationship(
@@ -201,7 +201,7 @@ public class GetMemberProfileOperation
       parentId2 = parents.get(1).getMemberId();
     }
 
-    List<MemberSummaryDto> siblingsFromDb = getChildrenForMember(samajId, parentId1, parentId2);
+    List<MemberSummaryDto> siblingsFromDb = getChildrenForMember(samajId, parentId1, parentId2, parents.get(0).getFamilyId());
     List<MemberSummaryDto> siblings = null;
     if (siblingsFromDb != null) {
       for (MemberSummaryDto child : siblingsFromDb) {
