@@ -1,0 +1,23 @@
+jar {
+    archiveBaseName.set('family-tree-ops-tool')
+    enabled = true
+}
+
+dependencies {
+    implementation project(':components:family-tree')
+    implementation libraries.excel
+}
+
+task runOpsTool(type: JavaExec) {
+    group = 'application'
+    description = 'Run Ops Tool'
+    mainClass = 'com.neasaa.familytree.OpsTool'
+    classpath = sourceSets.main.runtimeClasspath +
+                files('src/main/config/')
+    jvmArgs = ['-Xmx512m']                               // optional JVM args
+
+    // doFirst {
+    //     println "Classpath:"
+    //     classpath.each { println it }
+    // }
+}

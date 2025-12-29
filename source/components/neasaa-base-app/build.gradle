@@ -6,7 +6,7 @@ dependencies {
     api libraries.springFramework
     implementation libraries.springLogger
     api libraries.log4j
-    implementation libraries.neasaaUtils
+    api libraries.neasaaUtils
     implementation libraries.bouncycastleProvider
     api libraries.jackson
     api libraries.email

@@ -5,4 +5,4 @@ pluginManagement {
 }
 
 rootProject.name = 'family-tree'
-include ':components:neasaa-base-app', ':components:family-tree', ':components:family-tree-web-boot', 'components:integration-tests'
+include ':components:neasaa-base-app', ':components:family-tree', ':components:family-tree-web-boot', 'components:ops-tool' , 'components:integration-tests'
