@@ -62,7 +62,7 @@ public class GetMemberProfileOperation
     List<MemberSummaryDto> children = getChildrenForMember(samajId, memberEntity, spouse);
     List<MemberSummaryDto> siblings = getSiblings(samajId, memberEntity, parents);
     boolean canLoggedInUserUpdateMember = canLoggedInUserUpdateMember(memberEntity.getFamilyId());
-    AddressDto familyAddress = getFamilyAddress(memberEntity);
+    AddressDto familyAddress = getFamilyAddress(memberEntity.getFamilyId());
     AddressDto memberAddress = null;
     if (!memberEntity.isAddressSameAsFamily()) {
       memberAddress = getMemberAddress(memberEntity);
@@ -229,11 +229,6 @@ public class GetMemberProfileOperation
 
   private AddressDto getMemberAddress(FamilyMemberEntity member) {
     AddressEntity address = addressDao.getAddressById(member.getMemberAddressId());
-    return AddressDto.getAddressDtoFromEntity(address);
-  }
-
-  private AddressDto getFamilyAddress(FamilyMemberEntity member) {
-    AddressEntity address = addressDao.getAddressByFamilyId(member.getFamilyId());
     return AddressDto.getAddressDtoFromEntity(address);
   }
 }

@@ -5,7 +5,6 @@ import static com.neasaa.base.app.utils.ValidationUtils.checkValuePresent;
 import static com.neasaa.base.app.utils.ValidationUtils.checkValueRange;
 import static com.neasaa.familytree.operation.OperationNames.UPDATE_MY_FAMILY_MEMBER;
 import static com.neasaa.familytree.utils.Constants.MISSING_BIRTH_DATE_VALUE;
-import static com.neasaa.familytree.utils.DataFormatter.getFamilyMemberSearchString;
 import static com.neasaa.familytree.utils.DataFormatter.parseISODateToLocalDate;
 import static com.neasaa.familytree.utils.FamilytreeValidationUtils.validateBirthDate;
 import static com.neasaa.familytree.utils.FamilytreeValidationUtils.validateStringLength;
@@ -131,6 +130,7 @@ public class UpdateFamilyMemberProfileOperation
     checkIfEmailOrPhoneExists(opRequest.getEmail(), opRequest.getPhone(), memberEntityFromDb);
 
     int memberNewAddressId = memberEntityFromDb.getMemberAddressId();
+    String memberRegion = null;
     AddressEntity newAddressEntity = null;
     // Get the member address
     AddressEntity memberAddressFromDb =
@@ -139,6 +139,9 @@ public class UpdateFamilyMemberProfileOperation
     // existing address
     if (opRequest.isAddressSameAsFamily()) {
       memberNewAddressId = Constants.MEMBER_ADDRESS_SAME_AS_FAMILY_ADDRESS;
+      log.info("Looking up family address for family id {}", memberEntityFromDb.getFamilyId());
+      memberRegion = DataFormatter.getRegion(addressDao.getAddressByFamilyId(memberEntityFromDb.getFamilyId()));
+      log.info("Setting member region to {}", memberRegion);
       // Address can not be deleted here, because still linked to member profile
     } else {
       newAddressEntity = getAddressFromRequest(opRequest);
@@ -157,15 +160,14 @@ public class UpdateFamilyMemberProfileOperation
           addressDao.updateAddress(newAddressEntity);
         }
       }
+      memberRegion = DataFormatter.getRegion(newAddressEntity);
     }
 
     // Update family member details
     FamilyMemberEntity newFamilyMemberEntity =
         updateFamilyMemberEntityWithRequestAttributes(
-            memberEntityFromDb, opRequest, memberNewAddressId);
-    // Build search text for member
-    newFamilyMemberEntity.setMemberSearchText(
-        getFamilyMemberSearchString(newFamilyMemberEntity, newAddressEntity));
+            memberEntityFromDb, opRequest, memberNewAddressId, memberRegion);
+
     // Update profile in main table
     familyMemberDao.updateFamilyMember(newFamilyMemberEntity, getAuditInfo());
 
@@ -211,7 +213,7 @@ public class UpdateFamilyMemberProfileOperation
   private FamilyMemberEntity updateFamilyMemberEntityWithRequestAttributes(
       FamilyMemberEntity memberEntityFromDb,
       UpdateFamilyMemberProfileRequest opRequest,
-      int addressId) {
+      int addressId, String memberRegion) {
     String phoneNumber = DataFormatter.formatPhoneNumberForDBStorage(opRequest.getPhone());
 
     // Email id can be updated only if email is not verified i.e. registered
@@ -252,6 +254,7 @@ public class UpdateFamilyMemberProfileOperation
     newMemberEntity.setAddressSameAsFamily(opRequest.isAddressSameAsFamily());
     newMemberEntity.setMemberAddressId(addressId);
 
+    newMemberEntity.updateSearchText(memberRegion);
     return newMemberEntity;
   }
 

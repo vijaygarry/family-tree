@@ -103,7 +103,7 @@ public class AddFamilyMemberOperation
 
     if (!opRequest.isHeadOfFamily()) {
       if (opRequest.getRelationship() == null) {
-        throw new ValidationException("Relationship is required this family member");
+        throw new ValidationException("Relationship is required for this family member");
       }
       RelationshipType relationshipType =
           RelationshipType.getRelationshipType(opRequest.getRelationship().getRelationshipType());
@@ -139,6 +139,7 @@ public class AddFamilyMemberOperation
     //TODO: Check if other member exists with same phone or email
 
     AddressEntity newAddressEntity = null;
+    String memberRegion = null;
     int memberNewAddressId = Constants.MEMBER_ADDRESS_SAME_AS_FAMILY_ADDRESS;
     if (!opRequest.isAddressSameAsFamily()) {
       newAddressEntity = getAddressFromRequest(opRequest);
@@ -146,11 +147,15 @@ public class AddFamilyMemberOperation
         memberNewAddressId = addressDao.addAddress(newAddressEntity);
         newAddressEntity.setAddressId(memberNewAddressId);
       }
+      memberRegion = DataFormatter.getRegion(newAddressEntity);
+    } else {
+      memberRegion = family.getRegion();
     }
+
 
     FamilyMemberEntity newMemberFromDb =
         familyMemberDao.addFamilyMember(
-            getFamilyMemberFromRequest(opRequest, family, memberNewAddressId));
+            getFamilyMemberFromRequest(opRequest, family, memberNewAddressId, memberRegion));
     if (newMemberFromDb.isHeadOfFamily()) {
       familyDao.updateFamilyDisplayName(family, newMemberFromDb, getAuditInfo());
     }
@@ -223,19 +228,18 @@ public class AddFamilyMemberOperation
         .build();
   }
 
-  private FamilyMemberEntity getFamilyMemberFromRequest(
-      AddFamilyMemberRequest opRequest, FamilyEntity family, int addressId) {
+  private FamilyMemberEntity getFamilyMemberFromRequest (
+      AddFamilyMemberRequest opRequest, FamilyEntity family, int addressId, String memberRegion) {
     AuditInfo auditInfo = getAuditInfo();
     String phoneNumber = DataFormatter.formatPhoneNumberForDBStorage(opRequest.getPhone());
     String emailId =
         opRequest.getEmail() != null ? opRequest.getEmail().toLowerCase().trim() : null;
     short birthDay = MISSING_BIRTH_DATE_VALUE;
     if (opRequest.getBirthDay() != null) {
-      ;
       birthDay = opRequest.getBirthDay();
     }
 
-    return FamilyMemberEntity.builder()
+    FamilyMemberEntity memberEntity = FamilyMemberEntity.builder()
         .familyId(family.getFamilyId())
         .samajId(family.getSamajId())
         .headOfFamily(opRequest.isHeadOfFamily())
@@ -270,6 +274,8 @@ public class AddFamilyMemberOperation
         .lastUpdatedBy(auditInfo.getLastUpdatedBy())
         .lastUpdatedDate(auditInfo.getLastUpdatedDate())
         .build();
+    memberEntity.updateSearchText(memberRegion);
+    return memberEntity;
   }
 
   private void updateRelationships(

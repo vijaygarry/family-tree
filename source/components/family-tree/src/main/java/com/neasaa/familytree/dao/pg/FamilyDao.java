@@ -212,7 +212,7 @@ public class FamilyDao extends AbstractDao {
                             });
             //Update LastName in family members table
             if(isFamilyNameUpdated) {
-                getJdbcTemplate().update(UPDATE_FAMILY_MEMBERS_LAST_NAME_BY_FAMILYID, aFamily.getFamilyName(), aFamily.getFamilyId());
+                getJdbcTemplate().update(UPDATE_FAMILY_MEMBERS_LAST_NAME_BY_FAMILYID, aFamily.getFamilyName(), aFamily.getFamilyId(), aFamily.getSamajId());
             }
             return rowsUpdated;
         } catch (Exception e) {

@@ -17,9 +17,11 @@ import com.neasaa.familytree.dao.pg.AddressDao;
 import com.neasaa.familytree.dao.pg.FamilyDao;
 import com.neasaa.familytree.dao.pg.FamilyMemberDao;
 import com.neasaa.familytree.dao.pg.MemberRelationshipDao;
+import com.neasaa.familytree.entity.AddressEntity;
 import com.neasaa.familytree.entity.FamilyMemberEntity;
 import com.neasaa.familytree.entity.MemberRelationshipEntity;
 import com.neasaa.familytree.enums.Gender;
+import com.neasaa.familytree.operation.family.model.AddressDto;
 import com.neasaa.familytree.operation.family.model.MemberSummaryDto;
 import com.neasaa.familytree.utils.DataFormatter;
 import com.neasaa.familytree.utils.SessionUtils;
@@ -237,7 +239,7 @@ public abstract class FamilyAbstractOperation<
     }
 
     //If phone in request is not null
-    if(inputPhone != null) {
+    if(inputPhone != null && !inputPhone.isEmpty()) {
       String normalizePhoneNumber = DataFormatter.formatPhoneNumberForDBStorage(inputPhone);
       // If DBEntity phone different from request phone (In this case DB phone can be null i.e. updating first time)
       if(!normalizePhoneNumber.equalsIgnoreCase(memberEntityFromDb.getPhone())) {
@@ -266,6 +268,11 @@ public abstract class FamilyAbstractOperation<
         throw new ValidationException("Phone " + inputPhone + " already in use, please provide other phone number");
       }
     }
+  }
+
+  protected AddressDto getFamilyAddress(int familyId) {
+    AddressEntity address = addressDao.getAddressByFamilyId(familyId);
+    return AddressDto.getAddressDtoFromEntity(address);
   }
 
 }

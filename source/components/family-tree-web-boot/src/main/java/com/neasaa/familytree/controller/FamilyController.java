@@ -19,6 +19,7 @@ import com.neasaa.familytree.operation.family.AddFamilyOperation;
 import com.neasaa.familytree.operation.family.GetFamilyDetailsOperation;
 import com.neasaa.familytree.operation.family.GetMemberProfileOperation;
 import com.neasaa.familytree.operation.family.ManageRelationshipOperation;
+import com.neasaa.familytree.operation.family.SearchFamilyMemberOperation;
 import com.neasaa.familytree.operation.family.SearchFamilyOperation;
 import com.neasaa.familytree.operation.family.UpdateFamilyDetailsOperation;
 import com.neasaa.familytree.operation.family.UpdateFamilyImageOperation;
@@ -34,6 +35,8 @@ import com.neasaa.familytree.operation.family.model.GetMemberProfileRequest;
 import com.neasaa.familytree.operation.family.model.GetMemberProfileResponse;
 import com.neasaa.familytree.operation.family.model.ManageRelationshipRequest;
 import com.neasaa.familytree.operation.family.model.ManageRelationshipResponse;
+import com.neasaa.familytree.operation.family.model.SearchFamilyMemberRequest;
+import com.neasaa.familytree.operation.family.model.SearchFamilyMemberResponse;
 import com.neasaa.familytree.operation.family.model.SearchFamilyRequest;
 import com.neasaa.familytree.operation.family.model.SearchFamilyResponse;
 import com.neasaa.familytree.operation.family.model.UpdateFamilyDetailsRequest;
@@ -137,6 +140,13 @@ public class FamilyController {
       @RequestBody GetMemberProfileRequest getMemberProfileRequest) throws Exception {
     return WebRequestHandler.processRequest(
         GetMemberProfileOperation.class, getMemberProfileRequest);
+  }
+
+  @RequestMapping(value = "/searchMember")
+  @ResponseBody
+  public ResponseEntity<SearchFamilyMemberResponse> searchMember (
+          @RequestBody SearchFamilyMemberRequest searchFamilyMemberRequest) throws Exception {
+    return WebRequestHandler.processRequest(SearchFamilyMemberOperation.class, searchFamilyMemberRequest);
   }
 
   @PostMapping(value = "/updateMemberProfile")

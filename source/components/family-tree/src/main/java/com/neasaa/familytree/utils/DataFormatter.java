@@ -4,7 +4,6 @@ import com.neasaa.base.app.utils.PhoneUtil;
 import com.neasaa.familytree.entity.AddressEntity;
 import com.neasaa.familytree.entity.FamilyEntity;
 import com.neasaa.familytree.entity.FamilyMemberEntity;
-import com.neasaa.familytree.enums.IndianState;
 import com.neasaa.familytree.enums.Month;
 import java.time.LocalDate;
 import java.time.Period;
@@ -12,7 +11,6 @@ import java.time.format.DateTimeFormatter;
 
 public class DataFormatter {
 
-  private static final String WEDDING_DATE_FORMAT = "dd-MMM-yyyy";
 
   /**
    * Possible inputs
@@ -49,7 +47,7 @@ public class DataFormatter {
       return null;
     }
     if (isIndianAddress(address)) {
-      return address.getCity() + ", " + IndianState.getShortStateName(address.getState());
+      return address.getCity() + ", " + address.getState();
     }
 
     return address.getState() + ", " + address.getCountry();
@@ -71,54 +69,6 @@ public class DataFormatter {
     if (familyHeadOfFamily != null && familyHeadOfFamily.getFirstNameInHindi() != null) {
       sb.append(familyHeadOfFamily.getFirstNameInHindi()).append(" ");
     }
-    if (address != null) {
-      if (address.getCity() != null) {
-        sb.append(address.getCity()).append(" ");
-      }
-      if (address.getState() != null) {
-        sb.append(address.getState()).append(" ");
-      }
-      if (address.getCountry() != null) {
-        sb.append(address.getCountry()).append(" ");
-      }
-    }
-
-    return sb.toString();
-  }
-
-  public static String getFamilyMemberSearchString(
-      FamilyMemberEntity familyMemberEntity, AddressEntity address) {
-    if (familyMemberEntity == null) {
-      return null;
-    }
-    StringBuilder sb = new StringBuilder();
-    sb.append(familyMemberEntity.getFirstName()).append(" ");
-    if (familyMemberEntity.getFirstNameInHindi() != null
-        && !familyMemberEntity.getFirstNameInHindi().isEmpty()) {
-      sb.append(familyMemberEntity.getFirstNameInHindi()).append(" ");
-    }
-
-    if (familyMemberEntity.getLastName() != null && !familyMemberEntity.getLastName().isEmpty()) {
-      sb.append(familyMemberEntity.getLastName()).append(" ");
-    }
-
-    if (familyMemberEntity.getMaidenLastName() != null
-        && !familyMemberEntity.getMaidenLastName().isEmpty()) {
-      sb.append(familyMemberEntity.getMaidenLastName()).append(" ");
-    }
-
-    if (familyMemberEntity.getNickName() != null && !familyMemberEntity.getNickName().isEmpty()) {
-      sb.append(familyMemberEntity.getNickName()).append(" ");
-    }
-
-    if (familyMemberEntity.getPhone() != null && !familyMemberEntity.getPhone().isEmpty()) {
-      sb.append(familyMemberEntity.getPhone()).append(" ");
-    }
-
-    if (familyMemberEntity.getEmail() != null && !familyMemberEntity.getEmail().isEmpty()) {
-      sb.append(familyMemberEntity.getEmail()).append(" ");
-    }
-
     if (address != null) {
       if (address.getCity() != null) {
         sb.append(address.getCity()).append(" ");

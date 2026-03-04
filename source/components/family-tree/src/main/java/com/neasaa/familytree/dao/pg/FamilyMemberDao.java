@@ -13,8 +13,13 @@ import com.neasaa.familytree.entity.FamilyMemberEntity;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import com.neasaa.familytree.enums.Gender;
+import com.neasaa.familytree.enums.MaritalStatus;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -78,6 +83,15 @@ public class FamilyMemberDao extends AbstractDao {
                   + "FROM "
                   + BASE_SCHEMA_NAME + "FAMILYMEMBER "
           + "where SAMAJID = ? and FAMILYID = ? and  HEADOFFAMILY = true";
+
+  private static final String SEARCH_FAMILY_MEMBER =
+          "SELECT MEMBERID, FAMILYID, SAMAJID, LOGONNAME, HEADOFFAMILY, FIRSTNAME, FIRSTNAMEINHINDI, LASTNAME, MAIDENLASTNAME, NICKNAME, NICKNAMEINHINDI, "
+                  + "GENDER, BIRTHDAY, BIRTHMONTH, BIRTHYEAR, MARITALSTATUS, WEDDINGDATE, DATEOFDEATH, PHONE, ISPHONEVERIFIED, ISPHONEWHATSAPPREGISTERED, "
+                  + "EMAIL, ISEMAILVERIFIED, ADDRESSSAMEASFAMILY, MEMBERADDRESSID, EDUCATIONDETAILS, OCCUPATION, HOBBY, MEMBERSEARCHTEXT, PROFILEIMAGE, "
+                  + "PROFILEIMAGETHUMBNAIL, IMAGELASTUPDATED, CREATEDBY, CREATEDDATE, LASTUPDATEDBY, LASTUPDATEDDATE "
+                  + "FROM "
+                  + BASE_SCHEMA_NAME + "FAMILYMEMBER "
+                  + "WHERE  SAMAJID = ? and MEMBERSEARCHTEXT ilike ? ";
 
   private static final String UPDATE_LOGON_NAME_FOR_MEMBER =
       "UPDATE "
@@ -157,6 +171,56 @@ public class FamilyMemberDao extends AbstractDao {
       throw new RuntimeException("Invalid member id entry");
     }
     return memberList.get(0);
+  }
+
+  public List<FamilyMemberEntity> searchFamilyMember (
+          int samajId, String searchString, Gender gender,
+          MaritalStatus maritalStatus, Integer ageFrom, Integer ageTo) {
+    StringBuilder searchQuery = new StringBuilder(SEARCH_FAMILY_MEMBER);
+    List<Object> params = new ArrayList<>();
+    params.add(samajId);
+    params.add("%" + searchString + "%");
+    if (gender != null) {
+      searchQuery.append(" AND GENDER = ? ");
+      params.add(gender.name());
+    }
+    if (maritalStatus != null) {
+      searchQuery.append(" AND MARITALSTATUS = ? ");
+      params.add(maritalStatus.name());
+    }
+    if(ageFrom != null && ageTo != null) {
+      searchQuery.append(""" 
+              AND
+              make_date(birthyear, birthmonth, CASE WHEN birthday = -1 THEN 1 ELSE birthday END)
+                  BETWEEN ? AND ?
+              """);
+        // Setting local date to first day of the month to accommodate missing birthday.
+        LocalDate localStartDate = LocalDate.now().withDayOfMonth(1).minusYears(ageTo);
+        java.sql.Date startDate = java.sql.Date.valueOf(localStartDate);
+        java.sql.Date endDate = java.sql.Date.valueOf(LocalDate.now().minusYears(ageFrom));
+        log.info("Using start date: {} and end date: {} for age range: {} - {}", startDate, endDate, ageFrom, ageTo);
+        params.add(startDate);
+        params.add(endDate);
+    } else if (ageFrom != null) {
+      searchQuery.append("""
+              AND
+              make_date(birthyear, birthmonth, CASE WHEN birthday = -1 THEN 1 ELSE birthday END)
+                  <= ?
+              """);
+        params.add(java.sql.Date.valueOf(LocalDate.now().minusYears(ageFrom)));
+    } else if (ageTo != null) {
+      searchQuery.append("""
+              AND
+              make_date(birthyear, birthmonth, CASE WHEN birthday = -1 THEN 1 ELSE birthday END)
+                  >= ?
+              """);
+      // Setting local date to first day of the month to accommodate missing birthday.
+      LocalDate localStartDate = LocalDate.now().withDayOfMonth(1).minusYears(ageTo);
+      params.add(java.sql.Date.valueOf(localStartDate));
+    }
+
+    return getJdbcTemplate()
+            .query(searchQuery.toString(), new FamilyMemberRowMapper(), params.toArray());
   }
 
   public FamilyMemberEntity getHeadOfFamilyByFamilyId(int samajId, int familyId) {

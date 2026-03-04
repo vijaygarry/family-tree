@@ -15,7 +15,6 @@ public class AddFamilyMemberRequest extends OperationRequest {
   private boolean headOfFamily;
   private String firstName;
   private String firstNameInHindi;
-  private String lastName;
   private String maidenLastName;
   private String nickName;
   private String nickNameInHindi;
@@ -43,7 +42,6 @@ public class AddFamilyMemberRequest extends OperationRequest {
   public void trimFields() {
     if (firstName != null) firstName = firstName.trim();
     if (firstNameInHindi != null) firstNameInHindi = firstNameInHindi.trim();
-    if (lastName != null) lastName = lastName.trim();
     if (maidenLastName != null) maidenLastName = maidenLastName.trim();
     if (nickName != null) nickName = nickName.trim();
     if (nickNameInHindi != null) nickNameInHindi = nickNameInHindi.trim();

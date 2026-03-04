@@ -16,12 +16,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j2;
 
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Log4j2
 public class FamilyMemberEntity extends BaseEntity {
 
   @Serial private static final long serialVersionUID = 1748919840065L;
@@ -66,6 +68,42 @@ public class FamilyMemberEntity extends BaseEntity {
 
   public boolean isAlive() {
     return this.dateOfDeath == null;
+  }
+
+  /**
+   * Updates the member search text used for searching members.
+   * Format for member search string: First Name, Last Name, First Name in Hindi, Maiden Last Name, Nick Name,
+   * Phone, Email, Region
+   * @param region - Member region.
+   */
+  public void updateSearchText(String region) {
+    StringBuilder searchTextBuilder = new StringBuilder();
+    if (this.firstName != null) {
+      searchTextBuilder.append(this.firstName).append(" ");
+    }
+    if (this.lastName != null) {
+      searchTextBuilder.append(this.lastName).append(" ");
+    }
+    if (this.firstNameInHindi != null) {
+      searchTextBuilder.append(this.firstNameInHindi).append(" ");
+    }
+    if(this.maidenLastName != null) {
+      searchTextBuilder.append(this.maidenLastName).append(" ");
+    }
+    if (this.nickName != null) {
+      searchTextBuilder.append(this.nickName).append(" ");
+    }
+    if(this.phone != null) {
+      searchTextBuilder.append(this.phone).append(" ");
+    }
+    if(this.email != null) {
+      searchTextBuilder.append(this.email).append(" ");
+    }
+    log.info("Region for member {} is {}", this.memberId, region);
+    if(region != null) {
+      searchTextBuilder.append(region).append(" ");
+    }
+    this.memberSearchText = searchTextBuilder.toString();
   }
 
   public FamilyMemberEntity copyOf() {

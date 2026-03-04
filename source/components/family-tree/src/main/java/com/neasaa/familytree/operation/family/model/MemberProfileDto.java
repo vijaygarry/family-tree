@@ -46,7 +46,6 @@ public class MemberProfileDto {
   private String profileImage;
   private String profileImageThumbnail;
   private Date lastUpdatedDate;
-
   private boolean canUpdateMember;
 
   public static MemberProfileDto fromFamilyMemberDBEntity(
