@@ -64,21 +64,7 @@ public class AddFamilyOperation extends FamilyAbstractOperation<AddFamilyRequest
 
   private AddressEntity getAddressFromRequest(AddFamilyRequest opRequest) {
     AddressDto inputAddress = opRequest.getFamilyAddress();
-    AuditInfo auditInfo = getAuditInfo();
-    return AddressEntity.builder()
-        .addressLine1(inputAddress.getAddressLine1())
-        .addressLine2(inputAddress.getAddressLine2())
-        .addressLine3(inputAddress.getAddressLine3())
-        .city(inputAddress.getCity())
-        .district(inputAddress.getDistrict())
-        .state(inputAddress.getState())
-        .postalCode(inputAddress.getPostalCode())
-        .country(inputAddress.getCountry())
-        .createdBy(auditInfo.getCreatedBy())
-        .createdDate(auditInfo.getCreatedDate())
-        .lastUpdatedBy(auditInfo.getLastUpdatedBy())
-        .lastUpdatedDate(auditInfo.getLastUpdatedDate())
-        .build();
+    return inputAddress.getAddressEntityFromDto(getAuditInfo());
   }
 
   private FamilyEntity getFamilyFromRequest(

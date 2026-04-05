@@ -232,8 +232,7 @@ public class AddFamilyMemberOperation
       AddFamilyMemberRequest opRequest, FamilyEntity family, int addressId, String memberRegion) {
     AuditInfo auditInfo = getAuditInfo();
     String phoneNumber = DataFormatter.formatPhoneNumberForDBStorage(opRequest.getPhone());
-    String emailId =
-        opRequest.getEmail() != null ? opRequest.getEmail().toLowerCase().trim() : null;
+    String emailId = opRequest.getEmail();
     short birthDay = MISSING_BIRTH_DATE_VALUE;
     if (opRequest.getBirthDay() != null) {
       birthDay = opRequest.getBirthDay();
@@ -359,29 +358,9 @@ public class AddFamilyMemberOperation
     int memberAge =
         DataFormatter.getMemberAgeInYears(
             birthDay, Month.fromName(opRequest.getBirthMonth()), opRequest.getBirthYear());
-    if (gender == Gender.Female) {
-      if (memberAge < 20) {
-        return ImageConstants.DEFAULT_KID_GIRL_IMAGE;
-      } else if (memberAge < 60) {
-        MaritalStatus memberMaritalStatus =
+    MaritalStatus memberMaritalStatus =
             MaritalStatus.getMaritalStatus(opRequest.getMaritalStatus());
-        if (memberMaritalStatus == MaritalStatus.Single
-            || memberMaritalStatus == MaritalStatus.Engaged) {
-          return ImageConstants.DEFAULT_UNMARRIED_GIRL_IMAGE;
-        }
-        return ImageConstants.DEFAULT_MARRIED_WOMAN_IMAGE;
-      } else {
-        return ImageConstants.DEFAULT_OLD_WOMAN_IMAGE;
-      }
-    } else {
-      if (memberAge < 20) {
-        return ImageConstants.DEFAULT_KID_BOY_IMAGE;
-      } else if (memberAge < 60) {
-        return ImageConstants.DEFAULT_MAN_IMAGE;
-      } else {
-        return ImageConstants.DEFAULT_OLD_MAN_IMAGE;
-      }
-    }
+    return getMemberDefaultImagePath(gender, memberAge, memberMaritalStatus);
   }
 
   private static String getDefaultThumbnailImagePath(AddFamilyMemberRequest opRequest) {

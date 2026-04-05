@@ -10,4 +10,6 @@ public interface Constants {
 
   int MISSING_BIRTH_DATE_VALUE = -1;
 
+  short CHHIPA_SAMAJ_ID = 1;
+
 }

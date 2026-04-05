@@ -13,6 +13,7 @@ import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.base.app.operation.model.OperationRequest;
 import com.neasaa.base.app.operation.model.OperationResponse;
 import com.neasaa.base.app.service.AppSessionUser;
+import com.neasaa.familytree.constants.ImageConstants;
 import com.neasaa.familytree.dao.pg.AddressDao;
 import com.neasaa.familytree.dao.pg.FamilyDao;
 import com.neasaa.familytree.dao.pg.FamilyMemberDao;
@@ -21,6 +22,7 @@ import com.neasaa.familytree.entity.AddressEntity;
 import com.neasaa.familytree.entity.FamilyMemberEntity;
 import com.neasaa.familytree.entity.MemberRelationshipEntity;
 import com.neasaa.familytree.enums.Gender;
+import com.neasaa.familytree.enums.MaritalStatus;
 import com.neasaa.familytree.operation.family.model.AddressDto;
 import com.neasaa.familytree.operation.family.model.MemberSummaryDto;
 import com.neasaa.familytree.utils.DataFormatter;
@@ -273,6 +275,30 @@ public abstract class FamilyAbstractOperation<
   protected AddressDto getFamilyAddress(int familyId) {
     AddressEntity address = addressDao.getAddressByFamilyId(familyId);
     return AddressDto.getAddressDtoFromEntity(address);
+  }
+
+  public static String getMemberDefaultImagePath(Gender gender, int memberAge, MaritalStatus memberMaritalStatus) {
+    if (gender == Gender.Female) {
+      if (memberAge < 20) {
+        return ImageConstants.DEFAULT_KID_GIRL_IMAGE;
+      } else if (memberAge < 60) {
+        if (memberMaritalStatus == MaritalStatus.Single
+                || memberMaritalStatus == MaritalStatus.Engaged) {
+          return ImageConstants.DEFAULT_UNMARRIED_GIRL_IMAGE;
+        }
+        return ImageConstants.DEFAULT_MARRIED_WOMAN_IMAGE;
+      } else {
+        return ImageConstants.DEFAULT_OLD_WOMAN_IMAGE;
+      }
+    } else {
+      if (memberAge < 20) {
+        return ImageConstants.DEFAULT_KID_BOY_IMAGE;
+      } else if (memberAge < 60) {
+        return ImageConstants.DEFAULT_MAN_IMAGE;
+      } else {
+        return ImageConstants.DEFAULT_OLD_MAN_IMAGE;
+      }
+    }
   }
 
 }

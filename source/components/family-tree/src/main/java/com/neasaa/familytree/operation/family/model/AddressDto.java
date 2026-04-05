@@ -1,5 +1,6 @@
 package com.neasaa.familytree.operation.family.model;
 
+import com.neasaa.base.app.operation.AuditInfo;
 import com.neasaa.familytree.entity.AddressEntity;
 import lombok.*;
 
@@ -8,6 +9,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class AddressDto {
 
   private int addressId;
@@ -36,6 +38,22 @@ public class AddressDto {
         .build();
   }
 
+  public AddressEntity getAddressEntityFromDto(AuditInfo auditInfo) {
+     return AddressEntity.builder()
+            .addressLine1(getAddressLine1())
+            .addressLine2(getAddressLine2())
+            .addressLine3(getAddressLine3())
+            .city(getCity())
+            .district(getDistrict())
+            .state(getState())
+            .postalCode(getPostalCode())
+            .country(getCountry())
+            .createdBy(auditInfo.getCreatedBy())
+            .createdDate(auditInfo.getCreatedDate())
+            .lastUpdatedBy(auditInfo.getLastUpdatedBy())
+            .lastUpdatedDate(auditInfo.getLastUpdatedDate())
+            .build();
+  }
   public void trimFields() {
     if (addressLine1 != null) {
       addressLine1 = addressLine1.trim();

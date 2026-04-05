@@ -47,7 +47,7 @@ public class AddFamilyMemberRequest extends OperationRequest {
     if (nickNameInHindi != null) nickNameInHindi = nickNameInHindi.trim();
     if (memberAddress != null) memberAddress.trimFields();
     if (phone != null) phone = phone.trim();
-    if (email != null) email = email.trim();
+    if (email != null) email = email.trim().toLowerCase();
     if (linkedinUrl != null) linkedinUrl = linkedinUrl.trim();
     if (gender != null) gender = gender.trim();
     if (birthMonth != null) birthMonth = birthMonth.trim();

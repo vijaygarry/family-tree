@@ -16,9 +16,11 @@ import com.neasaa.familytree.operation.events.model.GetEventsRequest;
 import com.neasaa.familytree.operation.events.model.GetEventsResponse;
 import com.neasaa.familytree.operation.family.AddFamilyMemberOperation;
 import com.neasaa.familytree.operation.family.AddFamilyOperation;
+import com.neasaa.familytree.operation.family.FamilyRegistrationOperation;
 import com.neasaa.familytree.operation.family.GetFamilyDetailsOperation;
 import com.neasaa.familytree.operation.family.GetMemberProfileOperation;
 import com.neasaa.familytree.operation.family.ManageRelationshipOperation;
+import com.neasaa.familytree.operation.family.ProcessFamilyRegistrationOperation;
 import com.neasaa.familytree.operation.family.SearchFamilyMemberOperation;
 import com.neasaa.familytree.operation.family.SearchFamilyOperation;
 import com.neasaa.familytree.operation.family.UpdateFamilyDetailsOperation;
@@ -29,12 +31,16 @@ import com.neasaa.familytree.operation.family.model.AddFamilyMemberRequest;
 import com.neasaa.familytree.operation.family.model.AddFamilyMemberResponse;
 import com.neasaa.familytree.operation.family.model.AddFamilyRequest;
 import com.neasaa.familytree.operation.family.model.AddFamilyResponse;
+import com.neasaa.familytree.operation.family.model.FamilyRegistrationRequest;
+import com.neasaa.familytree.operation.family.model.FamilyRegistrationResponse;
 import com.neasaa.familytree.operation.family.model.GetFamilyDetailsRequest;
 import com.neasaa.familytree.operation.family.model.GetFamilyDetailsResponse;
 import com.neasaa.familytree.operation.family.model.GetMemberProfileRequest;
 import com.neasaa.familytree.operation.family.model.GetMemberProfileResponse;
 import com.neasaa.familytree.operation.family.model.ManageRelationshipRequest;
 import com.neasaa.familytree.operation.family.model.ManageRelationshipResponse;
+import com.neasaa.familytree.operation.family.model.ProcessFamilyRegistrationRequest;
+import com.neasaa.familytree.operation.family.model.ProcessFamilyRegistrationResponse;
 import com.neasaa.familytree.operation.family.model.SearchFamilyMemberRequest;
 import com.neasaa.familytree.operation.family.model.SearchFamilyMemberResponse;
 import com.neasaa.familytree.operation.family.model.SearchFamilyRequest;
@@ -77,6 +83,20 @@ public class FamilyController {
   public ResponseEntity<AddFamilyResponse> addFamily(@RequestBody AddFamilyRequest addFamilyRequest)
       throws Exception {
     return WebRequestHandler.processRequest(AddFamilyOperation.class, addFamilyRequest);
+  }
+
+  @RequestMapping(value = "/familyRegistrationRequest")
+  @ResponseBody
+  public ResponseEntity<FamilyRegistrationResponse> registerFamily(@RequestBody FamilyRegistrationRequest familyRegistrationRequest)
+      throws Exception {
+    return WebRequestHandler.processRequest(FamilyRegistrationOperation.class, familyRegistrationRequest);
+  }
+
+  @RequestMapping(value = "/processFamilyRegistrationRequest")
+  @ResponseBody
+  public ResponseEntity<ProcessFamilyRegistrationResponse> registerFamily(@RequestBody ProcessFamilyRegistrationRequest processFamilyRegistrationRequest)
+          throws Exception {
+    return WebRequestHandler.processRequest(ProcessFamilyRegistrationOperation.class, processFamilyRegistrationRequest);
   }
 
   @RequestMapping(value = "/getfamilydetails")

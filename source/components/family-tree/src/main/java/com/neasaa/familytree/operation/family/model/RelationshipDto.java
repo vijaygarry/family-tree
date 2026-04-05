@@ -46,4 +46,9 @@ public class RelationshipDto {
     entity.setRelatedMemberId(this.relatedMemberId);
     return entity;
   }
+
+  @Override
+  public String toString() {
+    return "member " + memberName + "(" + memberId + ")'s " + relationshipType + " is " + relatedMemberName + "(" + relatedMemberId + ")";
+  }
 }
