@@ -40,6 +40,9 @@ public class AppProperties {
   @Value("${email.list.for.sms.otp}")
   private String emailListForSMSOtp;
 
+  @Value("${email.list.for.family.registration}")
+  private String emailListForFamilyRegistration;
+
   @Value("${app.upload.dir}")
   private String appUploadDir;
 }

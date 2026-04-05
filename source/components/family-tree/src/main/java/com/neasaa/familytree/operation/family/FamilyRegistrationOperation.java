@@ -1,5 +1,6 @@
 package com.neasaa.familytree.operation.family;
 
+import static com.neasaa.base.app.operation.BeanNames.APP_EMAIL_SENDER;
 import static com.neasaa.base.app.utils.ValidationUtils.checkObjectPresent;
 import static com.neasaa.base.app.utils.ValidationUtils.checkValuePresent;
 import static com.neasaa.familytree.utils.Constants.CHHIPA_SAMAJ_ID;
@@ -8,7 +9,10 @@ import static com.neasaa.familytree.utils.FamilytreeValidationUtils.validateBirt
 
 import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
+import com.neasaa.base.app.utils.AppProperties;
 import com.neasaa.base.app.utils.EmailValidator;
+import com.neasaa.base.app.utils.email.EmailMessage;
+import com.neasaa.base.app.utils.email.EmailSender;
 import com.neasaa.familytree.dao.pg.FamilyRegistrationRequestDao;
 import com.neasaa.familytree.entity.FamilyMemberRegistrationEntity;
 import com.neasaa.familytree.entity.FamilyRegistrationRequestEntity;
@@ -21,9 +25,11 @@ import com.neasaa.familytree.operation.family.model.FamilyRegistrationResponse;
 import com.neasaa.familytree.utils.FamilytreeValidationUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +42,13 @@ public class FamilyRegistrationOperation extends FamilyAbstractOperation<FamilyR
 
   @Autowired
   protected FamilyRegistrationRequestDao familyRegistrationRequestDao;
+
+  @Autowired
+  private AppProperties appProperties;
+
+  @Autowired
+  @Qualifier(APP_EMAIL_SENDER)
+  private EmailSender emailSender;
 
   @Override
   public String getOperationName() {
@@ -160,6 +173,8 @@ public class FamilyRegistrationOperation extends FamilyAbstractOperation<FamilyR
       log.info("{} members processed in {} iteration", memberAdded, iteration);
     }
 
+    sendEmailNotification(opRequest.getFamilyDetails().getSurname(), familyRegistrationRequestId);
+
     FamilyRegistrationResponse response = new FamilyRegistrationResponse();
     response.setSurname(opRequest.getFamilyDetails().getSurname());
     response.setFamilyRegistrationId(familyRegistrationRequestId);
@@ -174,6 +189,37 @@ public class FamilyRegistrationOperation extends FamilyAbstractOperation<FamilyR
       if (familyRegistrationRequestDao.memberExistWithEmailPhone(member.getEmail(), member.getPhoneNumber())) {
         throw new ValidationException("Member with email " + member.getEmail() + " or phone " + member.getPhoneNumber() + " is already registered");
       }
+    }
+  }
+
+  private void sendEmailNotification (String familySurname, int familyRegistrationRequestId) {
+    try {
+      String emailSubject = "New family registration request: " + familySurname;
+      String emailBody = String.format("""
+              Dear Admin,
+              
+              A new family registration request has been submitted for family: %s. Please review and approve the request.
+              
+              Family Registration Request ID: %d
+              
+              Regards,
+              Rajput Chhipa Team""", familySurname, familyRegistrationRequestId);
+
+      String emailString = appProperties.getEmailListForFamilyRegistration();
+      List<String> emailList = Arrays.asList(emailString.trim().split(";"));
+      EmailMessage emailMessage =
+              EmailMessage.builder()
+                      .from(appProperties.getEmailSenderEmailId())
+                      .fromDisplayName(appProperties.getEmailSenderDisplayName())
+                      .to(emailList)
+                      .subject(emailSubject)
+                      .body(emailBody)
+                      .type(EmailMessage.EmailType.TEXT)
+                      .build();
+      log.info("Sending email to: {}, Subject: {}", emailList, emailSubject);
+      emailSender.sendEmail(emailMessage);
+    } catch (Exception e) {
+        log.error("Failed to send email notification for family registration request ID: {}", familyRegistrationRequestId, e);
     }
   }
 
