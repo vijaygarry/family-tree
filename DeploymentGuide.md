@@ -64,21 +64,11 @@ Update the **A record** for the domain `rajputchhipa.com` in Cloudflare:
 
 ---
 
-### 2.1. Build Latest Code
-
-```bash
-# Note: make sure you include clean task
-cd /Users/vijaygarothaya/work/product/family-tree/source/
-./gradlew clean buildDist -PbuildReactApp
-```
-
----
-
-### 2.2. Deploy Libs Directly from distribution/lib to Prod
+### 2.1. Build and Deploy Latest Code from local machine
 
 ```bash
 cd /Users/vijaygarothaya/work/product/chippaSamaj/family-tree-tf/source/env/dev/scripts/application/opsTools
-./deployLibFromLocalServer.sh
+./buildAndDeployFromLocalServer.sh
 ```
 
 ---

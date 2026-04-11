@@ -42,3 +42,4 @@ build/
 source/distribution/*
 uploaded-images/*
 logs/*
+source/components/family-tree-web-boot/src/main/resources/static/
