@@ -11,4 +11,8 @@ public class GetMemberProfileRequest extends OperationRequest {
   private static final long serialVersionUID = -3478291045823901842L;
 
   private Integer memberId;
+
+  @Override
+  public void normalize() {
+  }
 }

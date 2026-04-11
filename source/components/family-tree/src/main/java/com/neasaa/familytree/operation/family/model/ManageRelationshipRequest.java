@@ -13,4 +13,11 @@ public class ManageRelationshipRequest extends OperationRequest {
 
   private List<RelationshipDto> toAdd;
   private List<RelationshipDto> toRemove;
+
+  @Override
+  public void normalize() {
+    if (action != null) {
+      action = action.trim().toUpperCase();
+    }
+  }
 }

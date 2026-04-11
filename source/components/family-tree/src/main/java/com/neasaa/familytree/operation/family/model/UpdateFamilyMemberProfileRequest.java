@@ -39,7 +39,8 @@ public class UpdateFamilyMemberProfileRequest extends OperationRequest {
   private boolean addressSameAsFamily;
   private AddressDto memberAddress;
 
-  public void trimFields() {
+  @Override
+  public void normalize() {
     if (firstName != null) {
       firstName = firstName.trim();
     }
@@ -85,7 +86,7 @@ public class UpdateFamilyMemberProfileRequest extends OperationRequest {
       linkedinUrl = linkedinUrl.trim();
     }
     if (memberAddress != null) {
-      memberAddress.trimFields();
+      memberAddress.normalize();
     }
   }
 }

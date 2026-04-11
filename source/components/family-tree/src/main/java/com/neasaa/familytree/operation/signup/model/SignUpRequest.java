@@ -21,7 +21,8 @@ public class SignUpRequest extends OperationRequest {
 
   private String requestId;
 
-  public void trimFields() {
+  @Override
+  public void normalize() {
     if(otpChannel != null) {
       otpChannel = otpChannel.trim();
     }

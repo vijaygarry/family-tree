@@ -27,12 +27,13 @@ public class FamilyRegistrationRequest extends OperationRequest {
   private FamilyDetails familyDetails;
   private List<Member> members;
 
-  public void trimFields() {
+  @Override
+  public void normalize() {
     if (familyDetails != null) {
-      familyDetails.trimFields();
+      familyDetails.normalize();
     }
     if (members != null) {
-      members.forEach(Member::trimFields);
+      members.forEach(Member::normalize);
     }
   }
 
@@ -47,7 +48,7 @@ public class FamilyRegistrationRequest extends OperationRequest {
     private String phone;
     private AddressDto familyAddress;
 
-    public void trimFields() {
+    public void normalize() {
       if (surname != null) {
         surname = DataFormatter.capitalizeFirstLetter(surname);
       }
@@ -64,7 +65,7 @@ public class FamilyRegistrationRequest extends OperationRequest {
         phone = DataFormatter.formatPhoneNumberForDBStorage(phone);
       }
       if (familyAddress != null) {
-        familyAddress.trimFields();
+        familyAddress.normalize();
         // Capitalize address fields
         if (familyAddress.getAddressLine1() != null) {
           familyAddress.setAddressLine1(DataFormatter.capitalizeFirstLetter(familyAddress.getAddressLine1()));
@@ -110,7 +111,7 @@ public class FamilyRegistrationRequest extends OperationRequest {
     private Boolean headOfFamily;
     private Relationship relationship;
 
-    public void trimFields() {
+    public void normalize() {
       if (firstName != null) {
         firstName = DataFormatter.capitalizeFirstLetter(firstName);
       }
@@ -145,7 +146,7 @@ public class FamilyRegistrationRequest extends OperationRequest {
         occupation = DataFormatter.capitalizeFirstLetter(occupation);
       }
       if (relationship != null) {
-        relationship.trimFields();
+        relationship.normalize();
       }
     }
 
@@ -195,7 +196,7 @@ public class FamilyRegistrationRequest extends OperationRequest {
     private String relationshipType;
     private String memberName;
 
-    public void trimFields() {
+    public void normalize() {
       if (relationshipType != null) {
         relationshipType = relationshipType.trim();
       }

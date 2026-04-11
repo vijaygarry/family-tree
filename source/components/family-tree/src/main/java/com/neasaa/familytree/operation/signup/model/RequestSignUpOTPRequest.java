@@ -12,7 +12,8 @@ public class RequestSignUpOTPRequest extends OperationRequest {
   private String mobileNumber;
   private String emailId;
 
-  public void trimFields() {
+  @Override
+  public void normalize() {
     if(otpChannel != null) {
       otpChannel = otpChannel.trim();
     }

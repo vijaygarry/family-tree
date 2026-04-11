@@ -60,8 +60,6 @@ public class RequestSignUpOTPOperation
     if (opRequest == null) {
       throw new ValidationException("Invalid request provided.");
     }
-
-    opRequest.trimFields();
     checkValuePresent(opRequest.getOtpChannel(), "OTP channel");
   }
 

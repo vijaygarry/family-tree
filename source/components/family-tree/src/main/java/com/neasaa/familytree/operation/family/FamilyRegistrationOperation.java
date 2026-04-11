@@ -62,9 +62,6 @@ public class FamilyRegistrationOperation extends FamilyAbstractOperation<FamilyR
     }
     log.info("Request received for family registration: {}", opRequest);
 
-    // Trim and capitalize fields
-    opRequest.trimFields();
-
     checkObjectPresent(opRequest.getFamilyDetails(), "family details");
     checkValuePresent(opRequest.getFamilyDetails().getSurname(), "surname");
     checkObjectPresent(opRequest.getFamilyDetails().getFamilyAddress(), "family address");

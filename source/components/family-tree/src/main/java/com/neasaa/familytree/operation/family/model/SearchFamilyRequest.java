@@ -8,4 +8,11 @@ import lombok.Setter;
 @Setter
 public class SearchFamilyRequest extends OperationRequest {
   private String searchString;
+
+  @Override
+  public void normalize() {
+    if (searchString != null) {
+      searchString = searchString.trim();
+    }
+  }
 }

@@ -13,4 +13,8 @@ public class UpdateImageRequest extends OperationRequest {
   private Integer memberId; // If request to update member image
   private Path tmpUploadedFilePath;
   private String operationName;
+
+  @Override
+  public void normalize() {
+  }
 }

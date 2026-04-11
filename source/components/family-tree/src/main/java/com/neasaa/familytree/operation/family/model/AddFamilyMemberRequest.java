@@ -39,13 +39,14 @@ public class AddFamilyMemberRequest extends OperationRequest {
   private String profileImageThumbnail;
   private RelationshipDto relationship;
 
-  public void trimFields() {
+  @Override
+  public void normalize() {
     if (firstName != null) firstName = firstName.trim();
     if (firstNameInHindi != null) firstNameInHindi = firstNameInHindi.trim();
     if (maidenLastName != null) maidenLastName = maidenLastName.trim();
     if (nickName != null) nickName = nickName.trim();
     if (nickNameInHindi != null) nickNameInHindi = nickNameInHindi.trim();
-    if (memberAddress != null) memberAddress.trimFields();
+    if (memberAddress != null) memberAddress.normalize();
     if (phone != null) phone = phone.trim();
     if (email != null) email = email.trim().toLowerCase();
     if (linkedinUrl != null) linkedinUrl = linkedinUrl.trim();

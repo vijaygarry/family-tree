@@ -41,7 +41,6 @@ public class UpdateFamilyDetailsOperation
     if (opRequest == null) {
       throw new ValidationException("Invalid request provided.");
     }
-    opRequest.trimFields();
     checkObjectPresent(opRequest.getFamilyId(), "family Id");
     checkValueRange(opRequest.getFamilyId(), 1, Integer.MAX_VALUE, "family Id");
 

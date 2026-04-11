@@ -12,7 +12,6 @@ import com.neasaa.base.app.operation.AuditInfo;
 import com.neasaa.base.app.operation.exception.OperationException;
 import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.base.app.utils.EmailValidator;
-import com.neasaa.familytree.constants.ImageConstants;
 import com.neasaa.familytree.entity.AddressEntity;
 import com.neasaa.familytree.entity.FamilyEntity;
 import com.neasaa.familytree.entity.FamilyMemberEntity;
@@ -51,7 +50,6 @@ public class AddFamilyMemberOperation
     if (opRequest == null) {
       throw new ValidationException("Invalid request provided.");
     }
-    opRequest.trimFields();
     checkObjectPresent(opRequest.getFamilyId(), "family Id");
     checkValueRange(opRequest.getFamilyId(), 1, Integer.MAX_VALUE, "family id");
 

@@ -17,7 +17,8 @@ public class UpdateFamilyDetailsRequest extends OperationRequest {
   private String email;
   private AddressDto familyAddress;
 
-  public void trimFields() {
+  @Override
+  public void normalize() {
     if (familyName != null) {
       familyName = familyName.trim();
     }
@@ -34,7 +35,7 @@ public class UpdateFamilyDetailsRequest extends OperationRequest {
       email = email.trim();
     }
     if (familyAddress != null) {
-      familyAddress.trimFields();
+      familyAddress.normalize();
     }
   }
 }

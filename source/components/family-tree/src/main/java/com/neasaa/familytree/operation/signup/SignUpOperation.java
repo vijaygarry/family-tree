@@ -58,7 +58,6 @@ public class SignUpOperation extends AbstractOperation<SignUpRequest, EmptyOpera
     if (opRequest == null) {
       throw new ValidationException("Invalid request provided.");
     }
-    opRequest.trimFields();
     checkValuePresent(opRequest.getOtpChannel(), "OTP channel");
 
     checkValuePresent(opRequest.getOtp(), "One time password (OTP)");

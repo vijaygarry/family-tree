@@ -15,4 +15,11 @@ import lombok.Setter;
 public class ProcessFamilyRegistrationRequest extends OperationRequest {
   private int familyRegistrationId;
   private String action;
+
+  @Override
+  public void normalize() {
+    if (action != null) {
+      action = action.trim().toUpperCase();
+    }
+  }
 }

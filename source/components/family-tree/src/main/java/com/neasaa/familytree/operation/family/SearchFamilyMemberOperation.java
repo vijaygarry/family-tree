@@ -31,7 +31,6 @@ public class SearchFamilyMemberOperation extends FamilyAbstractOperation<SearchF
       if (opRequest == null) {
           throw new ValidationException("Invalid request provided.");
       }
-      opRequest.trimFields();
 
       if (opRequest.getGender() != null && !opRequest.getGender().isEmpty()) {
           if (Gender.getGenderByString(opRequest.getGender()) == null) {

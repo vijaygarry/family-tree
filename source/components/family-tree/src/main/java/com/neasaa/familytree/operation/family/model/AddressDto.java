@@ -54,7 +54,7 @@ public class AddressDto {
             .lastUpdatedDate(auditInfo.getLastUpdatedDate())
             .build();
   }
-  public void trimFields() {
+  public void normalize() {
     if (addressLine1 != null) {
       addressLine1 = addressLine1.trim();
     }

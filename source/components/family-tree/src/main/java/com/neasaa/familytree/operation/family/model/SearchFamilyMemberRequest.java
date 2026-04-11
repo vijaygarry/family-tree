@@ -13,7 +13,8 @@ public class SearchFamilyMemberRequest extends OperationRequest {
     private Integer ageTo;
     private String maritalStatus;
 
-    public void trimFields() {
+    @Override
+    public void normalize() {
         if (searchString != null) {
             searchString = searchString.trim();
         }

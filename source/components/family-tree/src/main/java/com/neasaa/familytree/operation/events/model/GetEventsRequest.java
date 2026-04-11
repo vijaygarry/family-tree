@@ -9,4 +9,11 @@ import lombok.Setter;
 public class GetEventsRequest extends OperationRequest {
   private String eventType;
   private boolean pastEvents;
+
+  @Override
+  public void normalize() {
+    if (eventType != null) {
+      eventType = eventType.trim().toUpperCase();
+    }
+  }
 }

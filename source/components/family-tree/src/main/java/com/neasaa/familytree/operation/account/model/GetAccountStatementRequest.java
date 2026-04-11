@@ -13,4 +13,17 @@ public class GetAccountStatementRequest extends OperationRequest {
   private Integer accountId;
   private String year;
   private String month;
+
+  @Override
+  public void normalize() {
+    if(year != null) {
+      year = year.trim();
+    }
+    if(month != null) {
+      month = month.trim();
+    }
+    if(accountId != null && accountId < 0) {
+      accountId = null;
+    }
+  }
 }

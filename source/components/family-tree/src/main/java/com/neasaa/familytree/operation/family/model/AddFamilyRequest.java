@@ -17,4 +17,26 @@ public class AddFamilyRequest extends OperationRequest {
   private boolean isPhoneWhatsappRegistered;
   private String email;
   private AddressDto familyAddress;
+
+  @Override
+  public void normalize() {
+    if (familyName != null) {
+      familyName = familyName.trim();
+    }
+    if (familyNameInHindi != null) {
+      familyNameInHindi = familyNameInHindi.trim();
+    }
+    if (gotra != null) {
+      gotra = gotra.trim();
+    }
+    if (phone != null) {
+      phone = phone.trim();
+    }
+    if (email != null) {
+      email = email.trim().toLowerCase();
+    }
+    if(familyAddress != null) {
+      familyAddress.normalize();
+    }
+  }
 }
