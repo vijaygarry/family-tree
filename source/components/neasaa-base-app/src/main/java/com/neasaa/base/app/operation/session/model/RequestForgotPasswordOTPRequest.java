@@ -8,4 +8,12 @@ import lombok.Setter;
 @Setter
 public class RequestForgotPasswordOTPRequest extends OperationRequest {
   private String loginName;
+
+  @Override
+  public void normalize() {
+    if (loginName != null) {
+      this.loginName = this.loginName.toLowerCase().trim();
+    }
+  }
+
 }

@@ -45,7 +45,6 @@ public class ResetForgotPasswordOperation
     if (opRequest == null) {
       throw new ValidationException("Invalid request provided.");
     }
-    opRequest.trimValues();
     checkValuePresent(opRequest.getLoginName(), "Email Id/Mobile Number");
     checkValuePresent(opRequest.getOtpChannel(), "otp channel");
     checkValuePresent(opRequest.getOtp(), "One time password (OTP)");

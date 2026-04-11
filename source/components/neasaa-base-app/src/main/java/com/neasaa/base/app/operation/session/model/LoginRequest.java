@@ -18,4 +18,11 @@ public class LoginRequest extends OperationRequest {
   private String password;
 
   private ClientInformation clientInformation;
+
+  @Override
+  public void normalize() {
+    if (this.loginName != null) {
+      this.loginName = this.loginName.toLowerCase().trim();
+    }
+  }
 }

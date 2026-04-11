@@ -63,7 +63,7 @@ public class RequestForgotPasswordOTPOperation
   public RequestForgotPasswordOTPResponse doExecute(RequestForgotPasswordOTPRequest opRequest)
       throws OperationException {
 
-    String logonName = opRequest.getLoginName().toLowerCase().trim();
+    String logonName = opRequest.getLoginName();
     String otpChannel = null;
     AppUser appUser = null;
     if(EmailValidator.isEmailId(logonName)) {

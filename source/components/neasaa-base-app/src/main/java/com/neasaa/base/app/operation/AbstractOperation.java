@@ -61,17 +61,18 @@ public abstract class AbstractOperation<
 
       // getOperationEntityByName make sure operationEntity is not null.
       if (operationEntity.getAuthorizationType() == null) {
-        String msg = "Authtype is not define for Operation name " + operationName;
+        String msg = "Authorization type is not define for Operation name " + operationName;
         log.info(msg);
         throw new InternalServerException(msg);
       }
-
+      request.normalize();
+      
       if (!this.authorizationService.isOperationAllowedForUser(operationEntity, appSessionUser)) {
         throw new AccessDeniedException(
             "Operation " + operationName + " not allowed. Please contact administrator.");
       }
 
-      // Static validation for input fields. This should not depends on DB connection.
+      // Static validation for input fields. This should not depend on DB connection.
       doValidate(request);
 
       response = doExecute(request);
@@ -89,8 +90,7 @@ public abstract class AbstractOperation<
       try {
         postExecute();
       } catch (Throwable th) {
-        log.error(
-            "Internal unhandle exception in doing post process. Error:" + th.getMessage(), th);
+          log.error("Internal unhandled exception in doing post process. Error:{}", th.getMessage(), th);
       }
       context.markComplete();
 
@@ -100,7 +100,7 @@ public abstract class AbstractOperation<
         auditTransaction(
             operationEntity, request, response, operationException, appSessionUser, context);
       } catch (Throwable th) {
-        log.error("Internal unhandle exception while auditing. Error:" + th.getMessage(), th);
+          log.error("Internal unhandled exception while auditing. Error:{}", th.getMessage(), th);
       }
     }
   }

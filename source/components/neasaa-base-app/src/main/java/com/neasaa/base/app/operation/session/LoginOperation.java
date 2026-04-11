@@ -64,7 +64,7 @@ public class LoginOperation extends AbstractOperation<LoginRequest, LoginRespons
   @Override
   public LoginResponse doExecute(LoginRequest opRequest) throws OperationException {
     String plainTextPassword = opRequest.getPassword();
-    String logonName = opRequest.getLoginName().toLowerCase().trim();
+    String logonName = opRequest.getLoginName();
     opRequest.setPassword(null);
     AppUser authenticatedUser =
         authenticationService.authenticateUser(logonName, plainTextPassword, null);

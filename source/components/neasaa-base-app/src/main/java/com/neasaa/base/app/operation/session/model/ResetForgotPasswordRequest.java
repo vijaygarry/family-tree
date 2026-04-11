@@ -19,7 +19,8 @@ public class ResetForgotPasswordRequest extends OperationRequest {
 
   private String requestId;
 
-  public void trimValues() {
+  @Override
+  public void normalize() {
     if (this.loginName != null) {
       this.loginName = this.loginName.trim().toLowerCase();
     }
