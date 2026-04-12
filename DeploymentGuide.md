@@ -67,7 +67,7 @@ Update the **A record** for the domain `rajputchhipa.com` in Cloudflare:
 ### 2.1. Build and Deploy Latest Code from local machine
 
 ```bash
-cd /Users/vijaygarothaya/work/product/chippaSamaj/family-tree-tf/source/env/dev/scripts/application/opsTools
+cd /Users/vijaygarothaya/work/product/chippaSamaj/family-tree-tf/source/env/dev/scripts/application/opsTools/dev-tools
 ./buildAndDeployFromLocalServer.sh
 ```
 
