@@ -18,10 +18,10 @@ public class FamilytreeValidationUtils {
   private static final String FAMILY_NAME_REGEX = "^[a-zA-Z .-]+$";
 
   // Address line regex allows alphabets, numbers, space, comma, dot, hyphen and hindi characters
-  private static final String ADDRESS_LINE_REGEX = "^[a-zA-Z0-9 ,.-\\u0900-\\u097F]+$";
-  private static final String CITY_REGEX = "^[a-zA-Z .-\\u0900-\\u097F]+$";
-  private static final String STATE_REGEX = "^[a-zA-Z .-\\u0900-\\u097F]+$";
-  private static final String COUNTRY_REGEX = "^[a-zA-Z .-\\u0900-\\u097F]+$";
+  private static final String ADDRESS_LINE_REGEX = "^[a-zA-Z0-9 ,.\\-()\\[\\]{}\\/\\#@&:;'\"\\u0900-\\u097F\\u1CD0-\\u1CFF\\uA8E0-\\uA8FF]+$";
+  private static final String CITY_REGEX = ADDRESS_LINE_REGEX;
+  private static final String STATE_REGEX = ADDRESS_LINE_REGEX;
+  private static final String COUNTRY_REGEX = ADDRESS_LINE_REGEX;
   private static final String POSTAL_CODE_REGEX =
       "^[a-zA-Z0-9]{3,8}$"; // Allowing 3 to 8 digit postal codes
 
@@ -50,13 +50,13 @@ public class FamilytreeValidationUtils {
     validateStringLength(address.getCountry(), "country", 70);
     validateStringLength(address.getPostalCode(), "postal code", 8);
 
-    validateStringWithRegex(address.getAddressLine1(), "address line-1", ADDRESS_LINE_REGEX);
-    validateStringWithRegex(address.getAddressLine2(), "address line-2", ADDRESS_LINE_REGEX);
-    validateStringWithRegex(address.getAddressLine3(), "address line-3", ADDRESS_LINE_REGEX);
-    validateStringWithRegex(address.getCity(), "city", CITY_REGEX);
-    validateStringWithRegex(address.getDistrict(), "district", CITY_REGEX);
-    validateStringWithRegex(address.getState(), "state", STATE_REGEX);
-    validateStringWithRegex(address.getCountry(), "country", COUNTRY_REGEX);
+//    validateStringWithRegex(address.getAddressLine1(), "address line-1", ADDRESS_LINE_REGEX);
+//    validateStringWithRegex(address.getAddressLine2(), "address line-2", ADDRESS_LINE_REGEX);
+//    validateStringWithRegex(address.getAddressLine3(), "address line-3", ADDRESS_LINE_REGEX);
+//    validateStringWithRegex(address.getCity(), "city", CITY_REGEX);
+//    validateStringWithRegex(address.getDistrict(), "district", CITY_REGEX);
+//    validateStringWithRegex(address.getState(), "state", STATE_REGEX);
+//    validateStringWithRegex(address.getCountry(), "country", COUNTRY_REGEX);
     validateStringWithRegex(address.getPostalCode(), "postal code", POSTAL_CODE_REGEX);
   }
 

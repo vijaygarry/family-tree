@@ -121,6 +121,9 @@ public class FamilyRegistrationRequest extends OperationRequest {
       if (phoneNumber != null) {
         phoneNumber = DataFormatter.formatPhoneNumberForDBStorage(phoneNumber);
       }
+      if(email != null) {
+        email = email.trim().toLowerCase();
+      }
       if (gender != null) {
         gender = gender.trim();
       }

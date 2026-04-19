@@ -255,19 +255,19 @@ public abstract class FamilyAbstractOperation<
 
   protected void checkIfEmailOrPhoneExists (String inputEmail, String inputPhone) {
     //If email in request is not null
-    if (inputEmail != null) {
+    if (inputEmail != null && !inputEmail.isEmpty()) {
       boolean memberExistsForEmail = familyMemberDao.isMemberExistsForEmail(inputEmail);
       if (memberExistsForEmail) {
-        throw new ValidationException("Email id " + inputEmail + " already in use, please provide other email id");
+        throw new ValidationException("Email id '" + inputEmail + "' already in use, please provide other email id");
       }
     }
 
     //If phone in request is not null
-    if (inputPhone != null) {
+    if (inputPhone != null && !inputPhone.isEmpty()) {
       String normalizePhoneNumber = DataFormatter.formatPhoneNumberForDBStorage(inputPhone);
       boolean memberExistsForPhone = familyMemberDao.isMemberExistsForPhone(normalizePhoneNumber);
       if (memberExistsForPhone) {
-        throw new ValidationException("Phone " + inputPhone + " already in use, please provide other phone number");
+        throw new ValidationException("Phone '" + inputPhone + "' already in use, please provide other phone number");
       }
     }
   }
