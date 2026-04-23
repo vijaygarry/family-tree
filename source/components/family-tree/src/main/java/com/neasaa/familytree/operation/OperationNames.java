@@ -27,5 +27,7 @@ public interface OperationNames {
   String GET_ACCOUNT_LIST = "GET_ACCOUNT_LIST";
   String GET_ACCOUNT_STATEMENT = "GET_ACCOUNT_STATEMENT";
 
+  String GET_SAMAJ_STATISTICS = "GET_SAMAJ_STATISTICS";
+
   String WHO_AM_I = "WHO_AM_I";
 }

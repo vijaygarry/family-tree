@@ -95,7 +95,8 @@ public class RequestSignUpOTPOperation
     FamilyMemberEntity memberEntity = familyMemberDao.getMemberByPhone(mobileNumber);
     if (memberEntity == null) {
       throw new ValidationException(
-              "Mobile number " + mobileNumber + " is not allowed to signup, please contact administrator.");
+              "No family member associated with phone number " + mobileNumber + ", please register family before you signup. " +
+                      "For more details contact administrator.");
     }
 
     // Fetch the existing OTP information if any
@@ -136,9 +137,11 @@ public class RequestSignUpOTPOperation
     }
 
     // Make sure member exists in family member table with this email
-    if (!familyMemberDao.isMemberExistsForEmail(emailId)) {
+    FamilyMemberEntity memberEntity = familyMemberDao.getMemberByEmail(emailId);
+    if (memberEntity == null) {
       throw new ValidationException(
-              "Email Id " + emailId + " is not allowed to signup, please contact administrator.");
+              "No family member associated with email " + emailId + ", please register family before you signup. " +
+                      "For more details contact administrator.");
     }
 
     // Fetch the existing OTP information if any
@@ -156,7 +159,7 @@ public class RequestSignUpOTPOperation
     String requestId = OTPUtil.generateRequestId();
     insertNewOTPVerificationInfo(newOtp, requestId, emailId, OTPUtil.EMAIL_OTP_EXPIRY_DURATION);
 
-    OTPUtil.sendOtpEmail(emailId, newOtp, OTPType.SIGN_UP, appProperties, emailSender);
+    OTPUtil.sendOtpEmail(emailId, newOtp, OTPType.SIGN_UP, memberEntity.getFirstName(), memberEntity.getLastName(), appProperties, emailSender);
     RequestSignUpOTPResponse response = new RequestSignUpOTPResponse();
     response.setOtpChannel(opRequest.getOtpChannel());
     response.setEmailId(emailId);

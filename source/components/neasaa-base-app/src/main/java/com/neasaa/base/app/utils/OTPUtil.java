@@ -23,11 +23,11 @@ public class OTPUtil {
 
   public static final String FORGET_PASSWORD_OTP_SUBJECT = "Your OTP code to reset password";
   public static final String FORGET_PASSWORD_OTP_BODY_TEMPLATE =
-      "Dear Customer,\n\nYour OTP to reset password is: %s\n\nRegards,\nRajput Chhipa Team";
+      "Dear %s,\n\nYour OTP to reset password is: %s\n\nRegards,\nRajput Chhipa Team";
 
   public static final String SIGNUP_OTP_SUBJECT = "Your OTP code to complete sign up";
   public static final String SIGNUP_OTP_BODY_TEMPLATE =
-      "Dear Customer,\n\nYour OTP to complete sign up is: %s\n\nRegards,\nRajput Chhipa Team";
+      "Dear %s,\n\nYour OTP to complete sign up is: %s\n\nRegards,\nRajput Chhipa Team";
 
   public static String generateOTP() {
     StringBuilder otp = new StringBuilder();
@@ -158,6 +158,8 @@ public class OTPUtil {
       String emailId,
       String otpCode,
       OTPType otpType,
+      String firstName,
+      String lastName,
       AppProperties appProperties,
       EmailSender emailSender) {
     try {
@@ -165,10 +167,10 @@ public class OTPUtil {
       String emailBody = null;
       if (otpType == OTPType.FORGOT_PASSWORD) {
         emailSubject = FORGET_PASSWORD_OTP_SUBJECT;
-        emailBody = String.format(FORGET_PASSWORD_OTP_BODY_TEMPLATE, otpCode);
+        emailBody = String.format(FORGET_PASSWORD_OTP_BODY_TEMPLATE, (firstName + " " + lastName), otpCode);
       } else if (otpType == OTPType.SIGN_UP) {
         emailSubject = SIGNUP_OTP_SUBJECT;
-        emailBody = String.format(SIGNUP_OTP_BODY_TEMPLATE, otpCode);
+        emailBody = String.format(SIGNUP_OTP_BODY_TEMPLATE, (firstName + " " + lastName), otpCode);
       } else {
         log.error("Unsupported OTP type for email: {}", otpType);
         throw new InternalServerException(

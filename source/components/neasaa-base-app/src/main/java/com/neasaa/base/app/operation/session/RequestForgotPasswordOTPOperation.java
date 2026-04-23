@@ -142,7 +142,7 @@ public class RequestForgotPasswordOTPOperation
       OTPUtil.sendOtpSMS(logonName, newOtp, OTPType.FORGOT_PASSWORD, appUser.getFirstName(), appUser.getLastName(),
               appProperties, emailSender);
     } else {
-      OTPUtil.sendOtpEmail(logonName, newOtp, OTPType.FORGOT_PASSWORD, appProperties, emailSender);
+      OTPUtil.sendOtpEmail(logonName, newOtp, OTPType.FORGOT_PASSWORD, appUser.getFirstName(), appUser.getLastName(), appProperties, emailSender);
     }
 
     RequestForgotPasswordOTPResponse response = new RequestForgotPasswordOTPResponse();
