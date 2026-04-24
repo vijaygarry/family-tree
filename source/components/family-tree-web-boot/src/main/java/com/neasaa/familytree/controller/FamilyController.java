@@ -50,6 +50,9 @@ import com.neasaa.familytree.operation.family.model.UpdateFamilyDetailsResponse;
 import com.neasaa.familytree.operation.family.model.UpdateFamilyMemberProfileRequest;
 import com.neasaa.familytree.operation.family.model.UpdateFamilyMemberProfileResponse;
 import com.neasaa.familytree.operation.family.model.UpdateImageRequest;
+import com.neasaa.familytree.operation.samaj.GetSamajStatisticsOperation;
+import com.neasaa.familytree.operation.samaj.model.GetSamajStatisticsRequest;
+import com.neasaa.familytree.operation.samaj.model.GetSamajStatisticsResponse;
 import com.neasaa.familytree.utils.Constants;
 import com.neasaa.familytree.utils.FileUtils;
 import java.io.IOException;
@@ -262,6 +265,13 @@ public class FamilyController {
       log.info("Failed to upload image to tmp directory", e);
       throw new InternalServerException("Failed to save image.");
     }
+  }
+
+  @RequestMapping(value = "/getSamajStats")
+  @ResponseBody
+  public ResponseEntity<GetSamajStatisticsResponse> getSamajStats (
+          @RequestBody GetSamajStatisticsRequest getSamajStatisticsRequest) throws Exception {
+    return WebRequestHandler.processRequest(GetSamajStatisticsOperation.class, getSamajStatisticsRequest);
   }
 
   private static ResponseEntity<? extends OperationResponse> buildValidationExceptionResponse(
