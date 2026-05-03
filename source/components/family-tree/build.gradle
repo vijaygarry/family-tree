@@ -15,8 +15,8 @@ dependencies {
     api project(':components:neasaa-base-app')
     //implementation libraries.springFramework
     //implementation libraries.logger
-	
-    testImplementation libraries.junitTest
+	api libraries.ibmIcu4j
+    testImplementation libraries.unitTest
 }
 
 eclipse {

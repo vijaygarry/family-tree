@@ -103,6 +103,7 @@ ext.libraries = [
 	userAgentParser: "nl.basjes.parse.useragent:yauaa:6.4@jar",
 	prefixmap: "nl.basjes.collections:prefixmap:2.0@jar", // Required for user agent parser
 
+	ibmIcu4j: "com.ibm.icu:icu4j:75.1@jar", // Required for coverting english word to hindi script. This is used in name formatting in hindi.
 
 	// spring-boot-starter-logging: "org.springframework.boot:spring-boot-starter-logging@jar",
 	// snakeyaml: "org.yaml:snakeyaml@jar",
@@ -134,6 +135,8 @@ ext.libraries = [
     junitApi: "org.junit.jupiter:junit-jupiter-api:5.10.0",
     junitEngine: "org.junit.jupiter:junit-jupiter-engine:5.10.0",
 	junitPlatformCommons: "org.junit.platform:junit-platform-commons:1.10.0@jar",
+	mockito: "org.mockito:mockito-core:5.11.0",
+	mockitoJunitJupiter: "org.mockito:mockito-junit-jupiter:5.11.0",
 	// Required for some JUnit 5 internals
     opentest4j: "org.opentest4j:opentest4j:1.2.0",
 	hamcrest: "org.hamcrest:hamcrest:2.2@jar",
@@ -193,10 +196,12 @@ libraries << [
 		libraries.postgresqlDriver,
         libraries.hikariConnectionPool,
 	],
-	junitTest: [
+	unitTest: [
 		libraries.junitApi,
-        libraries.junitEngine,
+		libraries.junitEngine,
 		libraries.junitPlatformCommons,
+		libraries.mockito,
+		libraries.mockitoJunitJupiter,
 	],
 	integTest: [
 		libraries.restAssured,
