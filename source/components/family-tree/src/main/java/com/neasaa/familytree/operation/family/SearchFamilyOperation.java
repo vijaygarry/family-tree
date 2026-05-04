@@ -32,16 +32,26 @@ public class SearchFamilyOperation
 
   @Override
   public SearchFamilyResponse doExecute(SearchFamilyRequest opRequest) throws OperationException {
-    log.info("Searching family{}", opRequest.getSearchString());
+    log.info("Searching family '{}' page={} pageSize={}", opRequest.getSearchString(), opRequest.getPage(), opRequest.getPageSize());
     int samajId = getSamajIdFromSession();
-    List<SearchFamilyEntity> families = familyDao.searchFamily(samajId, opRequest.getSearchString());
+    int limit = opRequest.getPageSize();
+    int offset = opRequest.getPage() * limit;
+
+    long totalCount = familyDao.searchFamilyCount(samajId, opRequest.getSearchString());
     SearchFamilyResponse response = new SearchFamilyResponse();
-    if (families == null || families.isEmpty()) {
+    response.setPage(opRequest.getPage());
+    response.setPageSize(limit);
+    response.setTotalCount(totalCount);
+    response.setTotalPages((int) Math.ceil((double) totalCount / limit));
+
+    if (totalCount == 0) {
       response.setOperationMessage(
           String.format(
               "No family found for selected search criteria: %s", opRequest.getSearchString()));
       return response;
     }
+
+    List<SearchFamilyEntity> families = familyDao.searchFamily(samajId, opRequest.getSearchString(), limit, offset);
     List<SearchFamilyDto> familyDtos =
         families.stream().map(SearchFamilyDto::getSearchFamilyDtoFromEntity).toList();
     response.setFamilies(familyDtos);

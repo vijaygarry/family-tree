@@ -50,6 +50,14 @@ public class FamilyDao extends AbstractDao {
           + "LEFT JOIN "
           + BASE_SCHEMA_NAME
           + "FAMILYMEMBER m on f.familyid = m.familyid and m.HEADOFFAMILY = true "
+          + "WHERE f.active = true and f.samajid = ? and f.familysearchtext ilike ? "
+          + "ORDER BY f.familyname LIMIT ? OFFSET ?";
+
+  private static final String SEARCH_FAMILY_COUNT =
+      "SELECT COUNT(*) "
+          + "FROM "
+          + BASE_SCHEMA_NAME
+          + "FAMILY f "
           + "WHERE f.active = true and f.samajid = ? and f.familysearchtext ilike ? ";
 
   private static final String UPDATE_FAMILY_DISPLAY_NAME =
@@ -113,9 +121,15 @@ public class FamilyDao extends AbstractDao {
     return familyList.get(0);
   }
 
-  public List<SearchFamilyEntity> searchFamily(int samajId, String searchString) {
+  public List<SearchFamilyEntity> searchFamily(int samajId, String searchString, int limit, int offset) {
     return getJdbcTemplate()
-        .query(SEARCH_FAMILY, new SearchFamilyRowMapper(), samajId, "%" + searchString + "%");
+        .query(SEARCH_FAMILY, new SearchFamilyRowMapper(), samajId, "%" + searchString + "%", limit, offset);
+  }
+
+  public long searchFamilyCount(int samajId, String searchString) {
+    Long count = getJdbcTemplate()
+        .queryForObject(SEARCH_FAMILY_COUNT, Long.class, samajId, "%" + searchString + "%");
+    return count != null ? count : 0L;
   }
 
   public void updateFamilyDisplayName(

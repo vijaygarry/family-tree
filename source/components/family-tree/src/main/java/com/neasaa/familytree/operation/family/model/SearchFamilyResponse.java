@@ -9,4 +9,8 @@ import lombok.Setter;
 @Setter
 public class SearchFamilyResponse extends OperationResponse {
   private List<SearchFamilyDto> families;
+  private int page;
+  private int pageSize;
+  private long totalCount;
+  private int totalPages;
 }
