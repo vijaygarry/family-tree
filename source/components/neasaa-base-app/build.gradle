@@ -1,5 +1,29 @@
+apply plugin: 'jacoco'
+
 jar {
     archiveBaseName.set('neasaa-base-app')
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        html.required = true
+        xml.required = false
+        csv.required = false
+    }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, include: 'com/neasaa/base/app/utils/**')
+        }))
+    }
 }
 
 dependencies {
@@ -12,6 +36,7 @@ dependencies {
     api libraries.email
     implementation libraries.jdbcLibs
     implementation libraries.jasypt
+    testImplementation libraries.unitTest
 }
 
 eclipse {
