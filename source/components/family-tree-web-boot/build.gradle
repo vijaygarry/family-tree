@@ -24,9 +24,11 @@ dependencies {
 
 
 // Define frontend path (absolute path preferred)
-// Override uxDir path as 
+// Override uxDir path as
 // ./gradlew build -PfrontendPath=/Users/vijay/projects/family-tree-ux
-def uxDir = project.findProperty("frontendPath") ?: "/Users/vijaygarothaya/work/product/chippaSamaj/family-tree-ux"
+def localProps = new Properties()
+file("${rootDir}/local.properties").withInputStream { localProps.load(it) }
+def uxDir = project.findProperty("frontendPath") ?: localProps['uxComponentRootPath']
 def uxBuildDir = "${uxDir}/build"
 
 // Explicitly Build UX component using following command

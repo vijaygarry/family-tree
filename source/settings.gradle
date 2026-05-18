@@ -4,6 +4,9 @@ pluginManagement {
     }
 }
 
+def localProps = new Properties()
+file('local.properties').withInputStream { localProps.load(it) }
+
 rootProject.name = 'family-tree'
 include ':components:family-tree', ':components:family-tree-web-boot', 'components:ops-tool' , 'components:integration-tests', ':components:neasaa-base-app'
-project(':components:neasaa-base-app').projectDir = file('/Users/vijaygarothaya/work/product/neasaa-base-app')
+project(':components:neasaa-base-app').projectDir = file(localProps['neasaaBaseAppPath'])
