@@ -1,14 +1,12 @@
-jar {
-    archiveBaseName.set('family-tree')
+plugins {
+    // Apply the spotless plugin before common.gradle.
+    id 'com.diffplug.spotless' version '8.5.1' apply false
 }
 
-test {
-    useJUnitPlatform()
+apply from: "${rootDir}/gradle/common.gradle"
 
-    testLogging {
-        events "passed", "skipped", "failed", "standard_out", "standard_error"
-        showStandardStreams = true
-    }
+jar {
+    archiveBaseName.set('family-tree')
 }
 
 dependencies {
@@ -17,14 +15,4 @@ dependencies {
     //implementation libraries.logger
 	api libraries.ibmIcu4j
     testImplementation libraries.unitTest
-}
-
-eclipse {
-    def repoSource = "${rootDir.path}"
-    // Fix windows directory delimiters
-    repoSource = repoSource.replaceAll( "\\\\", "/" )
-
-    project {
-        name = 'family-tree'
-    }
 }

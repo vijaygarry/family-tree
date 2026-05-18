@@ -1,3 +1,10 @@
+plugins {
+    // Apply the spotless plugin before common.gradle.
+    id 'com.diffplug.spotless' version '8.5.1' apply false
+}
+
+apply from: "${rootDir}/gradle/common.gradle"
+
 jar {
     archiveBaseName.set('family-tree-web-boot')
     enabled = true
@@ -15,7 +22,6 @@ dependencies {
     implementation libraries.prefixmap
 }
 
-apply plugin: 'eclipse-wtp'
 
 // Define frontend path (absolute path preferred)
 // Override uxDir path as 
@@ -77,19 +83,6 @@ task runApp(type: JavaExec) {
     doFirst {
         println "Classpath:"
         classpath.each { println it }
-    }
-}
-
-eclipse {
-    def repoSource = "${rootDir.path}"
-    // Fix windows directory delimiters
-    repoSource = repoSource.replaceAll( "\\\\", "/" )
-
-    project {
-        name = 'family-tree-web-boot'
-    }
-    wtp.facet {
-    	facet name:'org.eclipse.wst.common.project.facet.core.nature'
     }
 }
 

@@ -5,4 +5,5 @@ pluginManagement {
 }
 
 rootProject.name = 'family-tree'
-include ':components:neasaa-base-app', ':components:family-tree', ':components:family-tree-web-boot', 'components:ops-tool' , 'components:integration-tests'
+include ':components:family-tree', ':components:family-tree-web-boot', 'components:ops-tool' , 'components:integration-tests', ':components:neasaa-base-app'
+project(':components:neasaa-base-app').projectDir = file('/Users/vijaygarothaya/work/product/neasaa-base-app')

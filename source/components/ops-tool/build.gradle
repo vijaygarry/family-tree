@@ -1,3 +1,10 @@
+plugins {
+    // Apply the spotless plugin before common.gradle.
+    id 'com.diffplug.spotless' version '8.5.1' apply false
+}
+
+apply from: "${rootDir}/gradle/common.gradle"
+
 jar {
     archiveBaseName.set('family-tree-ops-tool')
     enabled = true
@@ -15,7 +22,7 @@ task runOpsTool(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath +
                 files('src/main/config/')
     jvmArgs = ['-Xmx512m']                               // optional JVM args
-
+    // args = [project.hasProperty('excelFile') ? project.property('excelFile') : '']
     // doFirst {
     //     println "Classpath:"
     //     classpath.each { println it }

@@ -1,0 +1,65 @@
+apply plugin: 'java-library'
+apply plugin: 'com.diffplug.spotless'
+apply plugin: 'jacoco'
+
+apply from: "${rootDir}/gradle/libraries.gradle"
+
+repositories {
+    mavenCentral()
+    flatDir { dirs "${rootDir}/libs" }
+}
+
+dependencies {
+    compileOnly libraries.lombok
+    annotationProcessor libraries.lombokProcessor
+    testCompileOnly libraries.lombok
+    testAnnotationProcessor libraries.lombokProcessor
+    testImplementation libraries.unitTest
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+// ─── test + coverage ──────────────────────────────────────────────────────────
+// Set ext.jacocoCoverageIncludes in the project build.gradle to filter coverage.
+// Defaults to all classes if not set.
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        html.required = true
+        xml.required = false
+        csv.required = false
+    }
+    afterEvaluate {
+        def includes = project.findProperty('jacocoCoverageIncludes') ?: ['**']
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, include: includes)
+        }))
+    }
+}
+
+tasks.register('checkVersion') {
+    doLast {
+        if (!hasProperty("version")) {
+            // TODO: Add this validation later once development is done.
+            throw new GradleException("Property 'version' is missing. Specify using '-Pversion=' command line option")
+        }
+    }
+}

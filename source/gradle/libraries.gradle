@@ -1,13 +1,9 @@
 ext.neasaaUtilVersion = '1.0.20250508'
 ext.springBootVersion = '3.4.5'
 ext.springFrameworkVersion = '6.2.6'
+ext.springSecurityVersion = '6.4.5'
 ext.tomcatVersion = '10.1.40'
 ext.jacksonVersion = '2.18.3'
-//This file list out all the jars required by this application
-
-// Define list of jars to be used by application
-// Note: All these jars are not included in all projects by default, Include required libraries in projects as required.
-
 
 ext.libraries = [
     lombok: "org.projectlombok:lombok:1.18.38@jar",
@@ -34,6 +30,7 @@ ext.libraries = [
 	//SpringBoot uses Jakarta Annotations.
 	jakartaAnnotation: "jakarta.annotation:jakarta.annotation-api:3.0.0@jar",
 	micrometerObservation: "io.micrometer:micrometer-observation:1.14.6@jar",
+	micrometerCommons: "io.micrometer:micrometer-commons:1.14.6@jar",
 
 	// Embeded Tomcat
 	// tomcatEmbedWebsocket: "org.apache.tomcat.embed:tomcat-embed-websocket:${springFrameworkVersion}@jar",
@@ -71,18 +68,16 @@ ext.libraries = [
 	springTx: "org.springframework:spring-tx:${springFrameworkVersion}@jar",
 	springJdbc: "org.springframework:spring-jdbc:${springFrameworkVersion}@jar",
 	//Sprint security core for encrypting password.
-	springSecurityCore: "org.springframework.security:spring-security-core:${springFrameworkVersion}@jar",
+	springSecurityCore: "org.springframework.security:spring-security-core:${springSecurityVersion}@jar",
 	//Sprint security core depends on Security crypto.
-	springSecurityCrypto : "org.springframework.security:spring-security-crypto:${springFrameworkVersion}@jar",
+	springSecurityCrypto : "org.springframework.security:spring-security-crypto:${springSecurityVersion}@jar",
 	// Spring framework uses commons logging API for logging.
     // This creates mandatory logging dependency in Spring on the Jakarta Commons Logging API (JCL).
     // Spring has its own JCL implementation spring-jcl-x.x.x.jar which will be added by spring core dependency
 	commonsLogging: "commons-logging:commons-logging:1.3.5",
-	micrometerCommons: "io.micrometer:micrometer-commons:1.14.5@jar",
 	
-
-	postgresqlDriver: "org.postgresql:postgresql:42.6.0@jar",
-	hikariConnectionPool: "com.zaxxer:HikariCP:5.0.1@jar",
+	postgresqlDriver: "org.postgresql:postgresql:42.7.11@jar",
+	hikariConnectionPool: "com.zaxxer:HikariCP:7.0.2@jar",
 	// jasypt to encrypt/decrypt database password
 	jasypt: "org.jasypt:jasypt:1.9.3@jar",
 
@@ -135,6 +130,7 @@ ext.libraries = [
     junitApi: "org.junit.jupiter:junit-jupiter-api:5.10.0",
     junitEngine: "org.junit.jupiter:junit-jupiter-engine:5.10.0",
 	junitPlatformCommons: "org.junit.platform:junit-platform-commons:1.10.0@jar",
+	junitPlatformLauncher: "org.junit.platform:junit-platform-launcher:1.10.0",
 	mockito: "org.mockito:mockito-core:5.11.0",
 	mockitoJunitJupiter: "org.mockito:mockito-junit-jupiter:5.11.0",
 	// Required for some JUnit 5 internals
@@ -200,6 +196,7 @@ libraries << [
 		libraries.junitApi,
 		libraries.junitEngine,
 		libraries.junitPlatformCommons,
+		libraries.junitPlatformLauncher,
 		libraries.mockito,
 		libraries.mockitoJunitJupiter,
 	],
@@ -208,6 +205,7 @@ libraries << [
         libraries.junitApi,
         libraries.junitEngine,
 		libraries.junitPlatformCommons,
+		libraries.junitPlatformLauncher,
 		libraries.opentest4j,
 		libraries.hamcrest,
 	],
@@ -221,21 +219,3 @@ libraries << [
 		libraries.angusMail,
 	]
 ]
-
-
-/*
-dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.session:spring-session-jdbc'
-	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'org.postgresql:postgresql'
-	annotationProcessor 'org.projectlombok:lombok'
-	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
-	testImplementation 'org.springframework.security:spring-security-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
-*/
