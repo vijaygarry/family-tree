@@ -298,6 +298,8 @@ public class MemberProcessor {
         request.setWeddingDate(getDateInISOFormat(familyMember.getWeddingDate()));
         request.setEmail(familyMember.getEmail());
         request.setPhone(familyMember.getPhone());
+        request.setEducationDetails(familyMember.getEducationDetails());
+        request.setOccupation(familyMember.getOccupation());
         request.setAddressSameAsFamily(familyMember.isAddressSameAsFamily());
         request.setRelationship(relationshipDto);
         int memberId = httpUtils.addFamilyMember(request);

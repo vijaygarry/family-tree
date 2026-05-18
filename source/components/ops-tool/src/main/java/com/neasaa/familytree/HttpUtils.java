@@ -5,6 +5,8 @@ import com.neasaa.base.app.operation.session.model.LogoutRequest;
 import com.neasaa.familytree.dto.OpsLoginRequest;
 import com.neasaa.familytree.operation.family.model.AddFamilyMemberRequest;
 import com.neasaa.familytree.operation.family.model.AddFamilyMemberResponse;
+import com.neasaa.familytree.operation.family.model.ProcessFamilyRegistrationRequest;
+import com.neasaa.familytree.operation.family.model.ProcessFamilyRegistrationResponse;
 import com.neasaa.http.ApiClient;
 import com.neasaa.http.ApiRequest;
 import com.neasaa.http.ApiResponse;
@@ -27,6 +29,7 @@ public class HttpUtils {
     public static final String CHANGE_PASSWORD_URL = "/api/session/changepassword";
     public static final String ADD_FAMILY_URL = "/api/family/addfamily";
     public static final String ADD_FAMILY_MEMBER_URL = "/api/family/addFamilyMember";
+    public static final String PROCESS_FAMILY_REGISTRATION_URL = "/api/family/processFamilyRegistrationRequest";
     public static final String GET_FAMILY_DETAILS_URL = "/api/family/getfamilydetails";
     public static final String MANAGE_RELATIONSHIP_URL = "/api/family/manageRelationship";
 
@@ -40,6 +43,7 @@ public class HttpUtils {
     public HttpUtils () throws Exception {
         BaseConfig.initialize("ops-tool.properties");
         this.baseUrl = BaseConfig.getProperty(BASE_URL);
+        log.info("Base URL: {}", baseUrl);
         this.adminUserName = BaseConfig.getProperty(ADMIN_USER_NAME);
         this.adminPassword = BaseConfig.getProperty(ADMIN_PASSWORD);
     }
@@ -111,6 +115,23 @@ public class HttpUtils {
         }
         log.info("Added member: {} with member ID: {}", addFamilyMemberRequest.getFirstName(), response.getResponse().getMemberId());
         return response.getResponse().getMemberId();
+    }
+
+    public int processFamilyRegistrationRequest (ProcessFamilyRegistrationRequest processFamilyRegistrationRequest) throws Exception {
+        ApiRequest<ProcessFamilyRegistrationRequest> request =
+                ApiRequest.<ProcessFamilyRegistrationRequest>builder().baseUrl(baseUrl)
+                        .contextPath(PROCESS_FAMILY_REGISTRATION_URL)
+                        .requestBody(processFamilyRegistrationRequest)
+                        .build();
+
+        request.addDefaultHeaders();
+        request.addSessionCookie(sessionId);
+        ApiResponse<ProcessFamilyRegistrationResponse> response = apiClient.processRequest(request, ProcessFamilyRegistrationResponse.class);
+        if(response.getHttpStatusCode() != 200) {
+            throw new Exception("Failed to process family request. HTTP Status Code: " + response.getHttpStatusCode() + " Message: " + response.getResponseBody());
+        }
+
+        return response.getResponse().getFamilyId();
     }
 
 }
