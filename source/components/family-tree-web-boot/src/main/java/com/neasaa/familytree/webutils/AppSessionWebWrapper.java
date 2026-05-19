@@ -6,16 +6,18 @@ import com.neasaa.base.app.service.AppSessionUser;
 import com.neasaa.base.app.utils.ValidationUtils;
 import jakarta.servlet.http.HttpSessionBindingEvent;
 import jakarta.servlet.http.HttpSessionBindingListener;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
+@Getter
 public class AppSessionWebWrapper implements HttpSessionBindingListener {
 
   private AppSessionUser appSessionUser;
-  private SessionExitCode exitCode = SessionExitCode.SESSION_TIMEOUT;
+  private final SessionExitCode exitCode = SessionExitCode.SESSION_TIMEOUT;
 
   /**
-   * @param aAppSUserSessionDetailsession
+   * @param appSessionUser
    */
   public AppSessionWebWrapper(AppSessionUser appSessionUser) {
     super();
@@ -57,10 +59,6 @@ public class AppSessionWebWrapper implements HttpSessionBindingListener {
       }
       this.appSessionUser.invalidate();
     }
-  }
-
-  public AppSessionUser getAppSessionUser() {
-    return appSessionUser;
   }
 
   /**
