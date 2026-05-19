@@ -1,4 +1,4 @@
-package com.neasaa.familytree.utils;
+package com.neasaa.familytree.webutils;
 
 import com.neasaa.base.app.service.AppSessionUser;
 import jakarta.servlet.http.HttpSession;

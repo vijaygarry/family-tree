@@ -1,4 +1,4 @@
-package com.neasaa.familytree;
+package com.neasaa.familytree.webutils;
 
 import com.neasaa.base.app.operation.Operation;
 import com.neasaa.base.app.operation.OperationContext;
@@ -9,8 +9,6 @@ import com.neasaa.base.app.operation.model.OperationRequest;
 import com.neasaa.base.app.operation.model.OperationResponse;
 import com.neasaa.base.app.service.AppSessionUser;
 import com.neasaa.base.app.utils.ValidationUtils;
-import com.neasaa.familytree.utils.AppSessionWebWrapper;
-import com.neasaa.familytree.utils.HttpSessionUtils;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

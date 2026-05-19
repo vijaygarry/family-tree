@@ -4,7 +4,7 @@ import com.neasaa.base.app.operation.exception.InternalServerException;
 import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.base.app.operation.model.EmptyOperationRequest;
 import com.neasaa.base.app.operation.model.OperationResponse;
-import com.neasaa.familytree.WebRequestHandler;
+import com.neasaa.familytree.webutils.WebRequestHandler;
 import com.neasaa.familytree.operation.OperationNames;
 import com.neasaa.familytree.operation.account.GetAccountListOperation;
 import com.neasaa.familytree.operation.account.GetAccountStatementOperation;
