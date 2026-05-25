@@ -1,45 +1,49 @@
--- Table: shared_schema.familymemberregistration
-
--- DROP TABLE IF EXISTS shared_schema.familymemberregistration;
-
-CREATE TABLE IF NOT EXISTS shared_schema.familymemberregistration
-(
-    memberrequestid serial NOT NULL,
+CREATE TABLE shared_schema.familymemberregistration (
+    memberrequestid integer NOT NULL,
     familyrequestid integer NOT NULL,
     samajid smallint NOT NULL,
-    headoffamily boolean NOT NULL DEFAULT false,
-    firstname character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    firstnameinhindi character varying(100) COLLATE pg_catalog."default",
-    gender character varying(10) COLLATE pg_catalog."default",
+    headoffamily boolean DEFAULT false NOT NULL,
+    firstname character varying(100) NOT NULL,
+    firstnameinhindi character varying(100),
+    gender character varying(10),
     birthday smallint,
     birthmonth smallint NOT NULL,
     birthyear smallint NOT NULL,
-    maritalstatus character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    maritalstatus character varying(20) NOT NULL,
     weddingdate date,
-    phone character varying(20) COLLATE pg_catalog."default",
-    email character varying(100) COLLATE pg_catalog."default",
-    addresssameasfamily boolean NOT NULL DEFAULT true,
-    educationdetails character varying(255) COLLATE pg_catalog."default",
-    occupation character varying(255) COLLATE pg_catalog."default",
+    phone character varying(20),
+    email character varying(100),
+    addresssameasfamily boolean DEFAULT true NOT NULL,
+    educationdetails character varying(255),
+    occupation character varying(255),
     createddate timestamp with time zone NOT NULL,
     memberid integer,
-    relationshiptype character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    relatedmemberid integer NOT NULL,
-    CONSTRAINT familymemberregistration_pkey PRIMARY KEY (memberrequestid),
-    CONSTRAINT familymemberregistration_familyrequestid_fkey FOREIGN KEY (familyrequestid)
-        REFERENCES shared_schema.familyregistrationrequest (familyrequestid) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-        NOT VALID
-)
+    relationshiptype character varying(100) NOT NULL,
+    relatedmemberid integer NOT NULL
+);
 
-TABLESPACE pg_default;
+ALTER TABLE shared_schema.familymemberregistration OWNER TO postgres;
 
-ALTER TABLE IF EXISTS shared_schema.familymemberregistration
-    OWNER to postgres;
+CREATE SEQUENCE shared_schema.familymemberregistration_memberrequestid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
-REVOKE ALL ON TABLE shared_schema.familymemberregistration FROM familytree_app_role;
+ALTER TABLE shared_schema.familymemberregistration_memberrequestid_seq OWNER TO postgres;
 
-GRANT DELETE, INSERT, SELECT, UPDATE ON TABLE shared_schema.familymemberregistration TO familytree_app_role;
+ALTER SEQUENCE shared_schema.familymemberregistration_memberrequestid_seq OWNED BY shared_schema.familymemberregistration.memberrequestid;
 
-GRANT ALL ON TABLE shared_schema.familymemberregistration TO postgres;
+ALTER TABLE ONLY shared_schema.familymemberregistration ALTER COLUMN memberrequestid SET DEFAULT nextval('shared_schema.familymemberregistration_memberrequestid_seq'::regclass);
+
+ALTER TABLE ONLY shared_schema.familymemberregistration
+    ADD CONSTRAINT familymemberregistration_pkey PRIMARY KEY (memberrequestid);
+
+ALTER TABLE ONLY shared_schema.familymemberregistration
+    ADD CONSTRAINT familymemberregistration_familyrequestid_fkey FOREIGN KEY (familyrequestid) REFERENCES shared_schema.familyregistrationrequest(familyrequestid);
+
+GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE shared_schema.familymemberregistration TO familytree_app_role;
+
+GRANT ALL ON SEQUENCE shared_schema.familymemberregistration_memberrequestid_seq TO familytree_app_role;
