@@ -5,6 +5,7 @@
 CREATE TABLE IF NOT EXISTS shared_schema.family
 (
     familyid SERIAL NOT NULL,
+    samajid smallint NOT NULL,
     familyname character varying(120) COLLATE pg_catalog."default" NOT NULL,
     familynameinhindi character varying(120) COLLATE pg_catalog."default",
     gotra character varying(100) COLLATE pg_catalog."default" NOT NULL,
@@ -16,7 +17,7 @@ CREATE TABLE IF NOT EXISTS shared_schema.family
     familysearchtext character varying(500) COLLATE pg_catalog."default",
     active boolean NOT NULL DEFAULT true,
     familyimage character varying(120) COLLATE pg_catalog."default",
-	imagelastupdated timestamp with time zone NOT NULL,
+    imagelastupdated timestamp with time zone NOT NULL,
     createdby integer NOT NULL,
     createddate timestamp with time zone NOT NULL,
     lastupdatedby integer NOT NULL,
@@ -25,14 +26,17 @@ CREATE TABLE IF NOT EXISTS shared_schema.family
     CONSTRAINT family_addressid_fkey FOREIGN KEY (addressid)
         REFERENCES shared_schema.address (addressid) MATCH SIMPLE
         ON UPDATE RESTRICT
-        ON DELETE RESTRICT
-        NOT VALID,
+        ON DELETE RESTRICT,
     CONSTRAINT family_createdby_fkey FOREIGN KEY (createdby)
         REFERENCES shared_schema.appuser (userid) MATCH SIMPLE
         ON UPDATE RESTRICT
         ON DELETE RESTRICT,
     CONSTRAINT family_lastupdatedby_fkey FOREIGN KEY (lastupdatedby)
         REFERENCES shared_schema.appuser (userid) MATCH SIMPLE
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT,
+    CONSTRAINT family_samajid_fkey FOREIGN KEY (samajid)
+        REFERENCES shared_schema.samaj (samajid) MATCH SIMPLE
         ON UPDATE RESTRICT
         ON DELETE RESTRICT
 )

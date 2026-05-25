@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS shared_schema.familymember
 (
     memberid serial NOT NULL,
     familyid integer NOT NULL,
+    samajid smallint NOT NULL,
     logonname character varying(150) COLLATE pg_catalog."default",
     headoffamily boolean NOT NULL DEFAULT false,
     firstname character varying(100) COLLATE pg_catalog."default" NOT NULL,
@@ -22,8 +23,10 @@ CREATE TABLE IF NOT EXISTS shared_schema.familymember
     weddingdate date,
     dateofdeath date,
     phone character varying(20) COLLATE pg_catalog."default",
+    isphoneverified boolean NOT NULL DEFAULT false,
     isphonewhatsappregistered boolean NOT NULL DEFAULT false,
     email character varying(100) COLLATE pg_catalog."default",
+    isemailverified boolean NOT NULL DEFAULT false,
     addresssameasfamily boolean NOT NULL DEFAULT true,
     memberaddressid integer,
     educationdetails character varying(255) COLLATE pg_catalog."default",
@@ -40,6 +43,7 @@ CREATE TABLE IF NOT EXISTS shared_schema.familymember
     CONSTRAINT familymember_pkey PRIMARY KEY (memberid),
     CONSTRAINT familymember_email_key UNIQUE (email),
     CONSTRAINT familymember_logonname_key UNIQUE (logonname),
+    CONSTRAINT familymember_phone_key UNIQUE (phone),
     CONSTRAINT familymember_createdby_fkey FOREIGN KEY (createdby)
         REFERENCES shared_schema.appuser (userid) MATCH SIMPLE
         ON UPDATE RESTRICT
@@ -54,6 +58,10 @@ CREATE TABLE IF NOT EXISTS shared_schema.familymember
         ON DELETE RESTRICT,
     CONSTRAINT familymember_memberaddressid_fkey FOREIGN KEY (memberaddressid)
         REFERENCES shared_schema.address (addressid) MATCH SIMPLE
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT,
+    CONSTRAINT familymember_samajid_fkey FOREIGN KEY (samajid)
+        REFERENCES shared_schema.samaj (samajid) MATCH SIMPLE
         ON UPDATE RESTRICT
         ON DELETE RESTRICT
 )

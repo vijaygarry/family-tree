@@ -59,3 +59,7 @@ COMMENT ON COLUMN shared_schema.address.postalcode
 COMMENT ON COLUMN shared_schema.address.country
     IS 'Country name.';
     
+
+INSERT INTO shared_schema.address(
+	addressid, addressline1, addressline2, addressline3, city, district, state, postalcode, country, createdby, createddate, lastupdatedby, lastupdateddate)
+	VALUES (0, 'Same as family', null, null, 'Same as family', null, 'Same as family', 'Family', 'Same as family', 2, now(), 2, now());
