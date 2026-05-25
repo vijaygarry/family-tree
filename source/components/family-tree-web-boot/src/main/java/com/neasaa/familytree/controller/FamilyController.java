@@ -26,6 +26,8 @@ import com.neasaa.familytree.operation.family.SearchFamilyOperation;
 import com.neasaa.familytree.operation.family.UpdateFamilyDetailsOperation;
 import com.neasaa.familytree.operation.family.UpdateFamilyImageOperation;
 import com.neasaa.familytree.operation.family.UpdateFamilyMemberImageOperation;
+import com.neasaa.familytree.operation.family.GetFamiliesByRegionOperation;
+import com.neasaa.familytree.operation.family.GetFamilyCountByCityOperation;
 import com.neasaa.familytree.operation.family.UpdateFamilyMemberProfileOperation;
 import com.neasaa.familytree.operation.family.model.AddFamilyMemberRequest;
 import com.neasaa.familytree.operation.family.model.AddFamilyMemberResponse;
@@ -49,7 +51,10 @@ import com.neasaa.familytree.operation.family.model.UpdateFamilyDetailsRequest;
 import com.neasaa.familytree.operation.family.model.UpdateFamilyDetailsResponse;
 import com.neasaa.familytree.operation.family.model.UpdateFamilyMemberProfileRequest;
 import com.neasaa.familytree.operation.family.model.UpdateFamilyMemberProfileResponse;
+import com.neasaa.familytree.operation.family.model.GetFamiliesByRegionRequest;
+import com.neasaa.familytree.operation.family.model.GetFamiliesByRegionResponse;
 import com.neasaa.familytree.operation.family.model.UpdateImageRequest;
+import com.neasaa.familytree.operation.family.model.GetFamilyCountByCityResponse;
 import com.neasaa.familytree.operation.samaj.GetSamajStatisticsOperation;
 import com.neasaa.familytree.operation.samaj.model.GetSamajStatisticsRequest;
 import com.neasaa.familytree.operation.samaj.model.GetSamajStatisticsResponse;
@@ -272,6 +277,20 @@ public class FamilyController {
   public ResponseEntity<GetSamajStatisticsResponse> getSamajStats (
           @RequestBody GetSamajStatisticsRequest getSamajStatisticsRequest) throws Exception {
     return WebRequestHandler.processRequest(GetSamajStatisticsOperation.class, getSamajStatisticsRequest);
+  }
+
+  @RequestMapping(value = "/getFamilyCountByCity")
+  @ResponseBody
+  public ResponseEntity<GetFamilyCountByCityResponse> getFamilyCountByCity (
+          @RequestBody EmptyOperationRequest request) throws Exception {
+    return WebRequestHandler.processRequest(GetFamilyCountByCityOperation.class, request);
+  }
+
+  @RequestMapping(value = "/getFamiliesByRegion")
+  @ResponseBody
+  public ResponseEntity<GetFamiliesByRegionResponse> getFamiliesByRegion(
+          @RequestBody GetFamiliesByRegionRequest request) throws Exception {
+    return WebRequestHandler.processRequest(GetFamiliesByRegionOperation.class, request);
   }
 
   private static ResponseEntity<? extends OperationResponse> buildValidationExceptionResponse(

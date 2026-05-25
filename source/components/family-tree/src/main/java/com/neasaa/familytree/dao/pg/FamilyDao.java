@@ -16,6 +16,7 @@ import com.neasaa.familytree.utils.DataFormatter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -107,6 +108,36 @@ public class FamilyDao extends AbstractDao {
 	private static final String UPDATE_FAMILY_MEMBERS_LAST_NAME_BY_FAMILYID = "UPDATE "  + BASE_SCHEMA_NAME + "FAMILYMEMBER " +
 			"SET LASTNAME = ? where FAMILYID = ?  AND SAMAJID = ?";
 
+  private static final String GET_FAMILIES_BY_REGION =
+      "SELECT f.familyid, f.samajid, f.familyname, f.familynameinhindi, f.gotra, "
+          + "f.region, f.phone, f.isphonewhatsappregistered, f.familyimage, "
+          + "m.FIRSTNAME, m.FIRSTNAMEINHINDI "
+          + "FROM " + BASE_SCHEMA_NAME + "FAMILY f "
+          + "LEFT JOIN " + BASE_SCHEMA_NAME + "FAMILYMEMBER m ON f.familyid = m.familyid AND m.HEADOFFAMILY = true "
+          + "LEFT JOIN " + BASE_SCHEMA_NAME + "ADDRESS a ON f.addressid = a.addressid "
+          + "WHERE f.active = true AND f.samajid = ? ";
+
+  public List<SearchFamilyEntity> getFamiliesByRegion(int samajId, String city, String state, String country) {
+    StringBuilder sql = new StringBuilder(GET_FAMILIES_BY_REGION);
+    List<Object> params = new ArrayList<>();
+    params.add(samajId);
+
+    if (city != null && !city.isEmpty()) {
+      sql.append("AND a.city ILIKE ? ");
+      params.add(city);
+    }
+    if (state != null && !state.isEmpty()) {
+      sql.append("AND a.state ILIKE ? ");
+      params.add(state);
+    }
+    if (country != null && !country.isEmpty()) {
+      sql.append("AND a.country ILIKE ? ");
+      params.add(country);
+    }
+    sql.append("ORDER BY f.familyname");
+
+    return getJdbcTemplate().query(sql.toString(), new SearchFamilyRowMapper(), params.toArray());
+  }
 
   public FamilyEntity getFamilyByFamilyId(int samajId, int familyId) {
     List<FamilyEntity> familyList =

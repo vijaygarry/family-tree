@@ -39,6 +39,7 @@ bin/
 !**/src/test/**/bin/
 build/
 
+source/local.properties
 source/distribution/*
 uploaded-images/*
 logs/*

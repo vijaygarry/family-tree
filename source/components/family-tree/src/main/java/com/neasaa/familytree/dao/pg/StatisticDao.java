@@ -1,7 +1,13 @@
 package com.neasaa.familytree.dao.pg;
 
+import com.neasaa.base.app.cache.SimpleCache;
 import com.neasaa.base.app.dao.pg.AbstractDao;
+import com.neasaa.familytree.operation.family.model.CityFamilyCountDto;
+import java.util.List;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+
+import static com.neasaa.familytree.constants.CacheKeyConstants.CITY_LIST_WITH_FAMILY_COUNT;
 
 @Repository
 public class StatisticDao extends AbstractDao {
@@ -48,6 +54,22 @@ public class StatisticDao extends AbstractDao {
               "AND make_date(birthyear, birthmonth, CASE WHEN birthday > 0 THEN birthday ELSE 1 END) < " +
               "(CURRENT_DATE - INTERVAL '20 years')";
 
+  private static final String GET_FAMILY_COUNT_BY_CITY =
+      "SELECT a.city, a.state, a.country, count (*) family_count "
+              + "FROM " + BASE_SCHEMA_NAME + "family f, " + BASE_SCHEMA_NAME + "address a "
+              + "WHERE f.samajid = ? AND f.active = true and f.addressid = a.addressid "
+              + "group by a.city, a.state, a.country "
+              + "order by count(*) desc";
+
+  private static final RowMapper<CityFamilyCountDto> CITY_FAMILY_COUNT_ROW_MAPPER =
+      (rs, rowNum) ->
+          CityFamilyCountDto.builder()
+              .cityName(rs.getString("city"))
+              .stateName(rs.getString("state"))
+               .country(rs.getString("country"))
+              .familyCount(rs.getInt("family_count"))
+              .build();
+
   public int getRegisteredFamiliesCount(int samajId) {
     return getJdbcTemplate().queryForObject(COUNT_REGISTERED_FAMILIES, Integer.class, samajId);
   }
@@ -78,5 +100,13 @@ public class StatisticDao extends AbstractDao {
 
   public int getSingleBoysCount(int samajId) {
     return getJdbcTemplate().queryForObject(COUNT_SINGLE_BOYS, Integer.class, samajId);
+  }
+
+  public List<CityFamilyCountDto> getFamilyCountByCity(int samajId) {
+    List<CityFamilyCountDto> cachedList = (List<CityFamilyCountDto>) SimpleCache.get(CITY_LIST_WITH_FAMILY_COUNT + "-" + samajId, List.class);
+    if(cachedList != null) {
+      return cachedList;
+    }
+    return getJdbcTemplate().query(GET_FAMILY_COUNT_BY_CITY, CITY_FAMILY_COUNT_ROW_MAPPER, samajId);
   }
 }

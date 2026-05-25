@@ -29,5 +29,9 @@ public interface OperationNames {
 
   String GET_SAMAJ_STATISTICS = "GET_SAMAJ_STATISTICS";
 
+  String GET_FAMILY_COUNT_BY_CITY = "GET_FAMILY_COUNT_BY_CITY";
+
+  String GET_FAMILIES_BY_REGION = "GET_FAMILIES_BY_REGION";
+
   String WHO_AM_I = "WHO_AM_I";
 }
