@@ -23,6 +23,19 @@
             <!-- Keep max 30 rolled files -->
             <DefaultRolloverStrategy max="30"/>
         </RollingFile>
+        <RollingFile name="AuditFileAppender" fileName="../../../logs/audit.log" filePattern="../../../logs/audit-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{ISO8601} %msg%n"/>
+            <!-- Rolling policy: time + size based -->
+            <Policies>
+                <!-- Roll every day -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <!-- Roll when file exceeds 10 MB -->
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+
+            <!-- Keep max 30 rolled files -->
+            <DefaultRolloverStrategy max="30"/>
+        </RollingFile>
 
         <!-- Console appender -->
         <Console name="ConsoleAppender" target="SYSTEM_OUT">
@@ -36,7 +49,9 @@
             <AppenderRef ref="ConsoleAppender"/>
             <AppenderRef ref="RollingFileAppender"/>
         </Root>
-
+        <Logger name="AUDIT_LOG" level="INFO" additivity="false">
+            <AppenderRef ref="AuditFileAppender"/>
+        </Logger>
         <!-- Example of package-specific logging level -->
         <!-- <Logger name="com.example" level="debug" additivity="false">
             <AppenderRef ref="RollingFileAppender"/>

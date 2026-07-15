@@ -2,6 +2,10 @@
 Family Tree App
 
 
+## Application setup
+Complete the database setup by following the instructions in [SETUP.md](SETUP.md).
+
+
 ## Useful commands
 ```
 # Got to source folder for all the below commands
