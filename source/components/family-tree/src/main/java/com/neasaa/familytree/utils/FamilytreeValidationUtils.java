@@ -23,7 +23,7 @@ public class FamilytreeValidationUtils {
   private static final String STATE_REGEX = ADDRESS_LINE_REGEX;
   private static final String COUNTRY_REGEX = ADDRESS_LINE_REGEX;
   private static final String POSTAL_CODE_REGEX =
-      "^[a-zA-Z0-9]{3,8}$"; // Allowing 3 to 8 digit postal codes
+      "^[a-zA-Z0-9 ]{3,8}$"; // alphanumeric and spaces, min 3 max 8 chars
 
   public static void validateFamilyName(String familyName) {
     checkValuePresent(familyName, "family name");

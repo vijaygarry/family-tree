@@ -74,7 +74,7 @@ public class AddressDto {
       state = state.trim();
     }
     if (postalCode != null) {
-      postalCode = postalCode.trim();
+      postalCode = postalCode.trim().toUpperCase();
     }
     if (country != null) {
       country = country.trim();

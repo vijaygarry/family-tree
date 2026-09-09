@@ -85,6 +85,9 @@ public class FamilyRegistrationRequest extends OperationRequest {
         if (familyAddress.getState() != null) {
           familyAddress.setState(DataFormatter.capitalizeFirstLetter(familyAddress.getState()));
         }
+        if (familyAddress.getPostalCode() != null) {
+          familyAddress.setPostalCode(familyAddress.getPostalCode().trim().toUpperCase());
+        }
         if (familyAddress.getCountry() != null) {
           familyAddress.setCountry(DataFormatter.capitalizeFirstLetter(familyAddress.getCountry()));
         }
