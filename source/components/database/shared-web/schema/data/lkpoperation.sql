@@ -165,6 +165,32 @@ INSERT INTO shared_schema.lkpoperation(
 	VALUES ('UPDATE_MY_FAMILY_MEMBER_IMAGE', 'Update my member image', 'updateFamilyMemberImage', true, true, 'ROLE_BASE', 
     true, 1, now(), 1, now());
 
+
+INSERT INTO shared_schema.lkpoperation(
+	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype, 
+    active, createdby, createddate, lastupdatedby, lastupdateddate)
+	VALUES ('SEARCH_FAMILY_MEMBER', 'Search family member', 'searchFamilyMember', true, true, 'ROLE_BASE', 
+    true, 1, now(), 1, now());
+    
+INSERT INTO shared_schema.lkpoperation(
+	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype, 
+    active, createdby, createddate, lastupdatedby, lastupdateddate)
+	VALUES ('GET_SAMAJ_STATISTICS', 'Get Samaj Statistics', 'getSamajStatistics', false, false, 'NO_AUTHORIZATION', 
+    true, 1, now(), 1, now());
+
+INSERT INTO shared_schema.lkpoperation(
+	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype,
+    active, createdby, createddate, lastupdatedby, lastupdateddate)
+	VALUES ('GET_FAMILY_COUNT_BY_CITY', 'Get Family Count By City', 'getFamilyCountByCity', false, false, 'NO_AUTHORIZATION',
+    true, 1, now(), 1, now());
+
+INSERT INTO shared_schema.lkpoperation(
+	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype,
+    active, createdby, createddate, lastupdatedby, lastupdateddate)
+	VALUES ('GET_FAMILIES_BY_REGION', 'Get Families By Region', 'GetFamiliesByRegionOperation', true, true, 'ROLE_BASE',
+    true, 1, now(), 1, now());
+
+
 -- Get Family stats
 -- Total number of families, total number of members.
 -- Registered users

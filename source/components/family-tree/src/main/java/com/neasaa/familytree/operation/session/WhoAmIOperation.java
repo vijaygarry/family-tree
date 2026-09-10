@@ -1,6 +1,7 @@
 package com.neasaa.familytree.operation.session;
 
 import static com.neasaa.familytree.operation.OperationNames.ADD_FAMILY;
+import static com.neasaa.familytree.operation.OperationNames.ADD_MEMBER_TO_ANY_FAMILY;
 import static com.neasaa.familytree.operation.OperationNames.WHO_AM_I;
 
 import com.neasaa.base.app.operation.AbstractOperation;
@@ -44,6 +45,9 @@ public class WhoAmIOperation extends AbstractOperation<EmptyOperationRequest, Wh
       List<String> newOperationAllowedList = new ArrayList<>();
       if(isOperationAllowedForUser(ADD_FAMILY)) {
         newOperationAllowedList.add(ADD_FAMILY);
+      }
+      if(isOperationAllowedForUser(ADD_MEMBER_TO_ANY_FAMILY)) {
+        newOperationAllowedList.add(ADD_MEMBER_TO_ANY_FAMILY);
       }
       SessionUtils.setOperationAllowedInSession(appSessionUser, newOperationAllowedList);
     }
