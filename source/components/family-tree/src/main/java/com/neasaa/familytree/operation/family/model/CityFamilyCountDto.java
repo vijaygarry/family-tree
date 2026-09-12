@@ -12,4 +12,5 @@ public class CityFamilyCountDto {
   private String stateName;
   private String country;
   private Integer familyCount;
+  private Integer memberCount;
 }

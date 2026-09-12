@@ -55,19 +55,22 @@ public class StatisticDao extends AbstractDao {
               "(CURRENT_DATE - INTERVAL '20 years')";
 
   private static final String GET_FAMILY_COUNT_BY_CITY =
-      "SELECT a.city, a.state, a.country, count (*) family_count "
-              + "FROM " + BASE_SCHEMA_NAME + "family f, " + BASE_SCHEMA_NAME + "address a "
-              + "WHERE f.samajid = ? AND f.active = true and f.addressid = a.addressid "
-              + "group by a.city, a.state, a.country "
-              + "order by count(*) desc";
+      "SELECT a.city, a.state, a.country, count(distinct f.familyid) family_count, count(fm.memberid) member_count "
+              + "FROM " + BASE_SCHEMA_NAME + "family f "
+              + "JOIN " + BASE_SCHEMA_NAME + "address a ON f.addressid = a.addressid "
+              + "LEFT JOIN " + BASE_SCHEMA_NAME + "familymember fm ON fm.familyid = f.familyid AND fm.samajid = f.samajid "
+              + "WHERE f.samajid = ? AND f.active = true "
+              + "GROUP BY a.city, a.state, a.country "
+              + "ORDER BY count(distinct f.familyid) desc";
 
   private static final RowMapper<CityFamilyCountDto> CITY_FAMILY_COUNT_ROW_MAPPER =
       (rs, rowNum) ->
           CityFamilyCountDto.builder()
               .cityName(rs.getString("city"))
               .stateName(rs.getString("state"))
-               .country(rs.getString("country"))
+              .country(rs.getString("country"))
               .familyCount(rs.getInt("family_count"))
+              .memberCount(rs.getInt("member_count"))
               .build();
 
   public int getRegisteredFamiliesCount(int samajId) {
