@@ -126,6 +126,9 @@ public class FamilyRegistrationRequest extends OperationRequest {
       }
       if(email != null) {
         email = email.trim().toLowerCase();
+        if(email.isEmpty()) {
+          email = null;
+        }
       }
       if (gender != null) {
         gender = gender.trim();

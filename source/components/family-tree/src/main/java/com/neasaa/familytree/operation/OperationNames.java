@@ -34,4 +34,6 @@ public interface OperationNames {
   String GET_FAMILIES_BY_REGION = "GET_FAMILIES_BY_REGION";
 
   String WHO_AM_I = "WHO_AM_I";
+
+  String MARK_AS_DECEASED = "MARK_AS_DECEASED";
 }

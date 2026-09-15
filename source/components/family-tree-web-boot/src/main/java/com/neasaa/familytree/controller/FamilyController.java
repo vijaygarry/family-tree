@@ -3,6 +3,7 @@ package com.neasaa.familytree.controller;
 import com.neasaa.base.app.operation.exception.InternalServerException;
 import com.neasaa.base.app.operation.exception.ValidationException;
 import com.neasaa.base.app.operation.model.EmptyOperationRequest;
+import com.neasaa.base.app.operation.model.EmptyOperationResponse;
 import com.neasaa.base.app.operation.model.OperationResponse;
 import com.neasaa.familytree.webutils.WebRequestHandler;
 import com.neasaa.familytree.operation.OperationNames;
@@ -28,6 +29,7 @@ import com.neasaa.familytree.operation.family.UpdateFamilyImageOperation;
 import com.neasaa.familytree.operation.family.UpdateFamilyMemberImageOperation;
 import com.neasaa.familytree.operation.family.GetFamiliesByRegionOperation;
 import com.neasaa.familytree.operation.family.GetFamilyCountByCityOperation;
+import com.neasaa.familytree.operation.family.MarkAsDeceasedOperation;
 import com.neasaa.familytree.operation.family.UpdateFamilyMemberProfileOperation;
 import com.neasaa.familytree.operation.family.model.AddFamilyMemberRequest;
 import com.neasaa.familytree.operation.family.model.AddFamilyMemberResponse;
@@ -49,6 +51,7 @@ import com.neasaa.familytree.operation.family.model.SearchFamilyRequest;
 import com.neasaa.familytree.operation.family.model.SearchFamilyResponse;
 import com.neasaa.familytree.operation.family.model.UpdateFamilyDetailsRequest;
 import com.neasaa.familytree.operation.family.model.UpdateFamilyDetailsResponse;
+import com.neasaa.familytree.operation.family.model.MarkAsDeceasedRequest;
 import com.neasaa.familytree.operation.family.model.UpdateFamilyMemberProfileRequest;
 import com.neasaa.familytree.operation.family.model.UpdateFamilyMemberProfileResponse;
 import com.neasaa.familytree.operation.family.model.GetFamiliesByRegionRequest;
@@ -182,6 +185,13 @@ public class FamilyController {
   public ResponseEntity<UpdateFamilyMemberProfileResponse> updateMemberProfile(
       @RequestBody UpdateFamilyMemberProfileRequest request) throws Exception {
     return WebRequestHandler.processRequest(UpdateFamilyMemberProfileOperation.class, request);
+  }
+
+  @PostMapping(value = "/markAsDeceased")
+  @ResponseBody
+  public ResponseEntity<EmptyOperationResponse> markAsDeceased(
+      @RequestBody MarkAsDeceasedRequest request) throws Exception {
+    return WebRequestHandler.processRequest(MarkAsDeceasedOperation.class, request);
   }
 
   @PostMapping("/updateMemberImage")

@@ -190,6 +190,12 @@ INSERT INTO shared_schema.lkpoperation(
 	VALUES ('GET_FAMILIES_BY_REGION', 'Get Families By Region', 'GetFamiliesByRegionOperation', true, true, 'ROLE_BASE',
     true, 1, now(), 1, now());
 
+INSERT INTO shared_schema.lkpoperation(
+	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype,
+    active, createdby, createddate, lastupdatedby, lastupdateddate)
+	VALUES ('MARK_AS_DECEASED', 'Mark Member As Deceased', 'MarkAsDeceasedOperation', true, true, 'ROLE_BASE',
+    true, 1, now(), 1, now());
+
 
 -- Get Family stats
 -- Total number of families, total number of members.

@@ -200,8 +200,7 @@ public class GetFamilyDetailsOperation
           Map<Integer, MemberSummaryDto> familyMemberMap,
           Set<Integer> memberIdsAlreadyAddedToTree) {
 
-    if (treeNode == null || treeNode.getMember().getMaritalStatus() == MaritalStatus.Single) {
-      // If member is single, no spouse or children to add.
+    if (treeNode == null) {
       return;
     }
 
@@ -211,6 +210,11 @@ public class GetFamilyDetailsOperation
       return;
     } else {
       memberIdsAlreadyAddedToTree.add(currentMember.getMemberId());
+    }
+
+    if (treeNode.getMember().getMaritalStatus() == MaritalStatus.Single) {
+      // If member is single, no spouse or children to add.
+      return;
     }
 
     int spouseMemberId = -1;
