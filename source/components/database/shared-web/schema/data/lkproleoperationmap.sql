@@ -188,6 +188,9 @@ VALUES ('APPLICATION_ADMIN_ROLE', 'UPDATE_ANY_FAMILY_MEMBER', 1, now(), 1, now()
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('APPLICATION_ADMIN_ROLE', 'MARK_AS_DECEASED', 1, now(), 1, now());
+INSERT INTO shared_schema.lkproleoperationmap(
+	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
+VALUES ('APPLICATION_ADMIN_ROLE', 'SET_HEAD_OF_FAMILY', 1, now(), 1, now());
 
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
@@ -291,6 +294,10 @@ VALUES ('SUPER_ADMIN_ROLE', 'GET_FAMILIES_BY_REGION', 1, now(), 1, now());
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('SUPER_ADMIN_ROLE', 'MARK_AS_DECEASED', 1, now(), 1, now());
+
+INSERT INTO shared_schema.lkproleoperationmap(
+	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
+VALUES ('SUPER_ADMIN_ROLE', 'SET_HEAD_OF_FAMILY', 1, now(), 1, now());
 
 
 

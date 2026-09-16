@@ -3,6 +3,7 @@ package com.neasaa.familytree.operation.session;
 import static com.neasaa.familytree.operation.OperationNames.ADD_FAMILY;
 import static com.neasaa.familytree.operation.OperationNames.ADD_MEMBER_TO_ANY_FAMILY;
 import static com.neasaa.familytree.operation.OperationNames.MARK_AS_DECEASED;
+import static com.neasaa.familytree.operation.OperationNames.SET_HEAD_OF_FAMILY;
 import static com.neasaa.familytree.operation.OperationNames.WHO_AM_I;
 
 import com.neasaa.base.app.operation.AbstractOperation;
@@ -52,6 +53,9 @@ public class WhoAmIOperation extends AbstractOperation<EmptyOperationRequest, Wh
       }
       if(isOperationAllowedForUser(MARK_AS_DECEASED)) {
         newOperationAllowedList.add(MARK_AS_DECEASED);
+      }
+      if(isOperationAllowedForUser(SET_HEAD_OF_FAMILY)) {
+        newOperationAllowedList.add(SET_HEAD_OF_FAMILY);
       }
       SessionUtils.setOperationAllowedInSession(appSessionUser, newOperationAllowedList);
     }

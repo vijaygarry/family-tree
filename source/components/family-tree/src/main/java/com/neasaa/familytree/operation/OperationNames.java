@@ -36,4 +36,6 @@ public interface OperationNames {
   String WHO_AM_I = "WHO_AM_I";
 
   String MARK_AS_DECEASED = "MARK_AS_DECEASED";
+
+  String SET_HEAD_OF_FAMILY = "SET_HEAD_OF_FAMILY";
 }

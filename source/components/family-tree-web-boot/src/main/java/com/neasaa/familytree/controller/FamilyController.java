@@ -30,6 +30,7 @@ import com.neasaa.familytree.operation.family.UpdateFamilyMemberImageOperation;
 import com.neasaa.familytree.operation.family.GetFamiliesByRegionOperation;
 import com.neasaa.familytree.operation.family.GetFamilyCountByCityOperation;
 import com.neasaa.familytree.operation.family.MarkAsDeceasedOperation;
+import com.neasaa.familytree.operation.family.SetHeadOfFamilyOperation;
 import com.neasaa.familytree.operation.family.UpdateFamilyMemberProfileOperation;
 import com.neasaa.familytree.operation.family.model.AddFamilyMemberRequest;
 import com.neasaa.familytree.operation.family.model.AddFamilyMemberResponse;
@@ -52,6 +53,7 @@ import com.neasaa.familytree.operation.family.model.SearchFamilyResponse;
 import com.neasaa.familytree.operation.family.model.UpdateFamilyDetailsRequest;
 import com.neasaa.familytree.operation.family.model.UpdateFamilyDetailsResponse;
 import com.neasaa.familytree.operation.family.model.MarkAsDeceasedRequest;
+import com.neasaa.familytree.operation.family.model.SetHeadOfFamilyRequest;
 import com.neasaa.familytree.operation.family.model.UpdateFamilyMemberProfileRequest;
 import com.neasaa.familytree.operation.family.model.UpdateFamilyMemberProfileResponse;
 import com.neasaa.familytree.operation.family.model.GetFamiliesByRegionRequest;
@@ -192,6 +194,13 @@ public class FamilyController {
   public ResponseEntity<EmptyOperationResponse> markAsDeceased(
       @RequestBody MarkAsDeceasedRequest request) throws Exception {
     return WebRequestHandler.processRequest(MarkAsDeceasedOperation.class, request);
+  }
+
+  @PostMapping(value = "/setHeadOfFamily")
+  @ResponseBody
+  public ResponseEntity<EmptyOperationResponse> setHeadOfFamily(
+      @RequestBody SetHeadOfFamilyRequest request) throws Exception {
+    return WebRequestHandler.processRequest(SetHeadOfFamilyOperation.class, request);
   }
 
   @PostMapping("/updateMemberImage")
