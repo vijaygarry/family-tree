@@ -65,13 +65,6 @@ public class GetSamajStatisticsOperation
 
     statistics.add(
         StatisticDto.builder()
-            .label("Registered Users")
-            .key("registered_users")
-            .value(statisticDao.getRegisteredUsersCount(samajId))
-            .build());
-
-    statistics.add(
-        StatisticDto.builder()
             .label("Number of Males")
             .key("males")
             .value(statisticDao.getMalesCount(samajId))
@@ -103,6 +96,13 @@ public class GetSamajStatisticsOperation
             .label("Single Boys (Above 20)")
             .key("single_boys")
             .value(statisticDao.getSingleBoysCount(samajId))
+            .build());
+
+    statistics.add(
+        StatisticDto.builder()
+            .label("Registered Users")
+            .key("registered_users")
+            .value(statisticDao.getRegisteredUsersCount(samajId))
             .build());
 
     return GetSamajStatisticsResponse.builder().statistics(statistics).build();
