@@ -6,6 +6,7 @@ import static com.neasaa.familytree.utils.DataFormatter.getISOFormatDate;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.neasaa.familytree.entity.FamilyMemberEntity;
+import com.neasaa.familytree.entity.FamilyMemberRegistrationEntity;
 import com.neasaa.familytree.enums.Gender;
 import com.neasaa.familytree.enums.MaritalStatus;
 import com.neasaa.familytree.utils.DataFormatter;
@@ -81,6 +82,31 @@ public class MemberSummaryDto {
         .occupation(familyMemberEntity.getOccupation())
         .profileImageThumbnail(familyMemberEntity.getProfileImageThumbnail())
         .belongsToSameFamily(belongsToSameFamily)
+        .build();
+  }
+
+  public static MemberSummaryDto fromRegistrationEntity(
+      FamilyMemberRegistrationEntity entity, String familyRelationship) {
+    short birthDay = entity.getBirthDay() != null ? entity.getBirthDay() : 0;
+    String birthDate = entity.getBirthMonth() != null
+        ? formatBirthDate(birthDay, entity.getBirthMonth(), entity.getBirthYear())
+        : null;
+    return MemberSummaryDto.builder()
+        .memberId(entity.getMemberRequestId())
+        .familyId(entity.getFamilyRequestId())
+        .headOfFamily(entity.isHeadOfFamily())
+        .firstName(entity.getFirstName())
+        .firstNameInHindi(entity.getFirstNameInHindi())
+        .familyRelationship(familyRelationship)
+        .gender(entity.getGender())
+        .birthDate(birthDate)
+        .isAlive(true)
+        .phone(DataFormatter.formatPhoneNumberForUX(entity.getPhone()))
+        .maritalStatus(entity.getMaritalStatus())
+        .weddingDate(getISOFormatDate(entity.getWeddingDate()))
+        .educationDetails(entity.getEducationDetails())
+        .occupation(entity.getOccupation())
+        .belongsToSameFamily(true)
         .build();
   }
 }

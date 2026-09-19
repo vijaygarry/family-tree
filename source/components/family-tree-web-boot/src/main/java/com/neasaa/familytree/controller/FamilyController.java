@@ -29,6 +29,8 @@ import com.neasaa.familytree.operation.family.UpdateFamilyImageOperation;
 import com.neasaa.familytree.operation.family.UpdateFamilyMemberImageOperation;
 import com.neasaa.familytree.operation.family.GetFamiliesByRegionOperation;
 import com.neasaa.familytree.operation.family.GetFamilyCountByCityOperation;
+import com.neasaa.familytree.operation.family.GetFamilyRegistrationDetailsOperation;
+import com.neasaa.familytree.operation.family.GetFamilyRegistrationListOperation;
 import com.neasaa.familytree.operation.family.MarkAsDeceasedOperation;
 import com.neasaa.familytree.operation.family.SetHeadOfFamilyOperation;
 import com.neasaa.familytree.operation.family.UpdateFamilyMemberProfileOperation;
@@ -58,6 +60,10 @@ import com.neasaa.familytree.operation.family.model.UpdateFamilyMemberProfileReq
 import com.neasaa.familytree.operation.family.model.UpdateFamilyMemberProfileResponse;
 import com.neasaa.familytree.operation.family.model.GetFamiliesByRegionRequest;
 import com.neasaa.familytree.operation.family.model.GetFamiliesByRegionResponse;
+import com.neasaa.familytree.operation.family.model.GetFamilyRegistrationDetailsRequest;
+import com.neasaa.familytree.operation.family.model.GetFamilyRegistrationDetailsResponse;
+import com.neasaa.familytree.operation.family.model.GetFamilyRegistrationListRequest;
+import com.neasaa.familytree.operation.family.model.GetFamilyRegistrationListResponse;
 import com.neasaa.familytree.operation.family.model.UpdateImageRequest;
 import com.neasaa.familytree.operation.family.model.GetFamilyCountByCityResponse;
 import com.neasaa.familytree.operation.samaj.GetSamajStatisticsOperation;
@@ -310,6 +316,20 @@ public class FamilyController {
   public ResponseEntity<GetFamiliesByRegionResponse> getFamiliesByRegion(
           @RequestBody GetFamiliesByRegionRequest request) throws Exception {
     return WebRequestHandler.processRequest(GetFamiliesByRegionOperation.class, request);
+  }
+
+  @RequestMapping(value = "/getFamilyRegistrationList")
+  @ResponseBody
+  public ResponseEntity<GetFamilyRegistrationListResponse> getFamilyRegistrationList(
+          @RequestBody GetFamilyRegistrationListRequest request) throws Exception {
+    return WebRequestHandler.processRequest(GetFamilyRegistrationListOperation.class, request);
+  }
+
+  @RequestMapping(value = "/getFamilyRegistrationDetails")
+  @ResponseBody
+  public ResponseEntity<GetFamilyRegistrationDetailsResponse> getFamilyRegistrationDetails(
+          @RequestBody GetFamilyRegistrationDetailsRequest request) throws Exception {
+    return WebRequestHandler.processRequest(GetFamilyRegistrationDetailsOperation.class, request);
   }
 
   private static ResponseEntity<? extends OperationResponse> buildValidationExceptionResponse(
