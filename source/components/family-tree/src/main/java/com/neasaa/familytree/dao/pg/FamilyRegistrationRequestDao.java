@@ -40,6 +40,13 @@ public class FamilyRegistrationRequestDao extends AbstractDao {
           + "FROM " + BASE_SCHEMA_NAME + "FAMILYREGISTRATIONREQUEST "
           + "WHERE STATUS = ? ORDER BY CREATEDDATE DESC";
 
+  private static final String SELECT_ALL_FAMILY_REGISTRATION_REQUESTS =
+      "SELECT FAMILYREQUESTID, SAMAJID, FAMILYNAME, FAMILYNAMEINHINDI, GOTRA, ADDRESSLINE1, ADDRESSLINE2, "
+          + "ADDRESSLINE3, CITY, DISTRICT, STATE, POSTALCODE, COUNTRY, PHONE, EMAIL, CREATEDDATE, CLIENTINFO, "
+          + "STATUS, FAMILYADDEDBY, DATEADDED, FAMILYID "
+          + "FROM " + BASE_SCHEMA_NAME + "FAMILYREGISTRATIONREQUEST "
+          + "ORDER BY CREATEDDATE DESC";
+
   private static final String INSERT_FAMILY_MEMBER_REGISTRATION =
       "INSERT INTO " + BASE_SCHEMA_NAME + "FAMILYMEMBERREGISTRATION "
           + "(FAMILYREQUESTID, SAMAJID, HEADOFFAMILY, FIRSTNAME, FIRSTNAMEINHINDI, GENDER, BIRTHDAY, "
@@ -114,6 +121,11 @@ public class FamilyRegistrationRequestDao extends AbstractDao {
   public List<FamilyRegistrationRequestEntity> getFamilyRegistrationRequestsByStatus(FamilyRegistrationStatus status) {
     return getJdbcTemplate().query(SELECT_FAMILY_REGISTRATION_REQUEST_BY_STATUS,
         new FamilyRegistrationRequestRowMapper(), status.name());
+  }
+
+  public List<FamilyRegistrationRequestEntity> getAllFamilyRegistrationRequests() {
+    return getJdbcTemplate().query(SELECT_ALL_FAMILY_REGISTRATION_REQUESTS,
+        new FamilyRegistrationRequestRowMapper());
   }
 
   public int insertFamilyMemberRegistration(FamilyMemberRegistrationEntity entity) {

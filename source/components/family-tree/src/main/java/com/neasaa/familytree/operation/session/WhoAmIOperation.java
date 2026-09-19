@@ -4,6 +4,7 @@ import static com.neasaa.familytree.operation.OperationNames.ADD_FAMILY;
 import static com.neasaa.familytree.operation.OperationNames.ADD_MEMBER_TO_ANY_FAMILY;
 import static com.neasaa.familytree.operation.OperationNames.MARK_AS_DECEASED;
 import static com.neasaa.familytree.operation.OperationNames.SET_HEAD_OF_FAMILY;
+import static com.neasaa.familytree.operation.OperationNames.GET_FAMILY_REGISTRATION_LIST;
 import static com.neasaa.familytree.operation.OperationNames.WHO_AM_I;
 
 import com.neasaa.base.app.operation.AbstractOperation;
@@ -56,6 +57,9 @@ public class WhoAmIOperation extends AbstractOperation<EmptyOperationRequest, Wh
       }
       if(isOperationAllowedForUser(SET_HEAD_OF_FAMILY)) {
         newOperationAllowedList.add(SET_HEAD_OF_FAMILY);
+      }
+      if(isOperationAllowedForUser(GET_FAMILY_REGISTRATION_LIST)) {
+        newOperationAllowedList.add(GET_FAMILY_REGISTRATION_LIST);
       }
       SessionUtils.setOperationAllowedInSession(appSessionUser, newOperationAllowedList);
     }
