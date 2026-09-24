@@ -86,6 +86,14 @@ public class UpdateFamilyDetailsOperation
       throw new ValidationException("Family not found.");
     }
 
+    String requestPhone = opRequest.getPhone();
+    String existingPhone = familyEntityFromDb.getPhone();
+    if (requestPhone != null && !requestPhone.isEmpty()
+        && !requestPhone.equals(existingPhone)
+        && familyDao.isFamilyExistsForPhone(requestPhone)) {
+      throw new ValidationException("A family with phone number " + requestPhone + " is already registered.");
+    }
+
     AddressEntity existingAddress = addressDao.getAddressById(familyEntityFromDb.getAddressId());
     if (existingAddress == null) {
       log.info("Address not found for family with Id {}", familyId);
@@ -165,7 +173,7 @@ public class UpdateFamilyDetailsOperation
       FamilyMemberEntity headOfFamily,
       AddressEntity familyAddress) {
     AuditInfo auditInfo = getAuditInfo();
-    String phoneNumber = DataFormatter.formatPhoneNumberForDBStorage(opRequest.getPhone());
+    String phoneNumber = opRequest.getPhone();
     String familyRegion = DataFormatter.getRegion(familyAddress);
     String emailId = (opRequest.getEmail() != null) ? opRequest.getEmail().toLowerCase() : null;
     String familyName = DataFormatter.capitalizeFirstLetter(opRequest.getFamilyName());

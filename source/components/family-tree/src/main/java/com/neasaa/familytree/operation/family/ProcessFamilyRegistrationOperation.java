@@ -136,6 +136,11 @@ public class ProcessFamilyRegistrationOperation extends FamilyAbstractOperation<
     familyEntityWrapper.getFamilyAddressEntity().setAddressId(addressId);
     familyEntityWrapper.getFamilyEntity().setAddressId(addressId);
 
+    String familyPhone = DataFormatter.formatPhoneNumberForDBStorage(familyEntityWrapper.getFamilyEntity().getPhone());
+    if (familyPhone != null && !familyPhone.isEmpty() && familyDao.isFamilyExistsForPhone(familyPhone)) {
+      throw new ValidationException("A family with phone number " + familyPhone + " is already registered.");
+    }
+
     int familyId = familyDao.addFamily(familyEntityWrapper.getFamilyEntity());
     familyEntityWrapper.getFamilyEntity().setFamilyId(familyId);
 

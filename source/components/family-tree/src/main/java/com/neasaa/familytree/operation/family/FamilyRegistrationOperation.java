@@ -107,6 +107,7 @@ public class FamilyRegistrationOperation extends FamilyAbstractOperation<FamilyR
     log.info("Registering family");
 
     checkIfMemberAlreadyExists(opRequest.getMembers());
+    checkIfFamilyPhoneAlreadyInUse(opRequest.getFamilyDetails().getPhone());
     // Create family address
     FamilyRegistrationRequestEntity familyRegistrationRequestEntity = getFamilyRegistrationEntityFromRequest(opRequest);
 
@@ -177,6 +178,15 @@ public class FamilyRegistrationOperation extends FamilyAbstractOperation<FamilyR
     response.setFamilyRegistrationId(familyRegistrationRequestId);
     response.setOperationMessage("Family registered successfully with ID: " + familyRegistrationRequestId);
     return response;
+  }
+
+  private void checkIfFamilyPhoneAlreadyInUse(String phone) {
+    if (phone == null || phone.isEmpty()) {
+      return;
+    }
+    if (familyDao.isFamilyExistsForPhone(phone)) {
+      throw new ValidationException("A family with phone number " + phone + " is already registered.");
+    }
   }
 
   private void checkIfMemberAlreadyExists (List<FamilyRegistrationRequest.Member> members) throws ValidationException {

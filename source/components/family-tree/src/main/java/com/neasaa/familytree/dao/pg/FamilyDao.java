@@ -108,6 +108,9 @@ public class FamilyDao extends AbstractDao {
 	private static final String UPDATE_FAMILY_MEMBERS_LAST_NAME_BY_FAMILYID = "UPDATE "  + BASE_SCHEMA_NAME + "FAMILYMEMBER " +
 			"SET LASTNAME = ? where FAMILYID = ?  AND SAMAJID = ?";
 
+  private static final String IS_FAMILY_EXISTS_FOR_PHONE =
+      "SELECT EXISTS (SELECT 1 FROM " + BASE_SCHEMA_NAME + "FAMILY WHERE PHONE = ?)";
+
   private static final String GET_FAMILIES_BY_REGION =
       "SELECT f.familyid, f.samajid, f.familyname, f.familynameinhindi, f.gotra, "
           + "f.region, f.phone, f.isphonewhatsappregistered, f.familyimage, "
@@ -266,6 +269,16 @@ public class FamilyDao extends AbstractDao {
                     "Error while updating family details. Please try again later");
         }
     }
+
+  public boolean isFamilyExistsForPhone(String phone) {
+    try {
+      return Boolean.TRUE.equals(
+          getJdbcTemplate().queryForObject(IS_FAMILY_EXISTS_FOR_PHONE, Boolean.class, phone));
+    } catch (Exception e) {
+      throw new InternalServerException(
+          "Internal error while processing your request, please try again.", e);
+    }
+  }
 
   public PreparedStatement buildUpdateStatement(
       Connection aConection, FamilyEntity aFamily, AuditInfo auditInfo) throws SQLException {

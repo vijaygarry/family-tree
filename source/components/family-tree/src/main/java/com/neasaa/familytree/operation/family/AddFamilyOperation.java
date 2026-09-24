@@ -38,11 +38,16 @@ public class AddFamilyOperation extends FamilyAbstractOperation<AddFamilyRequest
     checkValuePresent(opRequest.getGotra(), "gotra");
     checkObjectPresent(opRequest.getFamilyAddress(), "address");
     FamilytreeValidationUtils.validateAddress(opRequest.getFamilyAddress());
+    FamilytreeValidationUtils.validatePhoneNumber(opRequest.getPhone());
   }
 
   @Override
   public AddFamilyResponse doExecute(AddFamilyRequest opRequest) throws OperationException {
     log.info("Adding family");
+    if (opRequest.getPhone() != null && !opRequest.getPhone().isEmpty()
+        && familyDao.isFamilyExistsForPhone(opRequest.getPhone())) {
+      throw new ValidationException("A family with phone number " + opRequest.getPhone() + " is already registered.");
+    }
     AddressEntity familyAddress = getAddressFromRequest(opRequest);
     int addressId = addressDao.addAddress(familyAddress);
     familyAddress.setAddressId(addressId);
@@ -70,7 +75,7 @@ public class AddFamilyOperation extends FamilyAbstractOperation<AddFamilyRequest
   private FamilyEntity getFamilyFromRequest(
       AddFamilyRequest opRequest, AddressEntity familyAddress) {
     AuditInfo auditInfo = getAuditInfo();
-    String phoneNumber = DataFormatter.formatPhoneNumberForDBStorage(opRequest.getPhone());
+    String phoneNumber = opRequest.getPhone();
     String familyRegion = DataFormatter.getRegion(familyAddress);
     int samajId = getSamajIdFromSession();
     return FamilyEntity.builder()

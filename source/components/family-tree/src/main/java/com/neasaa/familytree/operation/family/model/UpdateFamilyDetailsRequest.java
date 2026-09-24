@@ -1,6 +1,7 @@
 package com.neasaa.familytree.operation.family.model;
 
 import com.neasaa.base.app.operation.model.OperationRequest;
+import com.neasaa.familytree.utils.DataFormatter;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,7 +30,7 @@ public class UpdateFamilyDetailsRequest extends OperationRequest {
       gotra = gotra.trim();
     }
     if (phone != null) {
-      phone = phone.trim();
+      phone = DataFormatter.formatPhoneNumberForDBStorage(phone);
     }
     if (email != null) {
       email = email.trim();
