@@ -22,6 +22,8 @@ public interface OperationNames {
 
   String MANAGE_RELATIONSHIP = "MANAGE_RELATIONSHIP";
 
+  String ADD_RELATIONSHIP = "ADD_RELATIONSHIP";
+
   String GET_EVENTS = "GET_EVENTS";
 
   String GET_ACCOUNT_LIST = "GET_ACCOUNT_LIST";

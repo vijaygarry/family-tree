@@ -204,7 +204,6 @@ INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('APPLICATION_ADMIN_ROLE', 'ADD_MEMBER_TO_MY_FAMILY', 1, now(), 1, now());
 
-
 INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('SUPER_ADMIN_ROLE', 'CHANGE_PASSWORD', 1, now(), 1, now());
@@ -307,6 +306,9 @@ INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('SUPER_ADMIN_ROLE', 'GET_FAMILY_REGISTRATION_DETAILS', 1, now(), 1, now());
 
+INSERT INTO shared_schema.lkproleoperationmap(
+	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
+VALUES ('SUPER_ADMIN_ROLE', 'ADD_RELATIONSHIP', 1, now(), 1, now());
 
 
 
