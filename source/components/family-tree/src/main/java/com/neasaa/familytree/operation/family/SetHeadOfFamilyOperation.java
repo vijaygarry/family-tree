@@ -59,6 +59,12 @@ public class SetHeadOfFamilyOperation
       log.error("Member name mismatch for member id {}.", opRequest.getMemberId());
       throw new ValidationException("No member found matching the provided details.");
     }
+    if (!memberEntityFromDb.isAlive()) {
+      log.warn("Cannot set deceased member {} as head of family {}.", opRequest.getMemberId(), opRequest.getFamilyId());
+      throw new ValidationException(
+          "We're sorry, but a deceased member cannot be designated as the head of family. "
+          + "Please select an active family member for this role.");
+    }
 
     FamilyEntity familyEntityFromDb = familyDao.getFamilyByFamilyId(samajId, opRequest.getFamilyId());
     if (familyEntityFromDb == null) {
