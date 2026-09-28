@@ -310,6 +310,13 @@ INSERT INTO shared_schema.lkproleoperationmap(
 	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
 VALUES ('SUPER_ADMIN_ROLE', 'ADD_RELATIONSHIP', 1, now(), 1, now());
 
+INSERT INTO shared_schema.lkproleoperationmap(
+	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
+VALUES ('APPLICATION_ADMIN_ROLE', 'REGISTER_MARRIAGE', 1, now(), 1, now());
+INSERT INTO shared_schema.lkproleoperationmap(
+	roleid, operationid, createdby, createddate, lastupdatedby, lastupdateddate)
+VALUES ('SUPER_ADMIN_ROLE', 'REGISTER_MARRIAGE', 1, now(), 1, now());
+
 
 
 

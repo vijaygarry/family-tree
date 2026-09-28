@@ -17,6 +17,7 @@ import com.neasaa.familytree.operation.events.model.GetEventsRequest;
 import com.neasaa.familytree.operation.events.model.GetEventsResponse;
 import com.neasaa.familytree.operation.family.AddFamilyMemberOperation;
 import com.neasaa.familytree.operation.family.AddRelationshipOperation;
+import com.neasaa.familytree.operation.family.RegisterMarriageOperation;
 import com.neasaa.familytree.operation.family.AddFamilyOperation;
 import com.neasaa.familytree.operation.family.FamilyRegistrationOperation;
 import com.neasaa.familytree.operation.family.GetFamilyDetailsOperation;
@@ -37,6 +38,7 @@ import com.neasaa.familytree.operation.family.SetHeadOfFamilyOperation;
 import com.neasaa.familytree.operation.family.UpdateFamilyMemberProfileOperation;
 import com.neasaa.familytree.operation.family.model.AddFamilyMemberRequest;
 import com.neasaa.familytree.operation.family.model.AddRelationshipRequest;
+import com.neasaa.familytree.operation.family.model.RegisterMarriageRequest;
 import com.neasaa.familytree.operation.family.model.AddFamilyMemberResponse;
 import com.neasaa.familytree.operation.family.model.AddFamilyRequest;
 import com.neasaa.familytree.operation.family.model.AddFamilyResponse;
@@ -180,6 +182,13 @@ public class FamilyController {
   public ResponseEntity<EmptyOperationResponse> addRelationship(
       @RequestBody AddRelationshipRequest addRelationshipRequest) throws Exception {
     return WebRequestHandler.processRequest(AddRelationshipOperation.class, addRelationshipRequest);
+  }
+
+  @PostMapping(value = "/registerMarriage")
+  @ResponseBody
+  public ResponseEntity<EmptyOperationResponse> registerMarriage(
+      @RequestBody RegisterMarriageRequest request) throws Exception {
+    return WebRequestHandler.processRequest(RegisterMarriageOperation.class, request);
   }
 
   @RequestMapping(value = "/getmemberprofile")

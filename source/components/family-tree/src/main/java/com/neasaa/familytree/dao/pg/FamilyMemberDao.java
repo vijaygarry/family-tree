@@ -128,6 +128,13 @@ public class FamilyMemberDao extends AbstractDao {
           + "LASTUPDATEDBY = ? , LASTUPDATEDDATE = ?  "
           + "where SAMAJID = ? and FAMILYID = ? and MEMBERID = ? ";
 
+  private static final String UPDATE_MEMBER_FAMILY_ID_STATEMENT =
+      "UPDATE "
+          + BASE_SCHEMA_NAME
+          + "FAMILYMEMBER "
+          + "SET FAMILYID = ?, LASTNAME = ?, LASTUPDATEDBY = ?, LASTUPDATEDDATE = ? "
+          + "WHERE SAMAJID = ? AND MEMBERID = ?";
+
   private static final String UPDATE_FAMILY_MEMBER_IMAGE_STATEMENT =
       "UPDATE "
           + BASE_SCHEMA_NAME
@@ -335,6 +342,24 @@ public class FamilyMemberDao extends AbstractDao {
                 samajId, familyId,
             memberId);
     log.info("Member image path is updated for member id: {}", memberId);
+  }
+
+  public void updateMemberFamilyId(int samajId, int memberId, int newFamilyId, String newLastName, AuditInfo auditInfo) {
+    try {
+      addFamilyMemberHistoryRecord(memberId, UPDATE_OPERATION);
+      getJdbcTemplate().update(
+          UPDATE_MEMBER_FAMILY_ID_STATEMENT,
+          newFamilyId,
+          newLastName,
+          auditInfo.getLastUpdatedBy(),
+          auditInfo.getLastUpdatedDate(),
+          samajId,
+          memberId);
+      log.info("Updated family ID to {} for member ID: {}", newFamilyId, memberId);
+    } catch (Exception e) {
+      log.error("Error while updating family ID for member id: {}", memberId, e);
+      throw new InternalServerException("Error while updating member family. Please try again later");
+    }
   }
 
   public FamilyMemberEntity addFamilyMember(FamilyMemberEntity aFamilyMember) {

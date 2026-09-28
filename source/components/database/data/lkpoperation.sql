@@ -220,6 +220,12 @@ INSERT INTO shared_schema.lkpoperation(
 	VALUES ('ADD_RELATIONSHIP', 'Add relationship between two family members', 'AddRelationshipOperation', true, true, 'ROLE_BASE',
     true, 1, now(), 1, now());
 
+INSERT INTO shared_schema.lkpoperation(
+	operationid, description, beanname, isauthorizationrequired, isauditrequired, authorizationtype,
+    active, createdby, createddate, lastupdatedby, lastupdateddate)
+	VALUES ('REGISTER_MARRIAGE', 'Register marriage between two family members', 'RegisterMarriageOperation', true, true, 'ROLE_BASE',
+    true, 1, now(), 1, now());
+
 -- Get Family stats
 -- Total number of families, total number of members.
 -- Registered users

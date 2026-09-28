@@ -6,6 +6,7 @@ import static com.neasaa.familytree.operation.OperationNames.MARK_AS_DECEASED;
 import static com.neasaa.familytree.operation.OperationNames.SET_HEAD_OF_FAMILY;
 import static com.neasaa.familytree.operation.OperationNames.GET_FAMILY_REGISTRATION_LIST;
 import static com.neasaa.familytree.operation.OperationNames.ADD_RELATIONSHIP;
+import static com.neasaa.familytree.operation.OperationNames.REGISTER_MARRIAGE;
 import static com.neasaa.familytree.operation.OperationNames.WHO_AM_I;
 
 import com.neasaa.base.app.operation.AbstractOperation;
@@ -64,6 +65,9 @@ public class WhoAmIOperation extends AbstractOperation<EmptyOperationRequest, Wh
       }
       if(isOperationAllowedForUser(ADD_RELATIONSHIP)) {
         newOperationAllowedList.add(ADD_RELATIONSHIP);
+      }
+      if(isOperationAllowedForUser(REGISTER_MARRIAGE)) {
+        newOperationAllowedList.add(REGISTER_MARRIAGE);
       }
       SessionUtils.setOperationAllowedInSession(appSessionUser, newOperationAllowedList);
     }
