@@ -19,9 +19,11 @@ import com.neasaa.familytree.entity.FamilyRegistrationRequestEntity;
 import com.neasaa.familytree.enums.FamilyRegistrationStatus;
 import com.neasaa.familytree.enums.Gender;
 import com.neasaa.familytree.enums.MaritalStatus;
+import com.neasaa.familytree.enums.RelationshipType;
 import com.neasaa.familytree.operation.OperationNames;
 import com.neasaa.familytree.operation.family.model.FamilyRegistrationRequest;
 import com.neasaa.familytree.operation.family.model.FamilyRegistrationResponse;
+import com.neasaa.familytree.operation.family.model.ProcessFamilyRegistrationResponse;
 import com.neasaa.familytree.utils.FamilytreeValidationUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +44,9 @@ public class FamilyRegistrationOperation extends FamilyAbstractOperation<FamilyR
 
   @Autowired
   protected FamilyRegistrationRequestDao familyRegistrationRequestDao;
+
+  @Autowired
+  private FamilyRegistrationApprovalUtil familyRegistrationApprovalUtil;
 
   @Autowired
   private AppProperties appProperties;
@@ -100,6 +105,7 @@ public class FamilyRegistrationOperation extends FamilyAbstractOperation<FamilyR
         checkValuePresent(member.getRelationship().getMemberName(), "related member name");
       }
     }
+    validateRelationships(opRequest.getMembers());
   }
 
   @Override
@@ -171,12 +177,24 @@ public class FamilyRegistrationOperation extends FamilyAbstractOperation<FamilyR
       log.info("{} members processed in {} iteration", memberAdded, iteration);
     }
 
-    sendEmailNotification(opRequest.getFamilyDetails().getSurname(), familyRegistrationRequestId);
-
     FamilyRegistrationResponse response = new FamilyRegistrationResponse();
     response.setSurname(opRequest.getFamilyDetails().getSurname());
     response.setFamilyRegistrationId(familyRegistrationRequestId);
-    response.setOperationMessage("Family registered successfully with ID: " + familyRegistrationRequestId);
+
+    boolean hasAddFamilyPermission = canLoggedInUserAddFamily();
+
+    if (hasAddFamilyPermission) {
+      log.info("Logged-in user has ADD_FAMILY permission, auto-processing registration id: {}", familyRegistrationRequestId);
+      familyRegistrationRequestEntity.setFamilyRequestId(familyRegistrationRequestId);
+      ProcessFamilyRegistrationResponse approvalResponse =
+          familyRegistrationApprovalUtil.approveRegistration(familyRegistrationRequestEntity, getAuditInfo());
+      response.setFamilyId(approvalResponse.getFamilyId());
+      response.setOperationMessage("Family registered and added successfully with family ID: " + approvalResponse.getFamilyId());
+    } else {
+      sendEmailNotification(opRequest.getFamilyDetails().getSurname(), familyRegistrationRequestId);
+      response.setOperationMessage("Family registered successfully with ID: " + familyRegistrationRequestId);
+    }
+
     return response;
   }
 
@@ -187,6 +205,137 @@ public class FamilyRegistrationOperation extends FamilyAbstractOperation<FamilyR
     if (familyDao.isFamilyExistsForPhone(phone)) {
       throw new ValidationException("A family with phone number " + phone + " is already registered.");
     }
+  }
+
+  private void validateRelationships(List<FamilyRegistrationRequest.Member> members) {
+    Map<String, FamilyRegistrationRequest.Member> membersByName = new HashMap<>();
+    for (FamilyRegistrationRequest.Member member : members) {
+      membersByName.put(member.getFirstName(), member);
+    }
+
+    for (FamilyRegistrationRequest.Member member : members) {
+      if (member.getHeadOfFamily()) {
+        continue;
+      }
+      FamilyRegistrationRequest.Member relatedMember = membersByName.get(member.getRelationship().getMemberName());
+      if (relatedMember == null) {
+        throw new ValidationException(
+            "Related member " + member.getRelationship().getMemberName() + " not found for member " + member.getFirstName());
+      }
+
+      // member.getRelationship() with have 2 fields: relationshipType and memberName
+      // E.g. member is "Arav" and member.getRelationship() = [relationshipType=Son, memberName="Vijay"]
+      // This reads as "Arav is Son of Vijay"
+      RelationshipType relationshipType = RelationshipType.getRelationshipType(member.getRelationship().getRelationshipType());
+      switch (relationshipType) {
+        case Son:
+        case Daughter:
+          validateChildParentRelationship(member, relatedMember, relationshipType);
+          break;
+        case Father:
+        case Mother:
+          validateChildParentRelationship(relatedMember, member, relationshipType);
+          break;
+        case Husband:
+        case Wife:
+          validateHusbandWifeRelationship(member, relatedMember, relationshipType);
+          break;
+        default:
+          throw new ValidationException("Unsupported relationship type: " + relationshipType);
+      }
+    }
+  }
+
+  private void validateChildParentRelationship(FamilyRegistrationRequest.Member child, FamilyRegistrationRequest.Member parent, RelationshipType relationshipType) {
+    if (relationshipType == RelationshipType.Son) {
+      if (!child.getGender().equalsIgnoreCase(Gender.Male.name())) {
+        throw new ValidationException(
+            "Member " + child.getFirstName() + " gender should be " + Gender.Male.name() + " for relation of son");
+      }
+    }
+    if (relationshipType == RelationshipType.Daughter) {
+      if (!child.getGender().equalsIgnoreCase(Gender.Female.name())) {
+        throw new ValidationException(
+            "Member " + child.getFirstName() + " gender should be " + Gender.Female.name()
+                + " for relation of daughter");
+      }
+    }
+    if (relationshipType == RelationshipType.Father) {
+      if (!parent.getGender().equalsIgnoreCase(Gender.Male.name())) {
+        throw new ValidationException(
+            "Member " + parent.getFirstName() + " gender should be " + Gender.Male.name() + " for relation of father");
+      }
+    }
+    if (relationshipType == RelationshipType.Mother) {
+      if (!parent.getGender().equalsIgnoreCase(Gender.Female.name())) {
+        throw new ValidationException(
+            "Member " + parent.getFirstName() + " gender should be " + Gender.Female.name() + " for relation of mother");
+      }
+    }
+
+    String parentName = parent.getFirstName();
+
+    MaritalStatus parentMaritalStatus = MaritalStatus.getMaritalStatus(parent.getMaritalStatus());
+    if (parentMaritalStatus == MaritalStatus.Single) {
+      throw new ValidationException(
+          "Parent " + parentName + " has marital status Single and cannot have a child " + child.getFirstName());
+    }
+
+    if (child.getBirthYear() <= parent.getBirthYear()) {
+      throw new ValidationException(
+          "Birth year of child " + child.getFirstName() + " (" + child.getBirthYear()
+              + ") must be after birth year of parent " + parentName + " (" + parent.getBirthYear() + ")");
+    }
+  }
+
+  /**
+   * Validates the relationship between a husband and wife, ensuring correct gender and marital status.
+   * @param member The member whose relationship is being validated.
+   * @param relatedMember The related member (spouse) in the relationship.
+   * @param relationshipType The type of relationship between the member and the related member.
+   * E.g. member is "Pinky" and member.getRelationship() = [relationshipType=Wife, memberName="Vijay"]
+   * This reads as "Pinky is Wife of Vijay"
+   * @throws ValidationException if the relationship is invalid based on gender or marital status.
+  */
+  private void validateHusbandWifeRelationship(FamilyRegistrationRequest.Member member, FamilyRegistrationRequest.Member spouseMember, RelationshipType relationshipType) {
+      Gender memberGender = Gender.getGenderByString(member.getGender());
+      Gender spouseGender = Gender.getGenderByString(spouseMember.getGender());
+
+      // Verify member's gender matches the relationship type
+      Gender expectedMemberGender = switch (relationshipType) {
+        case Husband -> Gender.Male;
+        case Wife -> Gender.Female;
+        default -> throw new ValidationException("Unsupported relationship type: " + relationshipType + " validating husband/wife relationship");
+      };
+      Gender expectedSpouseGender = switch (relationshipType) {
+        case Husband -> Gender.Female;
+        case Wife -> Gender.Male;
+        default -> throw new ValidationException("Unsupported relationship type: " + relationshipType + " validating husband/wife relationship");
+      };
+
+      if (memberGender != expectedMemberGender) {
+        throw new ValidationException(
+            member.getFirstName() + " is " + relationshipType + " of " + spouseMember.getFirstName() + " but " + member.getFirstName() + "'s gender is " + memberGender
+            + ". Expected " + expectedMemberGender);
+      }
+
+      if (spouseGender != expectedSpouseGender) {
+        throw new ValidationException(
+            member.getFirstName() + " is " + relationshipType + " of " + spouseMember.getFirstName() + " but " + spouseMember.getFirstName() + "'s gender is " + spouseGender
+            + ". Expected " + expectedSpouseGender);
+      }
+
+      MaritalStatus maritalStatus = MaritalStatus.getMaritalStatus(member.getMaritalStatus());
+      if (maritalStatus == MaritalStatus.Single) {
+        throw new ValidationException(
+           member.getFirstName() + " is " + relationshipType + " of " + spouseMember.getFirstName() + " but " + member.getFirstName() + "'s marital status is Single");
+      }
+
+      MaritalStatus spouseMaritalStatus = MaritalStatus.getMaritalStatus(spouseMember.getMaritalStatus());
+      if (spouseMaritalStatus == MaritalStatus.Single) {
+        throw new ValidationException(
+           member.getFirstName() + " is " + relationshipType + " of " + spouseMember.getFirstName() + " but " + spouseMember.getFirstName() + "'s marital status is Single");
+      }
   }
 
   private void checkIfMemberAlreadyExists (List<FamilyRegistrationRequest.Member> members) throws ValidationException {

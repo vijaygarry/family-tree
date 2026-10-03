@@ -1,5 +1,6 @@
 package com.neasaa.familytree.operation.family;
 
+import static com.neasaa.familytree.operation.OperationNames.ADD_FAMILY;
 import static com.neasaa.familytree.operation.OperationNames.ADD_MEMBER_TO_ANY_FAMILY;
 import static com.neasaa.familytree.operation.OperationNames.ADD_MEMBER_TO_MY_FAMILY;
 import static com.neasaa.familytree.operation.OperationNames.UPDATE_ANY_FAMILY_DETAILS;
@@ -81,6 +82,10 @@ public abstract class FamilyAbstractOperation<
    * @param familyId - Family ID to check
    * @return
    */
+  protected boolean canLoggedInUserAddFamily() {
+    return isOperationAllowedForUser(ADD_FAMILY);
+  }
+
   protected boolean canLoggedInUserUpdateFamily(int familyId) {
     if (isOperationAllowedForUser(UPDATE_ANY_FAMILY_DETAILS)) {
       return true;

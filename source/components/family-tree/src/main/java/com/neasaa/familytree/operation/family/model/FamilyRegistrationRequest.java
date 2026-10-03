@@ -112,6 +112,10 @@ public class FamilyRegistrationRequest extends OperationRequest {
     private String educationDetails;
     private String occupation;
     private Boolean headOfFamily;
+    
+    // member.getRelationship() with have 2 fields: relationshipType and memberName
+    // E.g. member is "Arav" and member.getRelationship() = [relationshipType=Son, memberName="Vijay"]
+    // This reads as "Arav is Son of Vijay"
     private Relationship relationship;
 
     public void normalize() {

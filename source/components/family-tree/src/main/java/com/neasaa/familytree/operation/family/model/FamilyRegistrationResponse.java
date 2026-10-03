@@ -13,4 +13,5 @@ public class FamilyRegistrationResponse extends OperationResponse {
 
   private String surname;
   private int familyRegistrationId;
+  private Integer familyId;
 }
