@@ -79,21 +79,21 @@ public class GetSamajStatisticsOperation
 
     statistics.add(
         StatisticDto.builder()
-            .label("Kids (Under 20)")
+            .label("Kids (Under 21)")
             .key("kids")
             .value(statisticDao.getKidsCount(samajId))
             .build());
 
     statistics.add(
         StatisticDto.builder()
-            .label("Single Girls (Above 20)")
+            .label("Single Girls (Above 21)")
             .key("single_girls")
             .value(statisticDao.getSingleGirlsCount(samajId))
             .build());
 
     statistics.add(
         StatisticDto.builder()
-            .label("Single Boys (Above 20)")
+            .label("Single Boys (Above 21)")
             .key("single_boys")
             .value(statisticDao.getSingleBoysCount(samajId))
             .build());

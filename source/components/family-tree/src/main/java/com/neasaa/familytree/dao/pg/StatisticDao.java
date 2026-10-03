@@ -38,21 +38,21 @@ public class StatisticDao extends AbstractDao {
           + BASE_SCHEMA_NAME
           + "FAMILYMEMBER WHERE SAMAJID = ? AND " +
               " make_date(birthyear, birthmonth, CASE WHEN birthday > 0 THEN birthday ELSE 1 END) > " +
-              " (CURRENT_DATE - INTERVAL '20 years')";
+              " (CURRENT_DATE - INTERVAL '21 years')";
 
   private static final String COUNT_SINGLE_GIRLS =
       "SELECT COUNT(*) FROM "
           + BASE_SCHEMA_NAME
           + "FAMILYMEMBER WHERE SAMAJID = ? AND GENDER = 'Female' AND MARITALSTATUS = 'Single' " +
               "AND make_date(birthyear, birthmonth, CASE WHEN birthday > 0 THEN birthday ELSE 1 END) < " +
-              "(CURRENT_DATE - INTERVAL '20 years')";
+              "(CURRENT_DATE - INTERVAL '21 years')";
 
   private static final String COUNT_SINGLE_BOYS =
       "SELECT COUNT(*) FROM "
           + BASE_SCHEMA_NAME
           + "FAMILYMEMBER WHERE SAMAJID = ? AND GENDER = 'Male' AND MARITALSTATUS = 'Single' " +
               "AND make_date(birthyear, birthmonth, CASE WHEN birthday > 0 THEN birthday ELSE 1 END) < " +
-              "(CURRENT_DATE - INTERVAL '20 years')";
+              "(CURRENT_DATE - INTERVAL '21 years')";
 
   private static final String GET_FAMILY_COUNT_BY_CITY =
       "SELECT a.city, a.state, a.country, count(distinct f.familyid) family_count, count(fm.memberid) member_count "
